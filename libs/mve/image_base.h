@@ -64,11 +64,11 @@ public:
     virtual ImageBase::Ptr duplicate_base (void) const;
 
     /** Returns the width of the image. */
-    int width (void) const;
+    long width (void) const;
     /** Returns the height of the image. */
-    int height (void) const;
+    long height (void) const;
     /** Returns the amount of channels in the image. */
-    int channels (void) const;
+    long channels (void) const;
 
     /** Returns false if one of width, height or channels is 0. */
     bool valid (void) const;
@@ -77,7 +77,7 @@ public:
      * Re-interprets the dimensions of the image. This will fail and
      * return false if the total image size does not match the old image.
      */
-    bool reinterpret (int new_w, int new_h, int new_c);
+    bool reinterpret (long new_w, long new_h, long new_c);
 
     /** Generic byte size information. Returns 0 if not overwritten. */
     virtual std::size_t get_byte_size (void) const;
@@ -94,7 +94,7 @@ public:
     static ImageType get_type_for_string (std::string const& type_string);
 
 protected:
-    int w, h, c;
+    long w, h, c;
 };
 
 /* ---------------------------------------------------------------- */
@@ -127,7 +127,7 @@ public:
     virtual ImageBase::Ptr duplicate_base (void) const;
 
     /** Allocates new image space, clearing previous content. */
-    void allocate (int width, int height, int chans);
+    void allocate (long width, long height, long chans);
 
     /**
      * Resizes the underlying image data vector.
@@ -136,7 +136,7 @@ public:
      * may still consume the original amount of memory. Use allocate()
      * instead if the previous data is not important.
      */
-    void resize (int width, int height, int chans);
+    void resize (long width, long height, long chans);
 
     /** Clears the image data from memory. */
     virtual void clear (void);
@@ -172,9 +172,9 @@ public:
     T const* end (void) const;
 
     /** Returns the amount of pixels in the image (w * h). */
-    int get_pixel_amount (void) const;
+    long get_pixel_amount (void) const;
     /** Returns the amount of values in the image (w * h * c). */
-    int get_value_amount (void) const;
+    long get_value_amount (void) const;
 
     /** Returns the size of the image in bytes (w * h * c * BPV). */
     std::size_t get_byte_size (void) const;
@@ -206,19 +206,19 @@ ImageBase::duplicate_base (void) const
     return ImageBase::Ptr(new ImageBase(*this));
 }
 
-inline int
+inline long
 ImageBase::width (void) const
 {
     return this->w;
 }
 
-inline int
+inline long
 ImageBase::height (void) const
 {
     return this->h;
 }
 
-inline int
+inline long
 ImageBase::channels (void) const
 {
     return this->c;
@@ -231,7 +231,7 @@ ImageBase::valid (void) const
 }
 
 inline bool
-ImageBase::reinterpret (int new_w, int new_h, int new_c)
+ImageBase::reinterpret (long new_w, long new_h, long new_c)
 {
     if (new_w * new_h * new_c != this->w * this->h * this->c)
         return false;
@@ -413,7 +413,7 @@ TypedImageBase<T>::get_type_string (void) const
 
 template <typename T>
 inline void
-TypedImageBase<T>::allocate (int width, int height, int chans)
+TypedImageBase<T>::allocate (long width, long height, long chans)
 {
     this->clear();
     this->resize(width, height, chans);
@@ -421,7 +421,7 @@ TypedImageBase<T>::allocate (int width, int height, int chans)
 
 template <typename T>
 inline void
-TypedImageBase<T>::resize (int width, int height, int chans)
+TypedImageBase<T>::resize (long width, long height, long chans)
 {
     this->w = width;
     this->h = height;
@@ -517,17 +517,17 @@ TypedImageBase<T>::end (void) const
 }
 
 template <typename T>
-inline int
+inline long
 TypedImageBase<T>::get_pixel_amount(void) const
 {
     return this->w * this->h;
 }
 
 template <typename T>
-inline int
+inline long
 TypedImageBase<T>::get_value_amount (void) const
 {
-    return static_cast<int>(this->data.size());
+    return static_cast<long>(this->data.size());
 }
 
 template <typename T>
