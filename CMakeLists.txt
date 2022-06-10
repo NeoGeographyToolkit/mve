@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.2) # For boost 1.72
+cmake_minimum_required(VERSION 3.15.5)
 
 project(mve VERSION 0.1.0 DESCRIPTION "mve")
 
