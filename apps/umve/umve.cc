@@ -36,9 +36,7 @@ print_help_and_exit (util::Arguments const& args)
     std::exit(EXIT_FAILURE);
 }
 
-int
-main (int argc, char** argv)
-{
+int main (int argc, char** argv) {
     /* Parse arguments. */
     util::Arguments args;
     args.set_usage("Syntax: umve [ OPTIONS ] [ FILES | SCENEDIR ]");
@@ -54,12 +52,24 @@ main (int argc, char** argv)
     conf.gl_mode = false;
     conf.open_dialog = false;
 
-    /* Handle arguments. */
+    /* Handle arguments.*/
+    std::vector<std::string> images, cameras;
     util::ArgResult const* arg;
-    while ((arg = args.next_result()))
-    {
-        if (arg->opt == nullptr)
-        {
+    while ((arg = args.next_result())) {
+        if (arg->opt == nullptr) {
+            // Keep track of images and camera files in .tsai format
+            std::string file = arg->arg; 
+            std::string ext4 = util::string::right(file, 4);
+            std::string ext5 = util::string::right(file, 5);
+            ext4 = util::string::lowercase(ext4);
+            ext5 = util::string::lowercase(ext5);
+            if (ext4 == ".png" || ext4 == ".jpg" || ext4 == ".tif" ||
+                ext5 == ".jpeg")
+                images.push_back(file);
+            else if (ext5 == ".tsai")
+                cameras.push_back(file);
+
+            // This will also cover the case of input images with no .tsai cameras
             conf.filenames.push_back(arg->arg);
             continue;
         }
@@ -72,6 +82,12 @@ main (int argc, char** argv)
             print_help_and_exit(args);
     }
 
+    /* Check if we have as many images as cameras. */
+    if (images.size() != cameras.size()) {
+        std::cerr << "Number of images and cameras does not match!" << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+    
     /* Set OpenGL version that Qt should use when creating a context.*/
     QSurfaceFormat fmt;
     fmt.setVersion(3, 3);
@@ -101,23 +117,24 @@ main (int argc, char** argv)
         win.open_scene_inspect();
 
     bool scene_opened = false;
-    for (std::size_t i = 0; i < conf.filenames.size(); ++i)
-    {
-        std::string const& filename = conf.filenames[i];
-        if (util::fs::file_exists(filename.c_str()))
-        {
-            win.load_file(filename);
-        }
-        else if (!scene_opened)
-        {
-            win.load_scene(filename);
-            scene_opened = true;
-        }
-        else
-        {
-            std::cerr << "Ignoring extra directory argument: "
-                << filename << std::endl;
-            continue;
+    
+    // The case when we have input images and cameras with .tsai extension
+    if (images.size() > 0 && cameras.size() > 0) {
+        win.load_scene(images, cameras);
+        scene_opened = true;
+    } else {
+        for (std::size_t i = 0; i < conf.filenames.size(); i++) {
+            std::string const& filename = conf.filenames[i];
+            if (util::fs::file_exists(filename.c_str())) {
+                win.load_file(filename);
+            } else if (!scene_opened) {
+                win.load_scene(filename);
+                scene_opened = true;
+            } else {
+                std::cerr << "Ignoring extra directory argument: "
+                    << filename << std::endl;
+                continue;
+            }
         }
     }
 

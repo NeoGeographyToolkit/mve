@@ -132,13 +132,30 @@ void
 MainWindow::load_scene (std::string const& path)
 {
     mve::Scene::Ptr scene;
+    try { 
+        scene = mve::Scene::create(path); 
+    } catch (std::exception& e) {
+        QMessageBox::information(this, tr("Error loading scene"),
+            tr("Scene could not be loaded.\n"
+            "Directory: %1\nError: %2").arg(QString(path.c_str()), e.what()));
+        return;
+    }
+
+    SceneManager::get().select_scene(scene);
+    this->enable_scene_actions(true);
+}
+
+// Load images and tsai camera files
+void MainWindow::load_scene (std::vector<std::string> const& images, 
+    std::vector<std::string> const& cameras) {
+    mve::Scene::Ptr scene;
     try
-    { scene = mve::Scene::create(path); }
+    { scene = mve::Scene::create(images, cameras); }
     catch (std::exception& e)
     {
         QMessageBox::information(this, tr("Error loading scene"),
             tr("Scene could not be loaded.\n"
-            "Directory: %1\nError: %2").arg(QString(path.c_str()), e.what()));
+            "Error: %1").arg(e.what()));
         return;
     }
 

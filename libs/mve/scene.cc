@@ -27,6 +27,21 @@ Scene::load_scene (std::string const& base_path)
     this->init_views();
 }
 
+// Load scene from a list of images and camera files.
+void Scene::load_scene (std::vector<std::string> const& image_files,
+         std::vector<std::string> const& camera_files) {
+     if (image_files.size() != camera_files.size())
+         throw util::Exception("Number of images and camera files do not match");
+
+    this->views.clear();
+    this->views.resize(image_files.size());
+    for(std::size_t i = 0; i < image_files.size(); ++i) {
+        this->views[i] = View::create();
+        //this->views[i]->load_view(image_files[i]);
+        this->views[i]->load_view(image_files[i], camera_files[i]);
+    }
+}
+
 /* ---------------------------------------------------------------- */
 
 void

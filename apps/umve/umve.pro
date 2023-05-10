@@ -1,3 +1,6 @@
+QMAKE_CXX = x86_64-conda_cos6-linux-gnu-g++
+QMAKE_CC = x86_64-conda_cos6-linux-gnu-gcc
+LINK = x86_64-conda_cos6-linux-gnu-g++
 MVE_ROOT = ../..
 
 CONFIG += qt release c++11

@@ -147,6 +147,9 @@ public:
     /** Initializes the view from a directory. */
     void load_view (std::string const& path);
 
+    /** Initializes the view from an image and a .tsai camera file. */
+    void load_view (std::string const& image, std::string const& camera);
+
     /** Initializes the view from a deprecated .mve file. */
     void load_view_from_mve_file (std::string const& filename);
 
@@ -284,6 +287,7 @@ protected:
 private:
     void deprecated_format_check (std::string const& path);
     void load_meta_data (std::string const& path);
+    void load_meta_data_from_tsai (std::string const& path);
     void save_meta_data (std::string const& path);
     void populate_images_and_blobs (std::string const& path);
     void replace_file (std::string const& old_fn, std::string const& new_fn);

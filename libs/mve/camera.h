@@ -149,6 +149,11 @@ public:
      */
     void debug_print (void) const;
 
+    /**
+     * Reads camera parameters from a .tsai file.
+     */
+    void read_tsai(std::string const& cam_file); 
+
 public:
     /* Intrinsic camera parameters. */
 
@@ -164,8 +169,12 @@ public:
     /* Extrinsic camera parameters. */
 
     /** Camera translation vector. Camera position p = -ROT^T * trans. */
+    // This better be double as for orbital cameras the translation can be huge.
+    // But this breaks code!
     float trans[3];
+
     /** Camera rotation which transforms from world to cam. */
+    // This better be float but then some code breaks.
     float rot[9];
 };
 

@@ -41,11 +41,18 @@ public:
     /** Constructs and loads a scene from the given directory. */
     static Scene::Ptr create (std::string const& path);
 
+    /** Constructs and load a scene from images and .tsai cameras. */
+    static Scene::Ptr create (std::vector<std::string> const& image_files,
+        std::vector<std::string> const& camera_files);
+
     Scene(const Scene&) = delete;
     Scene& operator=(const Scene&) = delete;
 
     /** Loads the scene from the given directory. */
     void load_scene (std::string const& base_path);
+    /** Loads the scene from images and tsai camera files */
+    void load_scene (std::vector<std::string> const& image_files,
+        std::vector<std::string> const& camera_files);
 
     /** Returns the list of views. */
     ViewList const& get_views (void) const;
@@ -112,6 +119,14 @@ Scene::create (std::string const& path)
 {
     Scene::Ptr scene(new Scene);
     scene->load_scene(path);
+    return scene;
+}
+
+inline Scene::Ptr
+Scene::create (std::vector<std::string> const& image_files,
+    std::vector<std::string> const& camera_files) {
+    Scene::Ptr scene(new Scene);
+    scene->load_scene(image_files, camera_files);
     return scene;
 }
 

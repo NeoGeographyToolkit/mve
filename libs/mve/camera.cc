@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 
 #include "math/matrix_tools.h"
 #include "mve/camera.h"
@@ -259,6 +260,215 @@ CameraInfo::set_rotation_from_string (std::string const& rot_string)
         ss >> this->rot[i];
 }
 
+void CameraInfo::read_tsai(std::string const& filename) { 
+    
+    std::cout << "Warning: Reading camera center as float. May not be accurate." << "\n";
+
+    // TODO(oalexan1): Must convert all entries to double, and read below with
+    // %lf and not %f.
+
+  // Open the input file
+  std::ifstream cam_file;
+  cam_file.open(filename.c_str());
+
+  std::string text; 
+  if (cam_file.fail()) {
+    text = "PinholeModel::read_file: Could not open file: " + filename;
+    throw std::invalid_argument(text.c_str());
+  }
+
+  // Check for version number on the first line
+  int file_version = 1; // The default version written before the 2016 changes
+  std::string line;
+  std::getline(cam_file, line);
+  if (line.find("VERSION") != std::string::npos) {
+    sscanf(line.c_str(),"VERSION_%d", &file_version); // Parse the version of the input file
+
+    std::getline(cam_file, line); // Go ahead and get the next line
+
+    // If we get version 3, continue on to the rest of the file.
+    if (file_version == 4) {
+      // Version 4 added support for multiple camera types.
+      if (line.find("PINHOLE") == std::string::npos) {
+        text = "PinholeModel::read_file: Expected PINHOLE type, but got type "
+                                + line;
+        throw std::invalid_argument(text.c_str());
+      }
+      std::getline(cam_file, line); // Grab the following line
+    }
+
+  }else{
+    // Check if the first line is correct
+    if (sscanf(line.c_str(),"fu = %f", &this->flen) != 1) {
+      text = std::string("PinholeModel::read_file(): A Pinhole camera file must ")
+            + "start either with the VERSION line or the focal length. Got instead:\n"
+            + line;
+        throw std::invalid_argument(text.c_str());
+    }
+  }
+
+  // Do not read the true focal length as when it is large the frustrum is displayed
+  // poorly.  
+  this->flen = 1.0f;
+
+  // Start parsing all the parameters from the lines.
+  double f_u;
+  if (!cam_file.good() || sscanf(line.c_str(),"fu = %lf", &f_u) != 1) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the x focal length.\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+    std::cout << "Not reading true focal length and optical center "
+        << "for rendering reasons.\n";
+
+  double f_v;
+  std::getline(cam_file, line);
+  if (!cam_file.good() || sscanf(line.c_str(),"fv = %lf", &f_v) != 1) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the y focal length\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+  if (f_v != this->flen)
+        std::cerr << "Expecting the focal length in the x and y directions to be the "
+            << "same. Ignoring the focal length in y.\n";
+   
+  // Do not read the true optical center as when it is large the frustrum is displayed
+  // poorly.
+    ppoint[0] = 0.5f;
+    ppoint[1] = 0.5f;
+
+  double cu, cv;
+  std::getline(cam_file, line);
+  if (!cam_file.good() || sscanf(line.c_str(),"cu = %lf", &cu) != 1) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the x principal point\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+  std::getline(cam_file, line);
+  if (!cam_file.good() || sscanf(line.c_str(),"cv = %lf", &cv) != 1) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the y principal point\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+  std::getline(cam_file, line);
+  double u_direction[3];
+  if (!cam_file.good() || sscanf(line.c_str(),"u_direction = %lf %lf %lf", 
+        &u_direction[0], &u_direction[1], &u_direction[2]) != 3) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the u direction vector\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+  std::getline(cam_file, line);
+  double v_direction[3];
+  if (!cam_file.good() || sscanf(line.c_str(),"v_direction = %lf %lf %lf", 
+        &v_direction[0], &v_direction[1], &v_direction[2]) != 3) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the v direction vector\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+  std::getline(cam_file, line);
+  double w_direction[3];
+  if (!cam_file.good() || sscanf(line.c_str(),"w_direction = %lf %lf %lf", 
+        &w_direction[0], &w_direction[1], &w_direction[2]) != 3) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the w direction vector\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+  // Read extrinsic parameters
+
+  // Camera center in world coordinates
+  std::getline(cam_file, line);
+  double camera_center[3];
+  if (!cam_file.good() || sscanf(line.c_str(),"C = %lf %lf %lf", 
+        &camera_center[0], &camera_center[1], &camera_center[2]) != 3) {
+    cam_file.close();
+    text = "PinholeModel::read_file: Could not read C (the camera center) vector\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+  // Read the rotation matrix, the transform from the camera to the world
+  double rotation[9];
+  std::getline(cam_file, line);
+  if ( !cam_file.good() ||
+       sscanf(line.c_str(), "R = %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+              &rotation[0], &rotation[1], &rotation[2],
+              &rotation[3], &rotation[4], &rotation[5],
+              &rotation[6], &rotation[7], &rotation[8]) != 9 ) {
+    cam_file.close();
+    text = "PinholeModel::read_file(): Could not read the rotation matrix\n";
+    throw std::invalid_argument(text.c_str());
+  }
+
+    // Find the transpose of the rotation matrix,
+    // because we want to go from world to camera coordinates.
+    this->rot[0] = rotation[0];
+    this->rot[1] = rotation[3];
+    this->rot[2] = rotation[6];
+    this->rot[3] = rotation[1];
+    this->rot[4] = rotation[4];
+    this->rot[5] = rotation[7];
+    this->rot[6] = rotation[2];
+    this->rot[7] = rotation[5];
+    this->rot[8] = rotation[8];
+
+    // Go from camera center in world coordinates to the vector 'trans'.
+    // trans = -inverse(camera2world) * camera_center
+    // trans = - world2camera * camera_center
+    this->trans[0] = -(this->rot[0]*camera_center[0] + this->rot[1]*camera_center[1] + this->rot[2]*camera_center[2]);
+    this->trans[1] = -(this->rot[3]*camera_center[0] + this->rot[4]*camera_center[1] + this->rot[5]*camera_center[2]);
+    this->trans[2] = -(this->rot[6]*camera_center[0] + this->rot[7]*camera_center[1] + this->rot[8]*camera_center[2]);
+
+#if 0
+  // Ignore the rest of the file for now
+
+  // The pitch line does not exist in older files, so don't fail if it is missing.
+  // - At this point we need to hang on to the position immediately before the 
+  int lens_start = cam_file.tellg();
+  std::getline(cam_file, line);
+  if (line.find("pitch") != std::string::npos) {
+    if (!cam_file.good() || sscanf(line.c_str(),"pitch = %lf", &m_pixel_pitch) != 1) {
+      cam_file.close();
+      vw_throw( IOErr() << "PinholeModel::read_file(): Could not read the pixel pitch\n" );
+    }
+    lens_start = cam_file.tellg();
+    std::getline(cam_file, line); // After reading the pitch, read the next line.
+  }
+  else // Pixel pitch not specified, use 1.0 as the default.
+  {
+    if (file_version > 2){
+      cam_file.close();
+      vw_throw( IOErr() << "PinholeModel::read_file(): Pitch value required in this file version!\n" );
+    }
+    m_pixel_pitch = 1.0;
+  }
+
+  // Now that we have loaded all the parameters, update the dependend class members.
+  this->rebuild_camera_matrix();
+
+  // This creates m_distortion but we still need to read the parameters.
+  bool found_name = construct_lens_distortion(line, file_version);
+
+  if (!found_name && (file_version > 2)){
+    cam_file.close();
+    vw_throw( IOErr() << "PinholeModel::read_file(): Distortion name required in this file version!\n" );
+  }
+  
+  // If there was no line containing the distortion model name (true for old files)
+  //  then we need to back up to before the distortion parameters begin in the file.
+  if (!found_name)
+    cam_file.seekg(lens_start, std::ios_base::beg);    
+
+  // The lens distortion class knows how to parse the rest of the input stream.
+  m_distortion->read(cam_file);
+#endif
+}
 /* ---------------------------------------------------------------- */
 
 void

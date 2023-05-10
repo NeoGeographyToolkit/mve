@@ -13,6 +13,8 @@
 #include "scene_addins/addin_frusta_base.h"
 #include "scene_addins/addin_frusta_scene_renderer.h"
 
+#include <iostream>
+
 AddinFrustaSceneRenderer::AddinFrustaSceneRenderer (void)
 {
     this->render_frusta_cb = new QCheckBox("Draw camera frusta");
@@ -90,20 +92,27 @@ AddinFrustaSceneRenderer::paint_impl (void)
 void
 AddinFrustaSceneRenderer::create_frusta_renderer (void)
 {
-    if (this->state->scene == nullptr)
+
+    if (this->state->scene == nullptr) {
+        std::cout << "Scene is null!\n";
         return;
+    }
 
     float size = this->frusta_size_slider->value() / 100.0f;
     mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
     mve::Scene::ViewList const& views(this->state->scene->get_views());
     for (std::size_t i = 0; i < views.size(); ++i)
     {
-        if (views[i].get() == nullptr)
+        if (views[i].get() == nullptr) {
+            std::cerr << "Empty camera!\n";
             continue;
+        }
 
         mve::CameraInfo const& cam = views[i]->get_camera();
-        if (cam.flen == 0.0f)
+        if (cam.flen == 0.0f) {
+            std::cerr << "Camera focal length is 0!\n";
             continue;
+        }
 
         add_camera_to_mesh(cam, size, mesh);
     }

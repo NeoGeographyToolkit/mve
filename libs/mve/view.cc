@@ -52,6 +52,25 @@ View::load_view (std::string const& user_path)
     }
 }
 
+/** Initializes the view from an image and a .tsai camera file. */
+void View::load_view (std::string const& image, std::string const& camera) {
+    this->clear();
+    
+    std::string safe_image_path = util::fs::sanitize_path(image);
+    safe_image_path = util::fs::abspath(safe_image_path);
+    this->path = safe_image_path;
+
+    ImageProxy proxy;
+    proxy.is_dirty = false;
+    proxy.filename = safe_image_path;
+    proxy.name = safe_image_path;
+    this->images.push_back(proxy);
+
+    std::string safe_camera_path = util::fs::sanitize_path(camera);
+    safe_camera_path = util::fs::abspath(safe_camera_path);
+    this->load_meta_data_from_tsai(safe_camera_path);
+}
+
 void
 View::load_view_from_mve_file  (std::string const& filename)
 {
@@ -614,6 +633,20 @@ View::load_meta_data (std::string const& path)
         this->meta_data.camera.set_translation_from_string(cam_trans);
 }
 
+void View::load_meta_data_from_tsai(std::string const& path) {
+
+    /* Open file and read key/value pairs. */
+    std::ifstream in(path.c_str());
+    if (!in.good())
+        throw util::FileException(path, "Error opening");
+
+    this->meta_data.camera = CameraInfo();
+    this->meta_data.camera.read_tsai(path);
+
+    // Useful for testing
+    //this->meta_data.camera.debug_print();
+}
+
 void
 View::save_meta_data (std::string const& path)
 {
@@ -672,9 +705,6 @@ View::populate_images_and_blobs (std::string const& path)
         if (ext4 == ".png" || ext4 == ".jpg" ||
             ext5 == ".jpeg" || ext5 == ".mvei")
         {
-            //std::cout << "View: Adding image proxy: "
-            //    << file.name << std::endl;
-
             ImageProxy proxy;
             proxy.is_dirty = false;
             proxy.filename = file.name;
