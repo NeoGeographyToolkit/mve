@@ -319,8 +319,8 @@ void CameraInfo::read_tsai(std::string const& filename) {
     throw std::invalid_argument(text.c_str());
   }
 
-    std::cout << "Not reading true focal length and optical center "
-        << "for rendering reasons.\n";
+    //std::cout << "Not reading true focal length and optical center "
+    //    << "for rendering reasons.\n";
 
   double f_v;
   std::getline(cam_file, line);
@@ -330,7 +330,7 @@ void CameraInfo::read_tsai(std::string const& filename) {
     throw std::invalid_argument(text.c_str());
   }
 
-  if (f_v != this->flen)
+  if (f_u != f_v)
         std::cerr << "Expecting the focal length in the x and y directions to be the "
             << "same. Ignoring the focal length in y.\n";
    
