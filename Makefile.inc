@@ -1,5 +1,6 @@
 # Default values.
-CXX ?= g++
+CXX ?= /home/oalexan1/miniconda3/envs/isis7/bin/x86_64-conda_cos6-linux-gnu-g++
+CC ?= /home/oalexan1/miniconda3/envs/isis7/bin/x86_64-conda_cos6-linux-gnu-gcc
 CXXWARNINGS ?= -Wall -Wextra -Wundef -pedantic
 CXXINTRINSICS ?= -msse2 -msse3 -msse4 -mpopcnt
 CXXFEATURES ?= -funsafe-math-optimizations -fno-math-errno -std=c++11
@@ -9,7 +10,7 @@ CXXFLAGS ?= ${CXXWARNINGS} ${CXXINTRINSICS} ${CXXFEATURES} -g -O3
 OPENMP ?= -fopenmp
 
 # Always compile programs and libs with multi-threading.
-CXXFLAGS += -pthread
+CXXFLAGS += -pthread -I/home/oalexan1/miniconda3/envs/isis7/include
 
 UNAME = $(shell uname)
 ifeq (${UNAME},Darwin)
