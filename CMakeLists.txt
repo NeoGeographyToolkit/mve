@@ -22,4 +22,6 @@ find_package(TIFF REQUIRED)
 
 add_subdirectory(libs/util)
 add_subdirectory(libs/mve)
-
+add_subdirectory(libs/dmrecon)
+add_subdirectory(libs/ogl)
+add_subdirectory(apps/umve)
