@@ -109,7 +109,7 @@ MainWindow::load_plugins (void)
         for (int j = 0; j < plugin_files.size(); ++j)
         {
             QString fp = plugin_files[j].absoluteFilePath();
-            std::cout << "Loading " << fp.toStdString() << "..." << std::flush;
+            //std::cout << "Loading " << fp.toStdString() << "..." << std::flush;
             QPluginLoader pl(fp, this);
             MainWindowTab *pl_tab = dynamic_cast<MainWindowTab*>(pl.instance());
             if (pl_tab)

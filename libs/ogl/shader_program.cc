@@ -134,7 +134,7 @@ ShaderProgram::try_load_all (std::string const& basename)
         return false;
     }
 
-    std::cerr << "Loading shaders from " << basename << ".*" << std::endl;
+    //std::cerr << "Loading shaders from " << basename << ".*" << std::endl;
 
     this->load_vert_file(vert_filename);
 
