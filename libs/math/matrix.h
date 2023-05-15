@@ -75,6 +75,9 @@ public:
 
     /* ------------------------- Management ----------------------- */
 
+    /** Use as input a double array. */
+    Matrix<T,N,M>& from_doubles(double const* values);
+
     /** Fills all vector elements with the given value. */
     Matrix<T,N,M>& fill (T const& value);
 
@@ -288,6 +291,19 @@ matrix_inplace_transpose (Matrix<T,N,N>& matrix)
 }
 
 /* ---------------------------- Management ------------------------ */
+
+//Matrix<T,N,M>& from_doubles(double const* values);
+/** Use as input a double array. */
+template <typename T, int N, int M>
+inline Matrix<T,N,M>&
+Matrix<T,N,M>::from_doubles(double const* values)
+{
+    for (int i = 0; i < M*N; i++)
+    {
+        m[i] = values[i];
+    }
+    return *this;
+}
 
 template <typename T, int N, int M>
 inline Matrix<T,N,M>&

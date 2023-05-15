@@ -169,13 +169,12 @@ public:
     /* Extrinsic camera parameters. */
 
     /** Camera translation vector. Camera position p = -ROT^T * trans. */
-    // This better be double as for orbital cameras the translation can be huge.
-    // But this breaks code!
-    float trans[3];
+    // Make it double as the translation can be large.
+    double trans[3];
 
     /** Camera rotation which transforms from world to cam. */
-    // This better be float but then some code breaks.
-    float rot[9];
+    // Make it double to ensure good precision and consistency with the translation.
+    double rot[9];
 };
 
 MVE_NAMESPACE_END

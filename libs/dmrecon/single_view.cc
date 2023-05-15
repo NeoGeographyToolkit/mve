@@ -91,7 +91,8 @@ math::Vec3f
 SingleView::viewRay(float x, float y, int level) const
 {
     math::Vec3f ray = mve::geom::pixel_3dpos(x, y, 1.f, this->img_pyramid->at(level).invproj);
-    math::Matrix3f rot(view->get_camera().rot);
+    math::Matrix3f rot;
+    rot.from_doubles(view->get_camera().rot);
     return rot.transposed() * ray;
 }
 
@@ -101,7 +102,8 @@ SingleView::viewRayScaled(int x, int y) const
     assert(this->has_target_level);
 
     math::Vec3f ray = mve::geom::pixel_3dpos(x, y, 1.f, this->target_level.invproj);
-    math::Matrix3f rot(view->get_camera().rot);
+    math::Matrix3f rot;
+    rot.from_doubles(view->get_camera().rot);
     return rot.transposed() * ray;
 }
 

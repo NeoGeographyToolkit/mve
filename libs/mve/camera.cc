@@ -334,7 +334,7 @@ void CameraInfo::read_tsai(std::string const& filename) {
         std::cerr << "Expecting the focal length in the x and y directions to be the "
             << "same. Ignoring the focal length in y.\n";
    
-  // Do not read the true optical center as when it is large the frustrum is displayed
+  // Do not read the true optical center as when it is large the frustum is displayed
   // poorly.
     ppoint[0] = 0.5f;
     ppoint[1] = 0.5f;
