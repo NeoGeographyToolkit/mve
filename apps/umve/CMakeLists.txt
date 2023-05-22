@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
 
-set (APP_NAME umve) 
+set (APP_NAME sfm_view)
 project(${APP_NAME})
 
 set(CMAKE_AUTOMOC ON)

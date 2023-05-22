@@ -91,8 +91,9 @@ public:
     ~MainWindow (void);
 
     void load_scene (std::string const& path);
+    // load images and tsai camera files
     void load_scene (std::vector<std::string> const& images, 
-        std::vector<std::string> const& cameras);  // load images and tsai camera files
+                     std::vector<std::string> const& cameras); 
     
     void load_file (std::string const& filename);
 

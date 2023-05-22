@@ -94,7 +94,7 @@ AddinFrustaSceneRenderer::create_frusta_renderer (void)
 {
 
     if (this->state->scene == nullptr) {
-        std::cout << "Scene is null!\n";
+        std::cerr << "Error: No scene loaded.\n";
         return;
     }
 
@@ -104,13 +104,13 @@ AddinFrustaSceneRenderer::create_frusta_renderer (void)
     for (std::size_t i = 0; i < views.size(); ++i)
     {
         if (views[i].get() == nullptr) {
-            std::cerr << "Empty camera!\n";
+            std::cerr << "Error: Empty camera.\n";
             continue;
         }
 
         mve::CameraInfo const& cam = views[i]->get_camera();
         if (cam.flen == 0.0f) {
-            std::cerr << "Camera focal length is 0!\n";
+            std::cerr << "Error: Camera focal length is 0.\n";
             continue;
         }
 
