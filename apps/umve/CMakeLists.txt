@@ -32,7 +32,7 @@ file(GLOB SOURCES *.cc *.h scene_addins/*.cc scene_addins/*.h scene_inspect/*.cc
 
 # SET(QT5_UIS )
 
-qt5_add_resources (RCC_SOURCES umve.qrc)
+qt5_add_resources(RCC_SOURCES umve.qrc)
 
 #QT5_ADD_RESOURCES ( ${APP_NAME}_RCCS ${umve_resource_files})
 # QT5_WRAP_UI(UIS_HDRS

@@ -3,6 +3,8 @@
  * TU Darmstadt - Graphics, Capture and Massively Parallel Computing
  * All rights reserved.
  *
+ * Customized for use with ASP by Oleg Alexandrov (2023)
+ * 
  * This software may be modified and distributed under the terms
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
@@ -46,6 +48,11 @@ int main (int argc, char** argv) {
     args.add_option('o', "open-dialog", "Raises scene open dialog on startup");
     args.add_option('\0', "gl", false, "Switches to GL window on startup");
     args.parse(argc, argv);
+
+    // Must set this before any GUI is created, for OpenGL to work.
+    // This variable must not go out of scope till this program exits.
+    char MESA_GL_ENV_STR[5012];
+    putenv(strcpy(MESA_GL_ENV_STR, "MESA_GL_VERSION_OVERRIDE=3.3"));
 
     /* Set default startup config. */
     AppSettings conf;
