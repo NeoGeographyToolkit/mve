@@ -28,16 +28,20 @@ AddinSfmRenderer::paint_impl (void)
     if (this->render_cb->isChecked())
     {
         /* Try to create renderer. */
-        if (this->sfm_renderer == nullptr)
-            this->create_renderer(!this->first_create_renderer);
-        this->first_create_renderer = false;
+        try {
+            if (this->sfm_renderer == nullptr)
+                this->create_renderer(!this->first_create_renderer);
+            this->first_create_renderer = false;
 
-        /* Try to render. */
-        if (this->sfm_renderer != nullptr)
-        {
-            this->state->wireframe_shader->bind();
-            this->state->wireframe_shader->send_uniform("ccolor", math::Vec4f(0.0f));
-            this->sfm_renderer->draw();
+            /* Try to render. */
+            if (this->sfm_renderer != nullptr)
+            {
+                this->state->wireframe_shader->bind();
+                this->state->wireframe_shader->send_uniform("ccolor", math::Vec4f(0.0f));
+                this->sfm_renderer->draw();
+            }
+        } catch (...) {
+            std::cerr << "Error rendering SfM points\n";
         }
     }
 }
@@ -59,10 +63,11 @@ AddinSfmRenderer::create_renderer (bool raise_error_on_failure)
     catch (std::exception& e)
     {
         // Comment this out, as this will will not be used to read bundle files
-        // std::cerr << "Error reading bundle: " << e.what() << std::endl;
         this->render_cb->setChecked(false);
-        if (raise_error_on_failure)
-            this->show_error_box("Error reading bundle", e.what());
+        std::cerr << "Error reading SfM points.\n";
+        if (raise_error_on_failure) {
+            // this->show_error_box("Error reading bundle", e.what());
+        }
         return;
     }
 }

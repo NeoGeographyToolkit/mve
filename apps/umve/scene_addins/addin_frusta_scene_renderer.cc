@@ -211,39 +211,6 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
         views[i]->set_dirty(false); // so it does not ask to save the scene on quitting
     }
 
-    // Plot the cameras as meshes
-    float size = this->frusta_size_slider->value() / 100.0f;
-    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
-    for (std::size_t i = 0; i < views.size(); i++) {
-        if (views[i].get() == nullptr) {
-            std::cerr << "Error: Empty camera.\n";
-            continue;
-        }
-
-        mve::CameraInfo const& cam = views[i]->get_camera();
-
-        if (cam.flen == 0.0f) {
-            std::cerr << "Error: Camera focal length is 0.\n";
-            continue;
-        }
-
-        add_camera_to_mesh(cam, size, mesh);
-    }
-
-    // TODO(oalexan1): Make this into a function.
-    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
-    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
-    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
-#if 1 // Ground plane
-    // TODO(oalexan1): Add a switch for turning this off. This must not
-    // show up when a mesh is loaded.
-    // Set up a color
-    math::Vec4f color;
-    color[0] = 0.0f;
-    color[1] = 1.0f;
-    color[2] = 0.0f;
-    color[3] = 1.0f;
-
     // Find the mean camera center by calling the function defined above
     math::Vec3d mean_cam_center = find_mean_camera_pos(cam_centers);
     std::cout << "Mean camera center is " << mean_cam_center << std::endl;
@@ -255,6 +222,7 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
     // mean camera center and goes through it
     // TODO(oalexan1): Make this into a function
 
+    // TODO(oalexan1): Make this a function called completeVectorToOrthonormalBasis
     // Find the index of the largest component of the normal
     int largest_comp = 0;
     for (int i = 1; i < 3; i++) {
@@ -302,7 +270,101 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
         R(row, 1) = y[row];
         R(row, 2) = z[row];
     }
+
+    // TODO(oalexan1): Make this into a function.
+    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
+    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
+    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
+    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
+#if 1 // Ground plane
+    // TODO(oalexan1): Add a switch for turning this off. This must not
+    // show up when a mesh is loaded.
+    // Set up a color
+    math::Vec4f color;
+    color[0] = 0.0f;
+    color[1] = 1.0f;
+    color[2] = 0.0f;
+    color[3] = 1.0f;
+
+
     std::cout << "R is " << R << std::endl;
+    // Inverse matrix
+    math::Matrix3d Rinv = R.transposed();
+    // Iterate over camera centers
+    // and find the bounding box
+    double x_min = std::numeric_limits<double>::max(),
+           y_min = x_min, x_max = -x_min, y_max = x_max;
+
+    for (std::size_t i = 0; i < cam_centers.size(); i++) {
+        // Transform the camera center to the new coordinate system
+        math::Vec3d cam_center = cam_centers[i];
+        math::Vec3d trans_center = Rinv.mult(cam_center);
+        x_min = std::min(x_min, trans_center[0]);
+        x_max = std::max(x_max, trans_center[0]);
+        y_min = std::min(y_min, trans_center[1]);
+        y_max = std::max(y_max, trans_center[1]);
+    }
+    std::cout << "x_min is " << x_min << std::endl;
+    std::cout << "x_max is " << x_max << std::endl;
+    std::cout << "y_min is " << y_min << std::endl;
+    std::cout << "y_max is " << y_max << std::endl;
+    double len = std::max(x_max - x_min, y_max - y_min);
+    if (len == 0.0)
+        len = 1.0; // careful not to divide by zero
+    double mid_x = (x_min + x_max)/2.0;
+    double mid_y = (y_min + y_max)/2.0;
+
+    //  Scale the box having the camera to make it of size 1
+    for (std::size_t i = 0; i < cam_centers.size(); i++) {
+        // Transform the camera center to the new coordinate system
+        math::Vec3d cam_center = cam_centers[i];
+        math::Vec3d trans_center = Rinv.mult(cam_center);
+        trans_center[0] = (trans_center[0] - mid_x)/len;
+        trans_center[1] = (trans_center[1] - mid_y)/len;
+        trans_center[2] = 1.0;
+        std::cout << "trans center after is " << trans_center << std::endl;
+        cam_centers[i] = R.mult(trans_center);
+    }
+    
+    std::cout << "len is " << len << std::endl;
+
+    // TODO(oalexan1): Make this into a function.
+    // TODO(oalexan1): This is repeated code
+    for (std::size_t i = 0; i < views.size(); i++) {
+        if (views[i].get() == nullptr) {
+            std::cerr << "Error: Empty camera.\n";
+            continue;
+        }
+        
+        //std::cout << "Will adjust the views!" << std::endl;
+        mve::CameraInfo cam = views[i]->get_camera(); // make a copy of the camera
+
+        // Update the trans field of the camera
+        math::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
+        for (int coord = 0; coord < 3; coord++) 
+            cam.trans[coord] = t[coord];
+        views[i]->set_camera(cam);
+        views[i]->set_dirty(false); // so it does not ask to save the scene on quitting
+    }
+
+    // Plot the cameras as meshes
+    float size = this->frusta_size_slider->value() / 100.0f;
+    for (std::size_t i = 0; i < views.size(); i++) {
+        if (views[i].get() == nullptr) {
+            std::cerr << "Error: Empty camera.\n";
+            continue;
+        }
+
+        mve::CameraInfo const& cam = views[i]->get_camera();
+
+        if (cam.flen == 0.0f) {
+            std::cerr << "Error: Camera focal length is 0.\n";
+            continue;
+        }
+
+        add_camera_to_mesh(cam, size, mesh);
+    }
+
 
 
     // TODO(oalexan1): Make this plane filled and in different color.
@@ -317,9 +379,10 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
             y[0] = -1.0; y[1] = 1.0;
         }
     
-        // TODO(oalexan1): Replace here by double
-        math::Vec3d v1(x[0], y[0], 1.0);
-        math::Vec3d v2(x[1], y[1], 1.0);
+        // The cameras are roughly at z = 1 before applying the rotation R,
+        // so here we put the plane at z = 0.5, so it is more down.
+        math::Vec3d v1(x[0], y[0], 0.5);
+        math::Vec3d v2(x[1], y[1], 0.5);
 
         verts.push_back(R.mult(v1));
         verts.push_back(R.mult(v2));

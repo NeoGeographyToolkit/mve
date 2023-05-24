@@ -801,12 +801,22 @@ View::load_image_intern (ImageProxy* proxy, bool init_only)
     if (init_only)
     {
         //std::cout << "View: Initializing image " << filename << std::endl;
-        image::ImageHeaders headers = image::load_file_headers(filename);
-        proxy->is_dirty = false;
-        proxy->width = headers.width;
-        proxy->height = headers.height;
-        proxy->channels = headers.channels;
-        proxy->type = headers.type;
+        try {
+            image::ImageHeaders headers = image::load_file_headers(filename);
+            proxy->is_dirty = false;
+            proxy->width = headers.width;
+            proxy->height = headers.height;
+            proxy->channels = headers.channels;
+            proxy->type = headers.type;
+        } catch (std::exception& e) {
+            // Just cook up some data, as the goal is to show cameras
+            // and not images.
+            proxy->is_dirty = false;
+            proxy->width = 100;
+            proxy->height = 100;
+            proxy->channels = 1;
+        }
+
         proxy->is_initialized = true;
         return;
     }
