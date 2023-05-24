@@ -374,17 +374,22 @@ ViewInspect::set_embedding (std::string const& name)
         return;
     }
 
-    /* Request the embedding. */
-    mve::ImageBase::Ptr img(this->view->get_image(name));
-    if (img == nullptr)
-    {
+    // Request the embedding.
+    // Do not let this crash the program.
+    try {
+        mve::ImageBase::Ptr img(this->view->get_image(name));
+        if (img == nullptr) {
+            QMessageBox::warning(this, tr("Image Viewer"),
+            "Failed to load image.");
+            return;
+        }
+       this->recent_embedding = name;
+       this->set_image(img);
+    } catch(...) {
         QMessageBox::warning(this, tr("Image Viewer"),
-            tr("Embedding not available: %1").arg(QString(name.c_str())));
+        "Failed to load image.");
         return;
     }
-
-    this->recent_embedding = name;
-    this->set_image(img);
 }
 
 /* ---------------------------------------------------------------- */

@@ -63,8 +63,9 @@ AddinSfmRenderer::create_renderer (bool raise_error_on_failure)
     catch (std::exception& e)
     {
         // Comment this out, as this will will not be used to read bundle files
+        // or sfm. Hence, fail quietly.
         this->render_cb->setChecked(false);
-        std::cerr << "Error reading SfM points.\n";
+        // std::cerr << "Error reading SfM points.\n";
         if (raise_error_on_failure) {
             // this->show_error_box("Error reading bundle", e.what());
         }

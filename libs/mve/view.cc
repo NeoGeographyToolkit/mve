@@ -703,8 +703,8 @@ View::populate_images_and_blobs (std::string const& path)
         }
 
         /* Load image. */
-        if (ext4 == ".png" || ext4 == ".jpg" ||
-            ext5 == ".jpeg" || ext5 == ".mvei")
+        if (ext4 == ".png" || ext4 == ".jpg" || ext4 == ".tif" ||
+            ext5 == ".jpeg" || ext5 == ".tiff" || ext5 == ".mvei")
         {
             ImageProxy proxy;
             proxy.is_dirty = false;
@@ -812,7 +812,10 @@ View::load_image_intern (ImageProxy* proxy, bool init_only)
     std::string ext5 = util::string::right(proxy->filename, 5);
     ext4 = util::string::lowercase(ext4);
     ext5 = util::string::lowercase(ext5);
-    if (ext4 == ".png" || ext4 == ".jpg" || ext5 == ".jpeg")
+    // TODO(oalexan1): Make this into a isImage() function and call it in many
+    // places where .jpeg shows up.
+    if (ext4 == ".png" || ext4 == ".jpg" || ext4 == ".tif" ||
+        ext5 == ".jpeg" || ext5 == ".tiff")
         proxy->image = image::load_file(filename);
     else if (ext5 == ".mvei")
         proxy->image = image::load_mvei_file(filename);

@@ -71,7 +71,7 @@ int main (int argc, char** argv) {
             ext4 = util::string::lowercase(ext4);
             ext5 = util::string::lowercase(ext5);
             if (ext4 == ".png" || ext4 == ".jpg" || ext4 == ".tif" ||
-                ext5 == ".jpeg")
+                ext5 == ".jpeg" || ext5 == ".tiff")
                 images.push_back(file);
             else if (ext5 == ".tsai")
                 cameras.push_back(file);
