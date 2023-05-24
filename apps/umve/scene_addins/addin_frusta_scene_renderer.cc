@@ -106,6 +106,20 @@ double find_shortest_distance(std::vector<math::Vec3d> centers) {
     return shortest;
 }
 
+// Function to find the mean camera position
+math::Vec3d find_mean_camera_pos(std::vector<math::Vec3d> const& centers) {
+    // If the vector is empty, return 0,0,0
+    if (centers.size() == 0)
+        return math::Vec3d(0,0,0);
+    
+    math::Vec3d mean(0,0,0);
+    for (std::size_t i = 0; i < centers.size(); i++) {
+        mean += centers[i];
+    }
+    mean /= centers.size();
+    return mean;
+}
+
 // Write a function to collect the cam2world matrices and camera centers
 // in vectors.
 void extractCameraPoses(mve::Scene::ViewList const & views,
@@ -187,6 +201,7 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
             cam_centers[i] = cam_centers[i] / shortest_dist;
         
         std::cout << "Camera center is " << cam_centers[i] << std::endl;
+        std::cout << "norm - 1.0 is " << cam_centers[i].norm() - 1.0 << std::endl;
 
         // Update the trans field of the camera
         math::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
@@ -196,6 +211,7 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
         views[i]->set_dirty(false); // so it does not ask to save the scene on quitting
     }
 
+    // Plot the cameras as meshes
     float size = this->frusta_size_slider->value() / 100.0f;
     mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
     for (std::size_t i = 0; i < views.size(); i++) {
@@ -228,21 +244,85 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
     color[2] = 0.0f;
     color[3] = 1.0f;
 
-    // Draw a tiled plane to signify the ground
-    // TODO(oalexan1): Make this plane filled and in different color.
-    for (size_t i = 1; i <= 22; i++) {
-        double x[2], y[2], z[2];
-        z[0] = -10.0; z[1] = -10.0;
-        if (i <= 11) {
-            y[0] = 2.0*(i - 6.0); y[1] = y[0];
-            x[0] = -10.0; x[1] = 10.0;
-        } else {
-            x[0] = 2.0*(i - 11 - 6.0); x[1] = x[0];
-            y[0] = -10.0; y[1] = 10.0;
-        }
+    // Find the mean camera center by calling the function defined above
+    math::Vec3d mean_cam_center = find_mean_camera_pos(cam_centers);
+    std::cout << "Mean camera center is " << mean_cam_center << std::endl;
+    std::cout << "Normal - 1.0 is " << mean_cam_center.norm() - 1.0 << std::endl;
 
-        verts.push_back(math::Vec3f(x[0], y[0], -10.0f));
-        verts.push_back(math::Vec3f(x[1], y[1], -10.0f));
+    math::Vec3d z = mean_cam_center / mean_cam_center.norm();
+    std::cout << "Plane normal is " << z << std::endl;
+    // Draw a tiled plane to signify the ground It is perpendicular to the
+    // mean camera center and goes through it
+    // TODO(oalexan1): Make this into a function
+
+    // Find the index of the largest component of the normal
+    int largest_comp = 0;
+    for (int i = 1; i < 3; i++) {
+        if (std::abs(z[i]) > std::abs(z[largest_comp]))
+            largest_comp = i;
+    }
+    std::cout << "Largest component is " << largest_comp << std::endl;
+    // print the largest value
+    std::cout << "Largest value is " << z[largest_comp] << std::endl;
+    int j = largest_comp + 1;
+    if (j == 3) j = 0;
+    std::cout << "j is " << j << std::endl;
+    math::Vec3d x(0.0, 0.0, 0.0);
+    x[j] = z[largest_comp];
+    x[largest_comp] = -z[j];
+    x = x / x.norm();
+    // Swap the j and largest_comp components
+    std::cout << "x is " << x << std::endl;
+    // print the dot product
+    std::cout << "Dot product is " << x.dot(z) << std::endl;
+    // Find y as the cross product of plane normal and x
+    math::Vec3d y = z.cross(x);
+    y = y / y.norm();
+    std::cout << "y is " << y << std::endl;
+    std::cout << "z is " << z << std::endl;
+    // print the dot product of x and y
+    std::cout << "Dot product is " << x.dot(y) << std::endl;
+    // print the dot product of y and z
+    std::cout << "Dot product is " << y.dot(z) << std::endl;
+    // print the dot product of x and z
+    std::cout << "Dot product is " << x.dot(z) << std::endl;
+    // Find z2 as cross product of x and y
+    math::Vec3d z2 = x.cross(y);
+    std::cout << "z2 is " << z2 << std::endl;
+    std::cout << "Dot product is2 " << x.dot(y) << std::endl;
+    // print the dot product of y and z
+    std::cout << "Dot product is2 " << y.dot(z2) << std::endl;
+    // print the dot product of x and z
+    std::cout << "Dot product is2 " << x.dot(z2) << std::endl;
+
+    // Find the matrix with x, y, z as columns
+    math::Matrix3d R;
+    for (int row = 0; row < 3; row++) {
+        R(row, 0) = x[row];
+        R(row, 1) = y[row];
+        R(row, 2) = z[row];
+    }
+    std::cout << "R is " << R << std::endl;
+
+
+    // TODO(oalexan1): Make this plane filled and in different color.
+    double d = 10.0;
+    for (size_t i = 1; i <= 22; i++) {
+        double x[2], y[2];
+        if (i <= 11) {
+            y[0] = 2.0*(i - 6.0)/d; y[1] = y[0];
+            x[0] = -1.0; x[1] = 1.0;
+        } else {
+            x[0] = 2.0*(i - 11 - 6.0)/d; x[1] = x[0];
+            y[0] = -1.0; y[1] = 1.0;
+        }
+    
+        // TODO(oalexan1): Replace here by double
+        math::Vec3d v1(x[0], y[0], 1.0);
+        math::Vec3d v2(x[1], y[1], 1.0);
+
+        verts.push_back(R.mult(v1));
+        verts.push_back(R.mult(v2));
         faces.push_back(verts.size() - 2);
         faces.push_back(verts.size() - 1);
         colors.push_back(color);
