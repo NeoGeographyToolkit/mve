@@ -120,7 +120,7 @@ math::Vec3d find_mean_camera_pos(std::vector<math::Vec3d> const& centers) {
     return mean;
 }
 
-// Write a function to collect the cam2world matrices and camera centers
+// Collect the cam2world matrices and camera centers
 // in vectors.
 void extractCameraPoses(mve::Scene::ViewList const & views,
     // Outputs
@@ -138,7 +138,6 @@ void extractCameraPoses(mve::Scene::ViewList const & views,
             continue;
         }
         
-        //std::cout << "Will adjust the views!" << std::endl;
         mve::CameraInfo const& cam = views[i]->get_camera(); // alias
 
         // The cameras store trans = -inverse(camera2world) * camera_center
@@ -161,14 +160,72 @@ void extractCameraPoses(mve::Scene::ViewList const & views,
     return;
 }
 
-// Divide all camera centers by shortest distance to planet center
-// TODO(oalexan1): This must be a switch. When not having a planet,
-// don't do this.
-void
-AddinFrustaSceneRenderer::create_frusta_renderer (void)
-{
+// Apply the camera2world transforms and camera centers to the cameras in the scene
+void applyCameraPoses(std::vector<math::Vec3d>    const & cam_centers,
+                      std::vector<math::Matrix3d> const & cam2world_vec,
+                      mve::Scene::ViewList              & views) {
 
-std::cout << "Now in create_frusta_renderer" << std::endl;
+    for (std::size_t i = 0; i < views.size(); i++) {
+        if (views[i].get() == nullptr) {
+            std::cerr << "Error: Empty camera.\n";
+            continue;
+        }
+        
+        mve::CameraInfo cam = views[i]->get_camera(); // make a copy of the camera
+        math::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
+        for (int coord = 0; coord < 3; coord++)
+            cam.trans[coord] = t[coord];
+        views[i]->set_camera(cam);
+        views[i]->set_dirty(false); // so it does not ask to save the scene on quitting
+    }
+    return;
+}
+
+// Given a vector, find a rotation matrix that rotates the vector to the z-axis.
+void completeVectorToRotation(math::Vec3d & z, math::Matrix3d & R) {
+
+    int largest_comp = 0;
+    for (int i = 1; i < 3; i++) {
+        if (std::abs(z[i]) > std::abs(z[largest_comp]))
+            largest_comp = i;
+    }
+
+    int j = largest_comp + 1;
+    if (j == 3) 
+        j = 0;
+    
+    math::Vec3d x(0.0, 0.0, 0.0);
+    x[j] = z[largest_comp];
+    x[largest_comp] = -z[j];
+
+    if (std::abs(z[largest_comp]) == 0.0) {
+        // Handle degenerate case, will return the identity matrix
+        x = math::Vec3d(1.0, 0.0, 0.0);
+        z = math::Vec3d(0.0, 0.0, 1.0);
+    }
+
+    x = x / x.norm();
+    z = z / z.norm();
+
+    // Find y as the cross product of plane normal and x
+    math::Vec3d y = z.cross(x);
+    y = y / y.norm();
+
+    // Find the matrix with x, y, z as columns
+    for (int row = 0; row < 3; row++) {
+        R(row, 0) = x[row];
+        R(row, 1) = y[row];
+        R(row, 2) = z[row];
+    }
+
+    return;
+}
+
+// Compute a ground plane, scale the orbital camera positions relative to the plane,
+// then plot the cameras and the ground plane.
+// TODO(oalexan1): Connect this to the gui checkboxes that can turn on and off
+// showing the cameras and the ground plane.
+void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
 
     if (this->state->scene == nullptr) {
         std::cerr << "Error: No scene loaded.\n";
@@ -183,118 +240,26 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
 
     // Find shortest distance from camera center to the origin
     double shortest_dist = find_shortest_distance(cam_centers);
-    std::cout << "Shortest distance is " << shortest_dist << std::endl;
 
     // Divide by the shortest distance, if at least 10.0
-    // TODO(oalexan1): Make this into a function.
-    // Use a switch to control if to divide or not.
-    for (std::size_t i = 0; i < views.size(); i++) {
-        if (views[i].get() == nullptr) {
-            std::cerr << "Error: Empty camera.\n";
-            continue;
-        }
-        
-        //std::cout << "Will adjust the views!" << std::endl;
-        mve::CameraInfo cam = views[i]->get_camera(); // make a copy of the camera
+    for (size_t cam = 0; cam < cam_centers.size(); cam++)
+            cam_centers[cam] = cam_centers[cam] / shortest_dist;
+    applyCameraPoses(cam_centers, cam2world_vec, views);
 
-        if (shortest_dist > 10.0) 
-            cam_centers[i] = cam_centers[i] / shortest_dist;
-        
-        std::cout << "Camera center is " << cam_centers[i] << std::endl;
-        std::cout << "norm - 1.0 is " << cam_centers[i].norm() - 1.0 << std::endl;
-
-        // Update the trans field of the camera
-        math::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
-        for (int coord = 0; coord < 3; coord++) 
-            cam.trans[coord] = t[coord];
-        views[i]->set_camera(cam);
-        views[i]->set_dirty(false); // so it does not ask to save the scene on quitting
-    }
-
-    // Find the mean camera center by calling the function defined above
+    // Find the mean camera center, use it as normal to the ground plane
     math::Vec3d mean_cam_center = find_mean_camera_pos(cam_centers);
-    std::cout << "Mean camera center is " << mean_cam_center << std::endl;
-    std::cout << "Normal - 1.0 is " << mean_cam_center.norm() - 1.0 << std::endl;
-
-    math::Vec3d z = mean_cam_center / mean_cam_center.norm();
-    std::cout << "Plane normal is " << z << std::endl;
-    // Draw a tiled plane to signify the ground It is perpendicular to the
-    // mean camera center and goes through it
-    // TODO(oalexan1): Make this into a function
-
-    // TODO(oalexan1): Make this a function called completeVectorToOrthonormalBasis
-    // Find the index of the largest component of the normal
-    int largest_comp = 0;
-    for (int i = 1; i < 3; i++) {
-        if (std::abs(z[i]) > std::abs(z[largest_comp]))
-            largest_comp = i;
-    }
-    std::cout << "Largest component is " << largest_comp << std::endl;
-    // print the largest value
-    std::cout << "Largest value is " << z[largest_comp] << std::endl;
-    int j = largest_comp + 1;
-    if (j == 3) j = 0;
-    std::cout << "j is " << j << std::endl;
-    math::Vec3d x(0.0, 0.0, 0.0);
-    x[j] = z[largest_comp];
-    x[largest_comp] = -z[j];
-    x = x / x.norm();
-    // Swap the j and largest_comp components
-    std::cout << "x is " << x << std::endl;
-    // print the dot product
-    std::cout << "Dot product is " << x.dot(z) << std::endl;
-    // Find y as the cross product of plane normal and x
-    math::Vec3d y = z.cross(x);
-    y = y / y.norm();
-    std::cout << "y is " << y << std::endl;
-    std::cout << "z is " << z << std::endl;
-    // print the dot product of x and y
-    std::cout << "Dot product is " << x.dot(y) << std::endl;
-    // print the dot product of y and z
-    std::cout << "Dot product is " << y.dot(z) << std::endl;
-    // print the dot product of x and z
-    std::cout << "Dot product is " << x.dot(z) << std::endl;
-    // Find z2 as cross product of x and y
-    math::Vec3d z2 = x.cross(y);
-    std::cout << "z2 is " << z2 << std::endl;
-    std::cout << "Dot product is2 " << x.dot(y) << std::endl;
-    // print the dot product of y and z
-    std::cout << "Dot product is2 " << y.dot(z2) << std::endl;
-    // print the dot product of x and z
-    std::cout << "Dot product is2 " << x.dot(z2) << std::endl;
-
-    // Find the matrix with x, y, z as columns
+    
+    math::Vec3d z = mean_cam_center; // will normalize z in the function below
     math::Matrix3d R;
-    for (int row = 0; row < 3; row++) {
-        R(row, 0) = x[row];
-        R(row, 1) = y[row];
-        R(row, 2) = z[row];
-    }
+    completeVectorToRotation(z, R);
 
-    // TODO(oalexan1): Make this into a function.
-    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
-    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
-    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
-    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
-#if 1 // Ground plane
-    // TODO(oalexan1): Add a switch for turning this off. This must not
-    // show up when a mesh is loaded.
-    // Set up a color
-    math::Vec4f color;
-    color[0] = 0.0f;
-    color[1] = 1.0f;
-    color[2] = 0.0f;
-    color[3] = 1.0f;
-
-
-    std::cout << "R is " << R << std::endl;
     // Inverse matrix
     math::Matrix3d Rinv = R.transposed();
-    // Iterate over camera centers
-    // and find the bounding box
+
+    // Find the bounding box of the camera centers in the coordinate system
+    // having the ground plane as x and y
     double x_min = std::numeric_limits<double>::max(),
            y_min = x_min, x_max = -x_min, y_max = x_max;
-
     for (std::size_t i = 0; i < cam_centers.size(); i++) {
         // Transform the camera center to the new coordinate system
         math::Vec3d cam_center = cam_centers[i];
@@ -304,10 +269,6 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
         y_min = std::min(y_min, trans_center[1]);
         y_max = std::max(y_max, trans_center[1]);
     }
-    std::cout << "x_min is " << x_min << std::endl;
-    std::cout << "x_max is " << x_max << std::endl;
-    std::cout << "y_min is " << y_min << std::endl;
-    std::cout << "y_max is " << y_max << std::endl;
     double len = std::max(x_max - x_min, y_max - y_min);
     if (len == 0.0)
         len = 1.0; // careful not to divide by zero
@@ -322,32 +283,18 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
         trans_center[0] = (trans_center[0] - mid_x)/len;
         trans_center[1] = (trans_center[1] - mid_y)/len;
         trans_center[2] = 1.0;
-        std::cout << "trans center after is " << trans_center << std::endl;
         cam_centers[i] = R.mult(trans_center);
     }
-    
-    std::cout << "len is " << len << std::endl;
 
-    // TODO(oalexan1): Make this into a function.
-    // TODO(oalexan1): This is repeated code
-    for (std::size_t i = 0; i < views.size(); i++) {
-        if (views[i].get() == nullptr) {
-            std::cerr << "Error: Empty camera.\n";
-            continue;
-        }
-        
-        //std::cout << "Will adjust the views!" << std::endl;
-        mve::CameraInfo cam = views[i]->get_camera(); // make a copy of the camera
-
-        // Update the trans field of the camera
-        math::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
-        for (int coord = 0; coord < 3; coord++) 
-            cam.trans[coord] = t[coord];
-        views[i]->set_camera(cam);
-        views[i]->set_dirty(false); // so it does not ask to save the scene on quitting
-    }
+    applyCameraPoses(cam_centers, cam2world_vec, views);
 
     // Plot the cameras as meshes
+    // TODO(oalexan1): Add a switch for turning this off.
+    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
+    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
+    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
+    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
+    math::Vec4f color(0, 1, 0, 1); // green
     float size = this->frusta_size_slider->value() / 100.0f;
     for (std::size_t i = 0; i < views.size(); i++) {
         if (views[i].get() == nullptr) {
@@ -356,18 +303,16 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
         }
 
         mve::CameraInfo const& cam = views[i]->get_camera();
-
         if (cam.flen == 0.0f) {
             std::cerr << "Error: Camera focal length is 0.\n";
             continue;
         }
-
         add_camera_to_mesh(cam, size, mesh);
     }
 
-
-
+    // Plot the ground plane half way between camera centers and origin
     // TODO(oalexan1): Make this plane filled and in different color.
+    // TODO(oalexan1): Add a switch for turning this off.
     double d = 10.0;
     for (size_t i = 1; i <= 22; i++) {
         double x[2], y[2];
@@ -391,7 +336,6 @@ std::cout << "Now in create_frusta_renderer" << std::endl;
         colors.push_back(color);
         colors.push_back(color);
     }
-#endif
 
     this->frusta_renderer = ogl::MeshRenderer::create(mesh);
     this->frusta_renderer->set_shader(this->state->wireframe_shader);

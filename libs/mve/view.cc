@@ -37,7 +37,6 @@ View::load_view (std::string const& user_path)
     this->deprecated_format_check(safe_path);
 
     /* Open meta.ini and populate images and blobs. */
-    //std::cout << "View: Loading view: " << path << std::endl;
     this->clear();
     try
     {
@@ -209,7 +208,6 @@ View::save_view_as (std::string const& user_path)
 {
     std::string safe_path = util::fs::sanitize_path(user_path);
     safe_path = util::fs::abspath(safe_path);
-    //std::cout << "View: Saving view: " << safe_path << std::endl;
 
     /* Create view directory if needed. */
     if (util::fs::file_exists(safe_path.c_str()))
@@ -276,9 +274,6 @@ View::save_view (void)
     /* Delete files of removed images and BLOBs. */
     for (std::size_t i = 0; i < this->to_delete.size(); ++i)
     {
-        //std::cout << "View: Deleting file: "
-        //    << this->to_delete[i] << std::endl;
-
         std::string fname = util::fs::join_path(this->path, this->to_delete[i]);
         if (util::fs::file_exists(fname.c_str())
             && !util::fs::unlink(fname.c_str()))
@@ -349,9 +344,6 @@ View::cache_cleanup (void)
         proxy.blob.reset();
         released += 1;
     }
-
-    //std::cout << "View: Released " << released
-    //    << " cache entries." << std::endl;
 
     return released;
 }
@@ -660,7 +652,6 @@ void View::load_meta_data_from_tsai(std::string const& path) {
 void
 View::save_meta_data (std::string const& path)
 {
-    //std::cout << "View: Saving meta data: " VIEW_IO_META_FILE << std::endl;
     std::string const fname = util::fs::join_path(path, VIEW_IO_META_FILE);
     std::string const fname_new = fname + ".new";
 
@@ -723,9 +714,6 @@ View::populate_images_and_blobs (std::string const& path)
         }
         else if (ext5 == ".blob")
         {
-            //std::cout << "View: Adding BLOB proxy: "
-            //    << file.name << std::endl;
-
             BlobProxy proxy;
             proxy.is_dirty = false;
             proxy.filename = file.name;
@@ -800,7 +788,6 @@ View::load_image_intern (ImageProxy* proxy, bool init_only)
 
     if (init_only)
     {
-        //std::cout << "View: Initializing image " << filename << std::endl;
         try {
             image::ImageHeaders headers = image::load_file_headers(filename);
             proxy->is_dirty = false;
@@ -821,7 +808,6 @@ View::load_image_intern (ImageProxy* proxy, bool init_only)
         return;
     }
 
-    //std::cout << "View: Loading image " << filename << std::endl;
     std::string ext4 = util::string::right(proxy->filename, 4);
     std::string ext5 = util::string::right(proxy->filename, 5);
     ext4 = util::string::lowercase(ext4);
@@ -867,7 +853,6 @@ View::save_image_intern (ImageProxy* proxy)
         std::string ext = get_file_extension(proxy->filename);
         std::string fname = proxy->name + ext;
         std::string pname = util::fs::join_path(this->path, fname);
-        //std::cout << "View: Copying image: " << fname << std::endl;
         util::fs::copy_file(proxy->filename.c_str(), pname.c_str());
         proxy->filename = fname;
         proxy->is_dirty = false;
@@ -892,7 +877,6 @@ View::save_image_intern (ImageProxy* proxy)
     std::string fname_new = fname_save + ".new";
 
     /* Save the new image. */
-    //std::cout << "View: Saving image: " << filename << std::endl;
     if (use_png_format)
         image::save_png_file(
             std::dynamic_pointer_cast<ByteImage>(proxy->image), fname_new);
@@ -905,7 +889,6 @@ View::save_image_intern (ImageProxy* proxy)
     /* If the original file was different (e.g. JPG to lossless), remove it. */
     if (!proxy->filename.empty() && fname_save != fname_orig)
     {
-        //std::cout << "View: Deleting file: " << fname_orig << std::endl;
         if (util::fs::file_exists(fname_orig.c_str())
             && !util::fs::unlink(fname_orig.c_str()))
             throw util::FileException(fname_orig, std::strerror(errno));
@@ -978,14 +961,12 @@ View::load_blob_intern (BlobProxy* proxy, bool init_only)
 
     if (init_only)
     {
-        //std::cout << "View: Initializing BLOB: " << filename << std::endl;
         proxy->size = size;
         proxy->is_initialized = true;
         return;
     }
 
     /* Read blob payload. */
-    //std::cout << "View: Loading BLOB: " << filename << std::endl;
     // FIXME: This limits BLOBs size to 2^31 bytes.
     ByteImage::Ptr blob = ByteImage::create(size, 1, 1);
     in.read(blob->get_byte_pointer(), blob->get_byte_size());
@@ -1016,7 +997,6 @@ View::save_blob_intern (BlobProxy* proxy)
     std::string fname_new = fname_orig + ".new";
 
     // Check if file exists? Create unique temp name?
-    //std::cout << "View: Saving BLOB " << proxy->filename << std::endl;
     std::ofstream out(fname_new.c_str(), std::ios::binary);
     if (!out.good())
         throw util::FileException(fname_new, std::strerror(errno));
