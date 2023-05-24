@@ -56,7 +56,7 @@ int main (int argc, char** argv) {
 
     /* Set default startup config. */
     AppSettings conf;
-    conf.gl_mode = false;
+    conf.gl_mode = true; // start in GL mode for now, as the goal is to view cameras
     conf.open_dialog = false;
 
     /* Handle arguments.*/

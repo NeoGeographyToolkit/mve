@@ -23,13 +23,9 @@ create_axis_renderer (ShaderProgram::Ptr shader)
     mve::TriangleMesh::FaceList& faces(mesh->get_faces());
     mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
 
-    // TODO(oalexan1): For now the axes are not drawn, but the ground plane is drawn instead. Need to have here a customizable switch.
-    bool draw_axes = false;
-
+    // Note(oalexan1): For now the axes are not drawn
+#if 0
     for (int hs = 0; hs < 2; ++hs) {
-
-        if (!draw_axes) 
-          continue; // do not draw the axes
 
         for (int i = 0; i < 3; ++i) { // For each axis
             float axis[4] =
@@ -83,37 +79,7 @@ create_axis_renderer (ShaderProgram::Ptr shader)
             }
         }
     }
-
-    // Draw the ground plane.
-    // TODO(oalexan1): Add a switch for turning this off. This must not
-    // show up when a mesh is loaded.
-    // Set up a color
-    math::Vec4f color;
-    color[0] = 0.0f;
-    color[1] = 1.0f;
-    color[2] = 0.0f;
-    color[3] = 1.0f;
-
-    // Draw a tiled plane to signify the ground
-    // TODO(oalexan1): Make this plane filled and in different color.
-    for (size_t i = 1; i <= 22; i++) {
-        double x[2], y[2], z[2];
-        z[0] = -10.0; z[1] = -10.0;
-        if (i <= 11) {
-            y[0] = 2.0*(i - 6.0); y[1] = y[0];
-            x[0] = -10.0; x[1] = 10.0;
-        } else {
-            x[0] = 2.0*(i - 11 - 6.0); x[1] = x[0];
-            y[0] = -10.0; y[1] = 10.0;
-        }
-
-        verts.push_back(math::Vec3f(x[0], y[0], -10.0f));
-        verts.push_back(math::Vec3f(x[1], y[1], -10.0f));
-        faces.push_back(verts.size() - 2);
-        faces.push_back(verts.size() - 1);
-        colors.push_back(color);
-        colors.push_back(color);
-    }
+#endif
 
     /* Generate the renderer. */
     MeshRenderer::Ptr ret(MeshRenderer::create());

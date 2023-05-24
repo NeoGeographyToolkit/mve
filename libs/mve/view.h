@@ -171,6 +171,9 @@ public:
     /** Returns true if meta data, images or blobs are dirty. */
     bool is_dirty (void) const;
 
+    /** Sets the dirty flag. */
+    void set_dirty (bool dirty);
+
     /** Cleans unused data that is not dirty. Returns amount cleaned. */
     int cache_cleanup (void);
 

@@ -31,8 +31,19 @@ CameraInfo::CameraInfo (void)
 
 /* ---------------------------------------------------------------- */
 
+// Must set the rotation before the translation
 void
 CameraInfo::fill_camera_pos (float* pos) const
+{
+    pos[0] = -rot[0] * trans[0] - rot[3] * trans[1] - rot[6] * trans[2];
+    pos[1] = -rot[1] * trans[0] - rot[4] * trans[1] - rot[7] * trans[2];
+    pos[2] = -rot[2] * trans[0] - rot[5] * trans[1] - rot[8] * trans[2];
+}
+
+/* Same as above, but with double precision. */
+// Must set the rotation before the translation
+void
+CameraInfo::fill_camera_pos (double* pos) const
 {
     pos[0] = -rot[0] * trans[0] - rot[3] * trans[1] - rot[6] * trans[2];
     pos[1] = -rot[1] * trans[0] - rot[4] * trans[1] - rot[7] * trans[2];
@@ -92,8 +103,6 @@ CameraInfo::fill_cam_to_world (float* mat) const
     mat[12] = 0.0f;   mat[13] = 0.0f;   mat[14] = 0.0f;   mat[15] = 1.0f;
 }
 
-/* ---------------------------------------------------------------- */
-
 void
 CameraInfo::fill_world_to_cam_rot (float* mat) const
 {
@@ -104,6 +113,16 @@ CameraInfo::fill_world_to_cam_rot (float* mat) const
 
 void
 CameraInfo::fill_cam_to_world_rot (float* mat) const
+{
+    mat[0]  = rot[0]; mat[1] = rot[3]; mat[2] = rot[6];
+    mat[3]  = rot[1]; mat[4] = rot[4]; mat[5] = rot[7];
+    mat[6]  = rot[2]; mat[7] = rot[5]; mat[8] = rot[8];
+}
+
+/* Same thing, but with doubles*/
+
+void
+CameraInfo::fill_cam_to_world_rot (double* mat) const
 {
     mat[0]  = rot[0]; mat[1] = rot[3]; mat[2] = rot[6];
     mat[3]  = rot[1]; mat[4] = rot[4]; mat[5] = rot[7];
@@ -262,10 +281,9 @@ CameraInfo::set_rotation_from_string (std::string const& rot_string)
 
 void CameraInfo::read_tsai(std::string const& filename) { 
     
-    std::cout << "Warning: Reading camera center as float. May not be accurate." << "\n";
-
-    // TODO(oalexan1): Must convert all entries to double, and read below with
-    // %lf and not %f.
+  // TODO(oalexan1): Must convert all entries to double, and read below with
+  // %lf and not %f. For now just the camera position and orientation are
+  // read as double, which are the most important ones.
 
   // Open the input file
   std::ifstream cam_file;
@@ -334,8 +352,8 @@ void CameraInfo::read_tsai(std::string const& filename) {
         std::cerr << "Expecting the focal length in the x and y directions to be the "
             << "same. Ignoring the focal length in y.\n";
    
-  // Do not read the true optical center as when it is large the frustum is displayed
-  // poorly.
+    // Do not read the true optical center as when it is large the frustum is displayed
+    // poorly.
     ppoint[0] = 0.5f;
     ppoint[1] = 0.5f;
 
@@ -449,7 +467,7 @@ void CameraInfo::read_tsai(std::string const& filename) {
     m_pixel_pitch = 1.0;
   }
 
-  // Now that we have loaded all the parameters, update the dependend class members.
+  // Now that we have loaded all the parameters, update the dependent class members.
   this->rebuild_camera_matrix();
 
   // This creates m_distortion but we still need to read the parameters.

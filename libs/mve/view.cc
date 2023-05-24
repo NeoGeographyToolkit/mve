@@ -319,6 +319,16 @@ View::is_dirty (void) const
     return false;
 }
 
+void
+View::set_dirty (bool is_dirty)
+{
+    this->meta_data.is_dirty = is_dirty;
+    for (std::size_t i = 0; i < this->images.size(); ++i)
+         this->images[i].is_dirty = is_dirty;
+    for (std::size_t i = 0; i < this->blobs.size(); ++i)
+        this->blobs[i].is_dirty = is_dirty;
+}
+
 int
 View::cache_cleanup (void)
 {

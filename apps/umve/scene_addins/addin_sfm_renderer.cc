@@ -58,7 +58,8 @@ AddinSfmRenderer::create_renderer (bool raise_error_on_failure)
     }
     catch (std::exception& e)
     {
-        std::cerr << "Error reading bundle: " << e.what() << std::endl;
+        // Comment this out, as this will will not be used to read bundle files
+        // std::cerr << "Error reading bundle: " << e.what() << std::endl;
         this->render_cb->setChecked(false);
         if (raise_error_on_failure)
             this->show_error_box("Error reading bundle", e.what());

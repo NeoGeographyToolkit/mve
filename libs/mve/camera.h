@@ -6,7 +6,7 @@
  * This software may be modified and distributed under the terms
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
-
+// Modified by oalexan1. Use doubles for camera position and orientation.
 #ifndef MVE_CAMERA_HEADER
 #define MVE_CAMERA_HEADER
 
@@ -33,7 +33,9 @@ public:
      * This can be thought of as the camera to world translation.
      * The position is calculated with: -R^T * t.
      */
+    // Must set the rotation before the translation
     void fill_camera_pos (float* pos) const;
+    void fill_camera_pos (double* pos) const;
 
     /**
      * Stores the camera translation 3-vector into array pointed to by pos.
@@ -69,6 +71,12 @@ public:
      * This is identical to the transposed rotation stored in the camera.
      */
     void fill_cam_to_world_rot (float* mat) const;
+
+    /**
+     * Stores the camera to world double precision 3x3 rotation matrix in mat.
+     * This is identical to the transposed rotation stored in the camera.
+     */
+    void fill_cam_to_world_rot (double* mat) const;
 
     /**
      * Initializes 'rot' and 'trans' members using the 4x4 matrix 'mat'.
