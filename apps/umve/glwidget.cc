@@ -18,11 +18,11 @@
 GLWidget::GLWidget (QWidget *parent)
     : QOpenGLWidget(parent)
     , context(nullptr)
-    , gl_width(0)
-    , gl_height(0)
+    , gl_width(500)
+    , gl_height(500)
     , cx_init(false)
 {
-    this->setFocusPolicy(Qt::ClickFocus);
+    this->setFocusPolicy(Qt::StrongFocus);
     this->makeCurrent();
     this->device_pixel_ratio = 1;
 #if QT_VERSION >= 0x050000
@@ -46,8 +46,7 @@ GLWidget::~GLWidget (void)
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::initializeGL()
-{
+GLWidget::initializeGL() {
 }
 
 /* ---------------------------------------------------------------- */
@@ -90,6 +89,13 @@ GLWidget::paintGL()
         }
         this->cx_init = false;
     }
+
+    // This block is needed to initialize the camera and paint the scene
+    // TODO(oalexan1): This may need more thought.
+    ogl::KeyboardEvent e;
+    e.type = ogl::KEYBOARD_EVENT_PRESS;
+    e.keycode = 0;
+    this->context->keyboard_event(e);
 
     /* Paint it! */
     this->context->paint();

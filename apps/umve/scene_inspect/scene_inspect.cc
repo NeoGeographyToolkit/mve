@@ -52,7 +52,9 @@ SceneInspect::SceneInspect (QWidget* parent)
     main_layout->addLayout(vbox, 1);
     main_layout->addWidget(this->tab_widget);
 
-    //this->gl_widget->repaint_gl();
+    // Focus on this widget
+    // TODO(oalexan1): Think more about this.
+    this->setFocusProxy(this->gl_widget);
 }
 
 /* ---------------------------------------------------------------- */
