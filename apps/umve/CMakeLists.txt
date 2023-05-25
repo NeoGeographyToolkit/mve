@@ -43,7 +43,7 @@ qt5_add_resources(RCC_SOURCES umve.qrc)
 include_directories(../../libs)
 include_directories(.)
 
-# Need this to find libOpenGL on Linux
+# Need this to f  ind libOpenGL on Linux
 set(EXTRA_SEARCH_DIR "")
 if (NOT APPLE)
   set(EXTRA_SEARCH_DIR "-L/usr/lib64")
@@ -95,7 +95,7 @@ elseif(UNIX) # Unix which is not Apple
 endif()
 
 # Install
-install(TARGETS ${APP_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS ${APP_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Install shaders. These will need to be shipped. See scene_addins/addin_state.cc.
 install(DIRECTORY "shaders" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sfm_view)
