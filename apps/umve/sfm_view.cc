@@ -45,7 +45,9 @@ int main (int argc, char** argv) {
     args.set_helptext_indent(14);
     args.set_exit_on_error(true);
     args.add_option('h', "help", false, "Prints this help text and exits");
-    args.add_option('o', "open-dialog", "Raises scene open dialog on startup");
+    args.add_option('o', "open-dialog", false, "Raises scene open dialog on startup");
+    args.add_option('\0', "width", true, "Window width in pixels");
+    args.add_option('\0', "height", true, "Window height in pixels");
     args.add_option('\0', "gl", false, "Switches to GL window on startup");
     args.parse(argc, argv);
 
@@ -61,8 +63,10 @@ int main (int argc, char** argv) {
 
     /* Handle arguments.*/
     std::vector<std::string> images, cameras;
+    int width = 1400, height = 1200; // default window size
     util::ArgResult const* arg;
     while ((arg = args.next_result())) {
+
         if (arg->opt == nullptr) {
             // Keep track of images and camera files in .tsai format
             std::string file = arg->arg; 
@@ -85,16 +89,26 @@ int main (int argc, char** argv) {
             conf.gl_mode = true;
         else if (arg->opt->lopt == "open-dialog")
             conf.open_dialog = true;
+        else if (arg->opt->lopt == "width")
+            width = atoi(arg->arg.c_str());
+        else if (arg->opt->lopt == "height")
+            height = atoi(arg->arg.c_str());
         else
             print_help_and_exit(args);
     }
 
     /* Check if we have as many images as cameras. */
     if (images.size() != cameras.size()) {
-        std::cerr << "Number of images and cameras does not match!" << std::endl;
+        std::cerr << "Number of images and cameras do not match." << std::endl;
         std::exit(EXIT_FAILURE);
     }
-    
+
+    // Sanity check for width and height
+    if (width < 10 || height < 10) {
+      std::cerr << "Invalid width or height. Must be at least 10." << std::endl;
+      std::exit(EXIT_FAILURE);
+    }
+
     /* Set OpenGL version that Qt should use when creating a context.*/
     QSurfaceFormat fmt;
     fmt.setVersion(3, 3);
@@ -117,7 +131,7 @@ int main (int argc, char** argv) {
     QApplication app(argc, argv);
 
     /* Create main window. */
-    MainWindow win;
+    MainWindow win(width, height);
 
     /* Apply app config. */
     if (conf.gl_mode)

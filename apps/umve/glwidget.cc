@@ -57,10 +57,6 @@ GLWidget::resizeGL(int width, int height)
     width *= this->device_pixel_ratio;
     height *= this->device_pixel_ratio;
 
-    std::cout << "Resizing GL from "
-        << this->gl_width << "x" << this->gl_height << " to "
-        << width << "x" << height << std::endl;
-
     this->gl_width = width;
     this->gl_height = height;
     if (this->context != nullptr)

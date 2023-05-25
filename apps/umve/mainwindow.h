@@ -87,7 +87,7 @@ public slots:
     void raise_open_scene_dialog (void);
 
 public:
-    MainWindow (void);
+    MainWindow (int width, int height);
     ~MainWindow (void);
 
     void load_scene (std::string const& path);

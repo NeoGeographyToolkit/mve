@@ -28,8 +28,7 @@
 
 #include <QPluginLoader>
 
-MainWindow::MainWindow (void)
-{
+MainWindow::MainWindow (int width, int height) {
     this->scene_overview = new SceneOverview(this);
     this->jobqueue = JobQueue::get();
 
@@ -71,9 +70,8 @@ MainWindow::MainWindow (void)
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_scene);
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_jobs);
     this->enable_scene_actions(false);
-    std::cout << "Fix here the resize" << std::endl;
-    this->resize(2000, 1500);
-
+    this->resize(width, height);
+    
     /* Start update timer and init. */
     this->update_timer = new QTimer(this);
     this->update_timer->start(2000); // Every sec
@@ -95,9 +93,7 @@ MainWindow::MainWindow (void)
 
 /* ---------------------------------------------------------------- */
 
-void
-MainWindow::load_plugins (void)
-{
+void MainWindow::load_plugins (void) {
     std::vector<std::string> plugin_paths;
     get_search_paths(&plugin_paths, "plugins");
     plugin_paths.push_back(":/plugins");
@@ -129,9 +125,7 @@ MainWindow::load_plugins (void)
 
 /* ---------------------------------------------------------------- */
 
-void
-MainWindow::load_scene (std::string const& path)
-{
+void MainWindow::load_scene (std::string const& path) {
     mve::Scene::Ptr scene;
     try { 
         scene = mve::Scene::create(path); 

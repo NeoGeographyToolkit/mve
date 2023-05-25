@@ -372,7 +372,7 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
         add_camera_to_mesh(cam, size, mesh);
     }
 
-    // Plot the ground plane half way between camera centers and origin
+    // Draw a ground plane as (x, z) in [-1, 1] x [-1, 1] at some height y.
     // TODO(oalexan1): Make this plane filled and in different color.
     // TODO(oalexan1): Add a switch for turning this off.
     double d = 10.0;
