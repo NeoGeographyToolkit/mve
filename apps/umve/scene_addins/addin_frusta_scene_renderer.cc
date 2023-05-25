@@ -89,7 +89,7 @@ AddinFrustaSceneRenderer::paint_impl (void)
     }
 }
 
-// TODO(oalexan1): Move this function to utils somewhere.
+// TODO(oalexan1): Move the functions below to utils somewhere.
 
 // Find shortest distance from camera center to the origin
 double find_shortest_distance(std::vector<math::Vec3d> centers) {
@@ -342,8 +342,10 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
     }
 
     // Rotate the camera positions and orientations
+    double GL_cam_shift_z = -0.5; // Move the cameras a bit to the back
     for (std::size_t i = 0; i < cam_centers.size(); i++) {
         cam_centers[i] = EcefToGL.mult(cam_centers[i]);
+        cam_centers[i][2] += GL_cam_shift_z;
         cam2world_vec[i] = EcefToGL.mult(cam2world_vec[i]);
     }
 
