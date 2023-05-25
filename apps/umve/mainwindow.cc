@@ -71,7 +71,8 @@ MainWindow::MainWindow (void)
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_scene);
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_jobs);
     this->enable_scene_actions(false);
-    this->resize(1024, 768);
+    std::cout << "Fix here the resize" << std::endl;
+    this->resize(2000, 1500);
 
     /* Start update timer and init. */
     this->update_timer = new QTimer(this);
