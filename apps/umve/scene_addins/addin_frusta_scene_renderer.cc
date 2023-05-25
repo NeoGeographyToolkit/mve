@@ -231,6 +231,29 @@ void completeVectorToRotation(math::Vec3d & y, math::Matrix3d & R) {
     return;
 }
 
+// Find the bounding box of the camera centers
+void bdBox(math::Matrix3d const& EcefToGL, 
+           std::vector<math::Vec3d> & cam_centers,
+           // Outputs
+           double & x_min, double & x_max, 
+           double & y_min, double & y_max,
+           double & z_min, double & z_max) {
+
+    double big = std::numeric_limits<double>::max();
+    x_min = big; y_min = big; z_min = big;
+    x_max = -big; y_max = -big; z_max = -big;
+
+    for (std::size_t i = 0; i < cam_centers.size(); i++) {
+        math::Vec3d trans_center = EcefToGL.mult(cam_centers[i]);
+        x_min = std::min(x_min, trans_center[0]);
+        x_max = std::max(x_max, trans_center[0]);
+        y_min = std::min(y_min, trans_center[1]);
+        y_max = std::max(y_max, trans_center[1]);
+        z_min = std::min(z_min, trans_center[2]);
+        z_max = std::max(z_max, trans_center[2]);
+    }
+}
+
 // Compute a ground plane, scale the orbital camera positions relative to the plane,
 // then plot the cameras and the ground plane.
 // TODO(oalexan1): Connect this to the gui checkboxes that can turn on and off
@@ -248,11 +271,16 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
     std::vector<math::Matrix3d> cam2world_vec;
     mve::Scene::ViewList & views(this->state->scene->get_views());
     extractCameraPoses(views, cam_centers, cam2world_vec);
+    if (cam_centers.empty()) {
+        std::cerr << "Error: No cameras found.\n";
+        return;
+    }
 
     // Find shortest distance from camera center to the origin
     double shortest_dist = find_shortest_distance(cam_centers);
+    shortest_dist = std::max(shortest_dist, 0.0001); // avoid division by zero
 
-    // Divide by the shortest distance, if at least 10.0
+    // Divide by the shortest distance to normalize the camera centers
     for (size_t cam = 0; cam < cam_centers.size(); cam++)
             cam_centers[cam] = cam_centers[cam] / shortest_dist;
 
@@ -263,67 +291,63 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
     // This is consistent with how OpenGL by default renders this plane
     // as horizontal (z axis pointing to user, y goes up, x goes right).
     math::Vec3d y = mean_cam_center; // will change below
-    math::Matrix3d R;
-    completeVectorToRotation(y, R);
+    math::Matrix3d GLToEcef;
+    completeVectorToRotation(y, GLToEcef);
 
     // Inverse matrix
-    math::Matrix3d Rinv = R.transposed();
+    math::Matrix3d EcefToGL = GLToEcef.transposed();
 
     // Find the bounding box of the camera centers in the coordinate system
     // having the ground plane as x and z axes. The y axis will point up,
     // consistent with the OpenGL default.
-    double x_min = std::numeric_limits<double>::max(),
-           z_min = x_min, x_max = -x_min, z_max = x_max;
-    for (std::size_t i = 0; i < cam_centers.size(); i++) {
-        // Transform the camera center to the new coordinate system
-        math::Vec3d cam_center = cam_centers[i];
-        math::Vec3d trans_center = Rinv.mult(cam_center);
-        x_min = std::min(x_min, trans_center[0]);
-        x_max = std::max(x_max, trans_center[0]);
-        z_min = std::min(z_min, trans_center[2]);
-        z_max = std::max(z_max, trans_center[2]);
-    }
-    double len = std::max(x_max - x_min, z_max - z_min);
+    // Call the bdBox function to find the bounding box of the camera centers
+    // in the coordinate system having the ground plane as x and z axes.
+    double x_min = 0, x_max = 0, y_min = 0, y_max = 0, z_min = 0, z_max = 0;
+    bdBox(EcefToGL, cam_centers, x_min, x_max, y_min, y_max, z_min, z_max);
+
+    // Max box size and mid point
+    double len = std::max(x_max - x_min, std::max(y_max - y_min, z_max - z_min));
     if (len == 0.0)
         len = 1.0; // careful not to divide by zero
-    double mid_x = (x_min + x_max)/2.0;
-    double mid_z = (z_min + z_max)/2.0;
-    std::cout << "mid_x = " << mid_x << "\n";
-    std::cout << "mid_z = " << mid_z << "\n";
-    std::cout << "max_x - min_x = " << x_max - x_min << "\n";
-    std::cout << "max_z - min_z = " << z_max - z_min << "\n";
+    double x_mid = (x_min + x_max)/2.0;
+    double y_mid = (y_min + y_max)/2.0;
+    double z_mid = (z_min + z_max)/2.0;
 
     // Rotate the camera centers so that the ground plane is the x-z plane
     // then normalize them to be to be on the order of 1.0. Rotate
-    // the camera orientations as well.
+    // the camera orientations as well. Then shift them so that they 
+    // can be seen in the default OpenGL view. Then put them 
+    // back to ECEF, before we later transform them again to GL, but after
+    // more fine tuning of the rotation transformation.
+    double GL_cam_shift_y = 0.2; // cameras are above the ground, defined below
+    double GL_ground_shift_y = -0.8;
     for (std::size_t i = 0; i < cam_centers.size(); i++) {
         // Transform the camera center to the new coordinate system
         math::Vec3d cam_center = cam_centers[i];
-        math::Vec3d trans_center = Rinv.mult(cam_center);
-        trans_center[0] = (trans_center[0] - mid_x)/len;
-        std::cout << "The height below is wrong!\n";
-        trans_center[1] = 0.2;
-        trans_center[2] = (trans_center[2] - mid_z)/len;
-        cam_centers[i] = R.mult(trans_center);
-        //cam2world_vec[i] = Rinv.mult(cam2world_vec[i]);
+        math::Vec3d trans_center = EcefToGL.mult(cam_center);
+        trans_center[0] = (trans_center[0] - x_mid)/len;
+        trans_center[1] = (trans_center[1] - y_mid)/len + GL_cam_shift_y;
+        trans_center[2] = (trans_center[2] - z_mid)/len;
+        cam_centers[i] = GLToEcef.mult(trans_center);
     }
 
     if (z_max - z_min > x_max - x_min) {
-        // Compute the 90 degree rotation in the x-z plane
+        // Rotate around the y xis by 90 degrees to show the cameras side-by-side
+        // as seen in the OpenGL default coordinate system.
         math::Matrix3d R90;
         R90[0] = 0; R90[1] = 0; R90[2] = -1;
         R90[3] = 0; R90[4] = 1; R90[5] = 0;
         R90[6] = 1; R90[7] = 0; R90[8] = 0;
-        Rinv = R90.mult(Rinv);
+        EcefToGL = R90.mult(EcefToGL);
     }
 
     // Rotate the camera positions and orientations
     for (std::size_t i = 0; i < cam_centers.size(); i++) {
-        cam_centers[i] = Rinv.mult(cam_centers[i]);
-        cam2world_vec[i] = Rinv.mult(cam2world_vec[i]);
+        cam_centers[i] = EcefToGL.mult(cam_centers[i]);
+        cam2world_vec[i] = EcefToGL.mult(cam2world_vec[i]);
     }
 
-
+    // Apply the camera positions and orientations to the views
     applyCameraPoses(cam_centers, cam2world_vec, views);
 
     // Plot the cameras as meshes
@@ -362,11 +386,10 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
             z[0] = -1.0; z[1] = 1.0;
         }
     
-        // The cameras are roughly at y = 1 before applying the rotation R,
+        // The cameras are roughly at y = 1 before applying the rotation GLToEcef,
         // so here we put the plane at y = ht, so it is more down.
-        double ht = -0.8;
-        math::Vec3d v1(x[0], ht, z[0]);
-        math::Vec3d v2(x[1], ht, z[1]);
+        math::Vec3d v1(x[0], GL_ground_shift_y, z[0]);
+        math::Vec3d v2(x[1], GL_ground_shift_y, z[1]);
 
         verts.push_back(v1);
         verts.push_back(v2);
