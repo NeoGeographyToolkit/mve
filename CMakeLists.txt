@@ -25,3 +25,7 @@ add_subdirectory(libs/mve)
 add_subdirectory(libs/dmrecon)
 add_subdirectory(libs/ogl)
 add_subdirectory(apps/umve)
+
+install(DIRECTORY "libs/math" DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mve)
+install(DIRECTORY "libs/util" DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mve)
+install(DIRECTORY "libs/mve" DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mve)
