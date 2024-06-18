@@ -5,7 +5,7 @@ project(${APP_NAME})
 
 set(CMAKE_AUTOMOC ON)
 
-add_definitions(-DGL_GLEXT_PROTOTYPES) # Need this to make OpenGL compile 
+add_definitions(-DGL_GLEXT_PROTOTYPES) # Need this to make OpenGL compile
 
 #####################################################################################
 #
@@ -19,15 +19,15 @@ find_package(Qt5OpenGL REQUIRED)
 
 #####################################################################################
 #
-# Source files 
+# Source files
 #
 #####################################################################################
-#SET(${APP_NAME}_HEADERS 
+#SET(${APP_NAME}_HEADERS
 #            			mainwindow.h glwidget.h)
-#SET(${APP_NAME}_SOURCES main.cpp 
+#SET(${APP_NAME}_SOURCES main.cpp
 #						mainwindow.cpp glwidget.cpp )
 
-# Source files 
+# Source files
 file(GLOB SOURCES *.cc *.h scene_addins/*.cc scene_addins/*.h scene_inspect/*.cc scene_inspect/*.h viewinspect/*.cc viewinspect/*.h)
 
 # SET(QT5_UIS )
@@ -43,36 +43,36 @@ qt_add_resources(RCC_SOURCES umve.qrc)
 include_directories(../../libs)
 include_directories(.)
 
-# Need this to f  ind libOpenGL on Linux
-set(EXTRA_SEARCH_DIR "")
+# Need this to find OpenGL
+set(GL_OPT "")
 if (NOT APPLE)
-  set(EXTRA_SEARCH_DIR "-L/usr/lib64")
+  set(GL_OPT "-L/usr/lib64")
   else()
-  set(EXTRA_SEARCH_DIR "-lOSMesa")
+  set(GL_OPT "-lOSMesa")
 endif()
 
-add_executable(${APP_NAME} 
-	WIN32
-	${SOURCES} ${${APP_NAME}_RCCS} ${UIS_HDRS} 
-	${SHADER_SOURCES} 
-    ${RCC_SOURCES})
- 
+add_executable(${APP_NAME}
+  WIN32
+  ${SOURCES} ${${APP_NAME}_RCCS} ${UIS_HDRS}
+  ${SHADER_SOURCES}
+  ${RCC_SOURCES})
+
 TARGET_LINK_LIBRARIES (${APP_NAME}
-    mveCore mveUtil mveDmrecon mveOgl
-    ${OPENGL_LIBRARIES}
-    Qt5::Widgets
-	Qt5::OpenGL
-    ${EXTRA_SEARCH_DIR}
+  mveCore mveUtil mveDmrecon mveOgl
+  ${OPENGL_LIBRARIES}
+  Qt5::Widgets
+  Qt5::OpenGL
+  ${GL_OPT}
 )
 
 # Create the launcher for VS2010
 if (MSVC_IDE)
-    # Set ENVIRONMENT. This will make VS debugger to refer qt5 related DLLs properly
-    create_target_launcher(${APP_NAME} WORKING_DIRECTORY "${APP_BIN_DIR}" ENVIRONMENT  "PATH=${QTDIR}/bin;%PATH%")
-    #create_target_launcher(sample1 ENVIRONMENT  ${RUN_ENV})
+  # Set ENVIRONMENT. This will make VS debugger to refer qt5 related DLLs properly
+  create_target_launcher(${APP_NAME} WORKING_DIRECTORY "${APP_BIN_DIR}" ENVIRONMENT  "PATH=${QTDIR}/bin;%PATH%")
+  #create_target_launcher(sample1 ENVIRONMENT  ${RUN_ENV})
 endif(MSVC_IDE)
 
-set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR 
+set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR
     "${APP_BIN_DIR}")
 
 if(WIN32 AND MSVC)
@@ -81,12 +81,12 @@ if(WIN32 AND MSVC)
                          ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${APP_BIN_DIR})
 
   add_custom_command(TARGET ${APP_NAME} POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-                     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${APP_NAME}${CMAKE_EXECUTABLE_SUFFIX}" 
+                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                     "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${APP_NAME}${CMAKE_EXECUTABLE_SUFFIX}"
 					 "${APP_BIN_DIR}")
 endif(WIN32 AND MSVC)
 
-# Set RPATHS 
+# Set RPATHS
 if(APPLE)
   set_target_properties(${APP_NAME} PROPERTIES
     INSTALL_RPATH "@loader_path;@loader_path/../lib;${MULTIVIEW_DEPS_DIR}/lib")
