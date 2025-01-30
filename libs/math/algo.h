@@ -142,8 +142,14 @@ struct predicate_epsilon_equal
 
 /** Iterator that advances 'S' elements of type T. */
 template <typename T, int S>
-struct InterleavedIter : public std::iterator<std::input_iterator_tag, T>
+struct InterleavedIter
 {
+    using iterator_category = std::input_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T const*;
+    using reference = T const&;
+
     T const* pos;
     InterleavedIter (T const* pos) : pos(pos) {}
     InterleavedIter& operator++ (void) { pos += S; return *this; }
