@@ -20,6 +20,8 @@ find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
 
+include_directories("${MULTIVIEW_DEPS_DIR}/include")
+
 add_subdirectory(libs/util)
 add_subdirectory(libs/mve)
 add_subdirectory(libs/dmrecon)

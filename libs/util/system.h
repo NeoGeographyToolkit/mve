@@ -139,7 +139,7 @@ print_build_timestamp (char const* application_name)
 #if defined(__APPLE__)
 #   if defined(__ppc__) || defined(__ppc64__)
 #       define HOST_BYTEORDER_BE
-#   elif defined(__i386__) || defined(__x86_64__)
+#   elif defined(__i386__) || defined(__x86_64__) || defined(__arm64__)
 #       define HOST_BYTEORDER_LE
 #   endif
 #endif
