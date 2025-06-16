@@ -65,6 +65,11 @@ TARGET_LINK_LIBRARIES (${APP_NAME}
   ${GL_OPT}
 )
 
+if (LINUX)
+  find_package(X11 REQUIRED)
+  target_link_libraries(${APP_NAME} ${X11_LIBRARIES})
+endif()
+
 # Create the launcher for VS2010
 if (MSVC_IDE)
   # Set ENVIRONMENT. This will make VS debugger to refer qt5 related DLLs properly
