@@ -19,8 +19,10 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
+find_package(OpenGL REQUIRED)
 
 include_directories("${MULTIVIEW_DEPS_DIR}/include")
+include_directories(${OPENGL_INCLUDE_DIR})
 
 add_subdirectory(libs/util)
 add_subdirectory(libs/mve)
