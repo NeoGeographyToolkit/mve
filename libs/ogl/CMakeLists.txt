@@ -10,7 +10,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/..")
 # Need this to find libOpenGL
 set(EXTRA_SEARCH_DIR "")
 if (NOT APPLE)
-  set(EXTRA_SEARCH_DIR "-L/usr/lib64")
+  # set(EXTRA_SEARCH_DIR "-L/usr/lib64")
 else()
   set(EXTRA_SEARCH_DIR "-lOSMesa")
 endif()

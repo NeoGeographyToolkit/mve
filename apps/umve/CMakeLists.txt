@@ -43,6 +43,14 @@ qt_add_resources(RCC_SOURCES umve.qrc)
 include_directories(../../libs)
 include_directories(.)
 
+# Need this to find OpenGL
+set(GL_OPT "")
+if (NOT APPLE)
+  #set(GL_OPT "-L/usr/lib64")
+else()
+  set(GL_OPT "-lOSMesa")
+endif()
+
 add_executable(${APP_NAME}
   WIN32
   ${SOURCES} ${${APP_NAME}_RCCS} ${UIS_HDRS}
@@ -54,6 +62,7 @@ TARGET_LINK_LIBRARIES (${APP_NAME}
   ${OPENGL_LIBRARIES}
   Qt5::Widgets
   Qt5::OpenGL
+  ${GL_OPT}
 )
 
 if (LINUX)
