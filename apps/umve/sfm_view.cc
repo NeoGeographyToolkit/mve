@@ -26,8 +26,6 @@
 
 struct AppSettings
 {
-    bool gl_mode;
-    bool open_dialog;
     std::vector<std::string> filenames;
 };
 
@@ -39,17 +37,15 @@ print_help_and_exit (util::Arguments const& args)
 }
 
 int main (int argc, char** argv) {
-    std::cout << "sfm_view test: binary is alive\n";
+    std::cout << "sfm_view test: second pass cleanup\n";
     /* Parse arguments. */
     util::Arguments args;
     args.set_usage("Syntax: umve [ OPTIONS ] [ FILES | SCENEDIR ]");
     args.set_helptext_indent(14);
     args.set_exit_on_error(true);
     args.add_option('h', "help", false, "Prints this help text and exits");
-    args.add_option('o', "open-dialog", false, "Raises scene open dialog on startup");
     args.add_option('\0', "width", true, "Window width in pixels");
     args.add_option('\0', "height", true, "Window height in pixels");
-    args.add_option('\0', "gl", false, "Switches to GL window on startup");
     args.parse(argc, argv);
 
     // Must set this before any GUI is created, for OpenGL to work.
@@ -59,9 +55,6 @@ int main (int argc, char** argv) {
 
     /* Set default startup config. */
     AppSettings conf;
-    conf.gl_mode = true; // start in GL mode for now, as the goal is to view cameras
-    conf.open_dialog = false;
-
     /* Handle arguments.*/
     std::vector<std::string> images, cameras;
     int width = 1400, height = 1200; // default window size
@@ -86,11 +79,7 @@ int main (int argc, char** argv) {
             continue;
         }
 
-        if (arg->opt->lopt == "gl")
-            conf.gl_mode = true;
-        else if (arg->opt->lopt == "open-dialog")
-            conf.open_dialog = true;
-        else if (arg->opt->lopt == "width")
+        if (arg->opt->lopt == "width")
             width = atoi(arg->arg.c_str());
         else if (arg->opt->lopt == "height")
             height = atoi(arg->arg.c_str());
@@ -134,17 +123,11 @@ int main (int argc, char** argv) {
     /* Create main window. */
     MainWindow win(width, height);
 
-    /* Apply app config. */
-    if (conf.gl_mode)
-        win.open_scene_inspect();
-
     // Load images and cameras with .tsai extension
     if (images.size() > 0 && cameras.size() > 0)
         win.load_scene(images, cameras);
     else if (!conf.filenames.empty())
         win.load_scene(conf.filenames[0]);
-    else if (conf.open_dialog)
-        win.raise_open_scene_dialog();
 
     return app.exec();
 }
