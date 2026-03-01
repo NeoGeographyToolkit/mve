@@ -7,42 +7,65 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#include <cstdlib>
 #include <iostream>
+#include <limits>
 
+#include "scenemanager.h"
+#include "addin_frusta_base.h"
 #include "addin_manager.h"
+
+#ifdef _WIN32
+#include <cstdlib>
+#endif
 
 AddinManager::AddinManager (GLWidget* gl_widget)
 {
     this->state.gl_widget = gl_widget;
-    this->frusta_renderer = new AddinFrustaSceneRenderer();
-    this->addins.push_back(this->frusta_renderer);
+
+    this->action_frusta = new QAction("Draw camera frusta");
+    this->action_frusta->setCheckable(true);
+    this->action_frusta->setChecked(true);
+
+    this->action_viewdir = new QAction("Draw viewing direction");
+    this->action_viewdir->setCheckable(true);
+    this->action_viewdir->setChecked(true);
+
+    this->frusta_size_slider = new QSlider();
+    this->frusta_size_slider->setMinimum(1);
+    this->frusta_size_slider->setMaximum(100);
+    this->frusta_size_slider->setValue(10);
+    this->frusta_size_slider->setOrientation(Qt::Horizontal);
+
+    this->connect(&SceneManager::get(), SIGNAL(scene_selected(sfm::Scene::Ptr)),
+        this, SLOT(on_scene_changed()));
+    this->connect(&SceneManager::get(), SIGNAL(view_selected(sfm::View::Ptr)),
+        this, SLOT(reset_viewdir_renderer()));
+    this->connect(this->frusta_size_slider, SIGNAL(valueChanged(int)),
+        this, SLOT(reset_frusta_renderer()));
+    this->connect(this->frusta_size_slider, SIGNAL(valueChanged(int)),
+        this->state.gl_widget, SLOT(repaint()));
+    this->connect(this->action_frusta, SIGNAL(toggled(bool)),
+        this->state.gl_widget, SLOT(repaint()));
+    this->connect(this->action_viewdir, SIGNAL(toggled(bool)),
+        this->state.gl_widget, SLOT(repaint()));
 }
 
-AddinFrustaSceneRenderer*
-AddinManager::get_frusta_renderer (void)
+QAction*
+AddinManager::get_action_frusta (void)
 {
-    return this->frusta_renderer;
+    return this->action_frusta;
 }
 
-bool
-AddinManager::keyboard_event(const ogl::KeyboardEvent &event)
+QAction*
+AddinManager::get_action_viewdir (void)
 {
-    for (std::size_t i = 0; i < this->addins.size(); ++i)
-        if (this->addins[i]->keyboard_event(event))
-            return true;
-
-    return ogl::CameraTrackballContext::keyboard_event(event);
+    return this->action_viewdir;
 }
 
-bool
-AddinManager::mouse_event (const ogl::MouseEvent &event)
+QSlider*
+AddinManager::get_frusta_size_slider (void)
 {
-    for (std::size_t i = 0; i < this->addins.size(); ++i)
-        if (this->addins[i]->mouse_event(event))
-            return true;
-
-    return ogl::CameraTrackballContext::mouse_event(event);
+    return this->frusta_size_slider;
 }
 
 void
@@ -68,6 +91,26 @@ AddinManager::reset_scene (void)
 }
 
 void
+AddinManager::on_scene_changed (void)
+{
+    this->orig_cam_centers.clear();
+    this->orig_cam2world_vec.clear();
+    this->frusta_renderer.reset();
+}
+
+void
+AddinManager::reset_frusta_renderer (void)
+{
+    this->frusta_renderer.reset();
+}
+
+void
+AddinManager::reset_viewdir_renderer (void)
+{
+    this->viewdir_renderer.reset();
+}
+
+void
 AddinManager::init_impl (void)
 {
 #ifdef _WIN32
@@ -83,21 +126,12 @@ AddinManager::init_impl (void)
 #endif
 
     this->state.load_shaders();
-
-    for (std::size_t i = 0; i < this->addins.size(); ++i)
-    {
-        this->addins[i]->set_state(&this->state);
-        this->addins[i]->init();
-    }
 }
 
 void
 AddinManager::resize_impl (int old_width, int old_height)
 {
     this->ogl::CameraTrackballContext::resize_impl(old_width, old_height);
-    for (std::size_t i = 0; i < this->addins.size(); ++i)
-        this->addins[i]->resize(this->ogl::Context::width,
-                                this->ogl::Context::height);
 }
 
 void
@@ -113,6 +147,342 @@ AddinManager::paint_impl (void)
 
     this->state.send_uniform(this->camera);
 
-    for (std::size_t i = 0; i < this->addins.size(); ++i)
-        this->addins[i]->paint();
+    if (this->action_frusta->isChecked()) {
+        if (this->frusta_renderer == nullptr)
+            this->create_frusta_renderer();
+        if (this->frusta_renderer != nullptr)
+            this->frusta_renderer->draw();
+    }
+
+    if (this->action_viewdir->isChecked()) {
+        if (this->viewdir_renderer == nullptr)
+            this->create_viewdir_renderer();
+        if (this->viewdir_renderer != nullptr)
+            this->viewdir_renderer->draw();
+    }
+}
+
+// Find shortest distance from camera center to the origin
+double find_shortest_distance(std::vector<math::Vec3d> centers) {
+    if (centers.size() == 0)
+        return 1.0;
+
+    double shortest = centers[0].norm();
+    for (std::size_t i = 1; i < centers.size(); i++) {
+        double dist = centers[i].norm();
+        if (dist < shortest)
+            shortest = dist;
+    }
+    return shortest;
+}
+
+// Function to find the mean camera position
+math::Vec3d find_mean_camera_pos(std::vector<math::Vec3d> const& centers) {
+    if (centers.size() == 0)
+        return math::Vec3d(0,0,0);
+
+    math::Vec3d mean(0,0,0);
+    for (std::size_t i = 0; i < centers.size(); i++)
+        mean += centers[i];
+    mean /= centers.size();
+    return mean;
+}
+
+// Collect the cam2world matrices and camera centers in vectors.
+void extractCameraPoses(sfm::Scene::ViewList const & views,
+    // Outputs
+    std::vector<math::Vec3d> & cam_centers,
+    std::vector<math::Matrix3d> & cam2world_vec) {
+
+    cam_centers.clear();
+    cam2world_vec.clear();
+
+    for (std::size_t i = 0; i < views.size(); i++) {
+
+        if (views[i].get() == nullptr) {
+            std::cerr << "Error: Empty camera.\n";
+            continue;
+        }
+
+        sfm::CameraInfo const& cam = views[i]->get_camera(); // alias
+
+        // The cameras store trans = -inverse(camera2world) * camera_center
+        // and rot = inverse(camera2world).
+        // We need to invert the camera2world matrix to get the camera center.
+        // So, need to find:
+        // and camera2world = transpose(rot)
+        // camera_center = -camera2world * trans
+
+        math::Matrix3d world2cam(cam.rot);
+        math::Vec3d t(cam.trans);
+        math::Matrix3d cam2world = world2cam.transposed();
+        math::Vec3d ctr = -cam2world.mult(t);
+
+        cam_centers.push_back(ctr);
+        cam2world_vec.push_back(cam2world);
+    }
+
+    return;
+}
+
+// Apply the camera2world transforms and camera centers to the cameras
+void applyCameraPoses(std::vector<math::Vec3d>    const & cam_centers,
+                      std::vector<math::Matrix3d> const & cam2world_vec,
+                      sfm::Scene::ViewList              & views) {
+
+    for (std::size_t i = 0; i < views.size(); i++) {
+        if (views[i].get() == nullptr) {
+            std::cerr << "Error: Empty camera.\n";
+            continue;
+        }
+
+        sfm::CameraInfo cam = views[i]->get_camera();
+
+        // Compute T = -cam2word^T * C and copy to the camera
+        math::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
+        for (int coord = 0; coord < 3; coord++)
+            cam.trans[coord] = t[coord];
+
+        // Compute R = cam2world^T and copy it to the camera
+        math::Matrix3d R = cam2world_vec[i].transposed();
+        for (int row = 0; row < 3; row++)
+            for (int col = 0; col < 3; col++)
+                cam.rot[row * 3 + col] = R(row, col);
+
+        views[i]->set_camera(cam);
+        views[i]->set_dirty(false);
+    }
+    return;
+}
+
+// Given a vector, find a rotation matrix that rotates the vector to the y-axis.
+void completeVectorToRotation(math::Vec3d & y, math::Matrix3d & R) {
+
+    int largest_comp = 0;
+    for (int i = 1; i < 3; i++) {
+        if (std::abs(y[i]) > std::abs(y[largest_comp]))
+            largest_comp = i;
+    }
+
+    int j = largest_comp + 1;
+    if (j == 3)
+        j = 0;
+
+    math::Vec3d x(0.0, 0.0, 0.0);
+    x[j] = y[largest_comp];
+    x[largest_comp] = -y[j];
+
+    if (std::abs(y[largest_comp]) == 0.0) {
+        // Handle degenerate case, will return the identity matrix
+        x = math::Vec3d(1.0, 0.0, 0.0);
+        y = math::Vec3d(0.0, 1.0, 0.0);
+    }
+
+    x = x / x.norm();
+    y = y / y.norm();
+
+    // Find y as the cross product of plane normal and x
+    math::Vec3d z = x.cross(y);
+    z = z / z.norm();
+
+    // Find the matrix with x, y, z as columns
+    for (int row = 0; row < 3; row++) {
+        R(row, 0) = x[row];
+        R(row, 1) = y[row];
+        R(row, 2) = z[row];
+    }
+
+    return;
+}
+
+// Find the bounding box of the camera centers
+void bdBox(math::Matrix3d const& EcefToGL,
+           std::vector<math::Vec3d> & cam_centers,
+           // Outputs
+           double & x_min, double & x_max,
+           double & y_min, double & y_max,
+           double & z_min, double & z_max) {
+
+    double big = std::numeric_limits<double>::max();
+    x_min = big; y_min = big; z_min = big;
+    x_max = -big; y_max = -big; z_max = -big;
+
+    for (std::size_t i = 0; i < cam_centers.size(); i++) {
+        math::Vec3d trans_center = EcefToGL.mult(cam_centers[i]);
+        x_min = std::min(x_min, trans_center[0]);
+        x_max = std::max(x_max, trans_center[0]);
+        y_min = std::min(y_min, trans_center[1]);
+        y_max = std::max(y_max, trans_center[1]);
+        z_min = std::min(z_min, trans_center[2]);
+        z_max = std::max(z_max, trans_center[2]);
+    }
+}
+
+// Compute a ground plane, scale the orbital camera positions relative
+// to the plane, then plot the cameras and the ground plane.
+void AddinManager::create_frusta_renderer (void) {
+
+    if (this->state.scene == nullptr)
+        return;
+
+    sfm::Scene::ViewList & views(this->state.scene->get_views());
+
+    // Cache the original poses on first call. Cleared by on_scene_changed().
+    if (this->orig_cam_centers.empty())
+        extractCameraPoses(views, this->orig_cam_centers,
+                           this->orig_cam2world_vec);
+    if (this->orig_cam_centers.empty()) {
+        std::cerr << "Error: No cameras found.\n";
+        return;
+    }
+
+    // Work on copies so the originals are never modified
+    std::vector<math::Vec3d> cam_centers = this->orig_cam_centers;
+    std::vector<math::Matrix3d> cam2world_vec = this->orig_cam2world_vec;
+
+    // Find shortest distance from camera center to the origin
+    double shortest_dist = find_shortest_distance(cam_centers);
+    shortest_dist = std::max(shortest_dist, 0.0001); // avoid division by zero
+
+    // Divide by the shortest distance to normalize the camera centers
+    for (size_t cam = 0; cam < cam_centers.size(); cam++)
+            cam_centers[cam] = cam_centers[cam] / shortest_dist;
+
+    // Find the mean camera center, use it as normal to the ground plane
+    math::Vec3d mean_cam_center = find_mean_camera_pos(cam_centers);
+
+    // Will map the cameras so that the ground plane is the x-z plane
+    // This is consistent with how OpenGL by default renders this plane
+    // as horizontal (z axis pointing to user, y goes up, x goes right).
+    math::Vec3d y = mean_cam_center; // will change below
+    math::Matrix3d GLToEcef;
+    completeVectorToRotation(y, GLToEcef);
+
+    // Inverse matrix
+    math::Matrix3d EcefToGL = GLToEcef.transposed();
+
+    // Find the bounding box of the camera centers in the coordinate system
+    // having the ground plane as x and z axes. The y axis will point up,
+    // consistent with the OpenGL default.
+    double x_min = 0, x_max = 0, y_min = 0, y_max = 0, z_min = 0, z_max = 0;
+    bdBox(EcefToGL, cam_centers, x_min, x_max, y_min, y_max, z_min, z_max);
+
+    // Max box size and mid point
+    double len = std::max(x_max - x_min,
+                          std::max(y_max - y_min, z_max - z_min));
+    if (len == 0.0)
+        len = 1.0; // careful not to divide by zero
+    double x_mid = (x_min + x_max)/2.0;
+    double y_mid = (y_min + y_max)/2.0;
+    double z_mid = (z_min + z_max)/2.0;
+
+    // Rotate the camera centers so that the ground plane is the x-z plane
+    // then normalize them to be on the order of 1.0. Rotate
+    // the camera orientations as well. Then shift them so that they
+    // can be seen in the default OpenGL view. Then put them
+    // back to ECEF, before we later transform them again to GL, but after
+    // more fine tuning of the rotation transformation.
+    double GL_cam_shift_y = 0.2; // cameras are above the ground
+    double GL_ground_shift_y = -0.8;
+    for (std::size_t i = 0; i < cam_centers.size(); i++) {
+        math::Vec3d cam_center = cam_centers[i];
+        math::Vec3d trans_center = EcefToGL.mult(cam_center);
+        trans_center[0] = (trans_center[0] - x_mid)/len;
+        trans_center[1] = (trans_center[1] - y_mid)/len + GL_cam_shift_y;
+        trans_center[2] = (trans_center[2] - z_mid)/len;
+        cam_centers[i] = GLToEcef.mult(trans_center);
+    }
+
+    if (z_max - z_min > x_max - x_min) {
+        // Rotate around the y axis by 90 degrees to show the cameras
+        // side-by-side as seen in the OpenGL default coordinate system.
+        math::Matrix3d R90;
+        R90[0] = 0; R90[1] = 0; R90[2] = -1;
+        R90[3] = 0; R90[4] = 1; R90[5] = 0;
+        R90[6] = 1; R90[7] = 0; R90[8] = 0;
+        EcefToGL = R90.mult(EcefToGL);
+    }
+
+    // Rotate the camera positions and orientations
+    double GL_cam_shift_z = -0.5; // Move the cameras a bit to the back
+    for (std::size_t i = 0; i < cam_centers.size(); i++) {
+        cam_centers[i] = EcefToGL.mult(cam_centers[i]);
+        cam_centers[i][2] += GL_cam_shift_z;
+        cam2world_vec[i] = EcefToGL.mult(cam2world_vec[i]);
+    }
+
+    // Apply the camera positions and orientations to the views
+    applyCameraPoses(cam_centers, cam2world_vec, views);
+
+    // Plot the cameras as meshes
+    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
+    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
+    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
+    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
+    math::Vec4f color(0, 1, 0, 1); // green
+    float size = this->frusta_size_slider->value() / 100.0f;
+    for (std::size_t i = 0; i < views.size(); i++) {
+        if (views[i].get() == nullptr) {
+            std::cerr << "Error: Empty camera.\n";
+            continue;
+        }
+
+        sfm::CameraInfo const& cam = views[i]->get_camera();
+        if (cam.flen == 0.0f) {
+            std::cerr << "Error: Camera focal length is 0.\n";
+            continue;
+        }
+        add_camera_to_mesh(cam, size, mesh);
+    }
+
+    // Draw a ground plane as (x, z) in [-1, 1] x [-1, 1] at some height y.
+    double d = 10.0;
+    for (size_t i = 1; i <= 22; i++) {
+        double x[2], z[2];
+        if (i <= 11) {
+            z[0] = 2.0*(i - 6.0)/d; z[1] = z[0];
+            x[0] = -1.0; x[1] = 1.0;
+        } else {
+            x[0] = 2.0*(i - 11 - 6.0)/d; x[1] = x[0];
+            z[0] = -1.0; z[1] = 1.0;
+        }
+
+        math::Vec3d v1(x[0], GL_ground_shift_y, z[0]);
+        math::Vec3d v2(x[1], GL_ground_shift_y, z[1]);
+
+        verts.push_back(v1);
+        verts.push_back(v2);
+        faces.push_back(verts.size() - 2);
+        faces.push_back(verts.size() - 1);
+        colors.push_back(color);
+        colors.push_back(color);
+    }
+
+    this->frusta_renderer = ogl::MeshRenderer::create(mesh);
+    this->frusta_renderer->set_shader(this->state.wireframe_shader);
+    this->frusta_renderer->set_primitive(GL_LINES);
+}
+
+void
+AddinManager::create_viewdir_renderer (void)
+{
+    if (this->state.view == nullptr)
+        return;
+
+    math::Vec3f campos, viewdir;
+    sfm::CameraInfo const& cam(this->state.view->get_camera());
+    cam.fill_camera_pos(*campos);
+    cam.fill_viewing_direction(*viewdir);
+
+    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
+    mve::TriangleMesh::VertexList& verts = mesh->get_vertices();
+    mve::TriangleMesh::ColorList& colors = mesh->get_vertex_colors();
+    verts.push_back(campos);
+    verts.push_back(campos + viewdir * 100.0f);
+    colors.push_back(math::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));
+    colors.push_back(math::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));
+
+    this->viewdir_renderer = ogl::MeshRenderer::create(mesh);
+    this->viewdir_renderer->set_shader(this->state.wireframe_shader);
+    this->viewdir_renderer->set_primitive(GL_LINES);
 }

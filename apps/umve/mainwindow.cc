@@ -84,11 +84,10 @@ MainWindow::create_menus (void)
     this->menu_file = new QMenu(tr("&File"), this);
     this->menu_file->addAction(this->action_quit);
 
-    AddinFrustaSceneRenderer* fr =
-        this->tab_sceneinspect->get_addin_manager()->get_frusta_renderer();
+    AddinManager* am = this->tab_sceneinspect->get_addin_manager();
     this->menu_view = new QMenu(tr("&View"), this);
-    this->menu_view->addAction(fr->get_action_frusta());
-    this->menu_view->addAction(fr->get_action_viewdir());
+    this->menu_view->addAction(am->get_action_frusta());
+    this->menu_view->addAction(am->get_action_viewdir());
     QAction* action_frusta_size = new QAction(tr("Set frusta size"), this);
     this->connect(action_frusta_size, SIGNAL(triggered()),
         this, SLOT(on_frusta_size()));
@@ -122,9 +121,8 @@ MainWindow::on_about (void)
 void
 MainWindow::on_frusta_size (void)
 {
-    AddinFrustaSceneRenderer* fr =
-        this->tab_sceneinspect->get_addin_manager()->get_frusta_renderer();
-    QSlider* slider = fr->get_frusta_size_slider();
+    AddinManager* am = this->tab_sceneinspect->get_addin_manager();
+    QSlider* slider = am->get_frusta_size_slider();
 
     QDialog dlg(this);
     dlg.setWindowTitle(tr("Frusta size"));

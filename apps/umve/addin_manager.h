@@ -12,43 +12,58 @@
 
 #include "ogl/opengl.h"
 
-#include <string>
-#include <vector>
+#include <QAction>
+#include <QSlider>
 
+#include "math/vector.h"
+#include "math/matrix.h"
 #include "sfm_view_utils.h"
 #include "ogl/context.h"
 #include "ogl/camera_trackball.h"
+#include "ogl/mesh_renderer.h"
 
 #include "glwidget.h"
-#include "addin_base.h"
-#include "addin_frusta_scene_renderer.h"
+#include "addin_state.h"
+
 class AddinManager : public QWidget, public ogl::CameraTrackballContext
 {
     Q_OBJECT
 
 public:
     AddinManager (GLWidget* gl_widget);
-    AddinFrustaSceneRenderer* get_frusta_renderer (void);
-    virtual ~AddinManager (void) {}
     void set_scene (sfm::Scene::Ptr scene);
     void set_view (sfm::View::Ptr view);
-
     void reset_scene (void);
 
-    virtual bool keyboard_event (ogl::KeyboardEvent const& event);
-    virtual bool mouse_event (ogl::MouseEvent const& event);
+    QAction* get_action_frusta (void);
+    QAction* get_action_viewdir (void);
+    QSlider* get_frusta_size_slider (void);
 
 protected:
     void init_impl (void);
     void resize_impl (int old_width, int old_height);
     void paint_impl (void);
 
-private:
-    AddinState state;
-    std::vector<AddinBase*> addins;
+private slots:
+    void reset_viewdir_renderer (void);
+    void reset_frusta_renderer (void);
+    void on_scene_changed (void);
 
-    /* Addins. */
-    AddinFrustaSceneRenderer* frusta_renderer;
+private:
+    void create_frusta_renderer (void);
+    void create_viewdir_renderer (void);
+
+    AddinState state;
+    QAction* action_frusta;
+    QAction* action_viewdir;
+    QSlider* frusta_size_slider;
+    ogl::MeshRenderer::Ptr frusta_renderer;
+    ogl::MeshRenderer::Ptr viewdir_renderer;
+
+    // Cached original poses (before GL transformation).
+    // Cleared on scene change, preserved across slider changes.
+    std::vector<math::Vec3d> orig_cam_centers;
+    std::vector<math::Matrix3d> orig_cam2world_vec;
 };
 
 #endif /* UMVE_SCENE_ADDIN_MANAGER_HEADER */
