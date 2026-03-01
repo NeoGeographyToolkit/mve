@@ -12,6 +12,7 @@
 
 #include <QApplication>
 #include <QDockWidget>
+#include <QLabel>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -45,7 +46,6 @@ MainWindow::MainWindow (int width, int height) {
     central_layout->addWidget(this->tab_sceneinspect);
 
     this->setWindowTitle(tr("sfm_view"));
-    this->setWindowIcon(QIcon(":/images/icon_window.png"));
     this->setCentralWidget(central_widget);
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_scene);
     this->enable_scene_actions(false);
@@ -104,11 +104,6 @@ MainWindow::open_scene_inspect (void)
 void
 MainWindow::create_actions (void)
 {
-    this->action_reload_scene = new QAction(
-        tr("&Reload scene"), this);
-    this->connect(this->action_reload_scene, SIGNAL(triggered()),
-        this, SLOT(on_reload_scene()));
-
     this->action_close_scene = new QAction(
         tr("Close scene"), this);
     this->connect(this->action_close_scene, SIGNAL(triggered()),
@@ -138,7 +133,6 @@ void
 MainWindow::create_menus (void)
 {
     this->menu_scene = new QMenu(tr("&Scene"), this);
-    this->menu_scene->addAction(this->action_reload_scene);
     this->menu_scene->addAction(this->action_close_scene);
     this->menu_scene->addSeparator();
     this->menu_scene->addAction(this->action_cache_cleanup);
@@ -153,7 +147,6 @@ MainWindow::create_menus (void)
     this->menuBar()->addMenu(this->menu_help);
     this->menuBar()->show();
 
-    this->scene_overview->add_toolbar_action(this->action_reload_scene);
     this->scene_overview->add_toolbar_action(this->action_close_scene);
     this->scene_overview->add_toolbar_action(this->action_cache_cleanup);
     this->scene_overview->add_toolbar_action(this->action_refresh_scene);
@@ -191,29 +184,9 @@ MainWindow::perform_close_scene (void)
 void
 MainWindow::enable_scene_actions (bool value)
 {
-    this->action_reload_scene->setEnabled(value);
     this->action_close_scene->setEnabled(value);
     this->action_cache_cleanup->setEnabled(value);
     this->action_refresh_scene->setEnabled(value);
-}
-
-void
-MainWindow::on_reload_scene (void)
-{
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
-
-    if (scene == nullptr || scene->get_path().empty())
-    {
-        QMessageBox::information(this, "Error reloading scene!",
-            "There is nothing to reload.");
-        return;
-    }
-
-    std::string scene_path = scene->get_path();
-    if (!this->perform_close_scene())
-        return;
-
-    this->load_scene(scene_path);
 }
 
 void

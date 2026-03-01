@@ -8,12 +8,10 @@
  */
 
 #include <QApplication>
-#include <QFileDialog>
-#include <QFormLayout>
+#include <QFrame>
+#include <QLabel>
 #include <QPainter>
 #include <QStyleFactory>
-
-#include "util/file_system.h"
 
 #include "guihelpers.h"
 
@@ -50,8 +48,6 @@ get_pixmap_from_image (mve::ByteImage::ConstPtr img)
     return QPixmap::fromImage(img_qimage);
 }
 
-/* ---------------------------------------------------------------- */
-
 QWidget*
 get_separator (void)
 {
@@ -61,8 +57,6 @@ get_separator (void)
     return line;
 }
 
-/* ---------------------------------------------------------------- */
-
 QWidget*
 get_expander (void)
 {
@@ -71,29 +65,13 @@ get_expander (void)
     return expander;
 }
 
-/* ---------------------------------------------------------------- */
-
 void
 set_qt_style (char const* style_name)
 {
-#if 0
-    /* Output all QT styles as string... */
-    std::cout << "Available QT styles: ";
-    QStringList styles = QStyleFactory::keys();
-    for (int i = 0; i < styles.size(); ++i)
-    {
-        if (i != 0) std::cout << ", ";
-        std::cout << styles[i].toStdString();
-    }
-    std::cout << std::endl;
-#endif
-
     QStyle* style = QStyleFactory::create(style_name);
     if (style != nullptr)
         QApplication::setStyle(style);
 }
-
-/* ---------------------------------------------------------------- */
 
 QWidget*
 get_wrapper (QLayout* layout, int margin)
@@ -103,58 +81,6 @@ get_wrapper (QLayout* layout, int margin)
     ret->setLayout(layout);
     return ret;
 }
-
-/* ---------------------------------------------------------------- */
-
-PlyExportDialog::PlyExportDialog (mve::View::Ptr view, QWidget* parent)
-    : QDialog(parent)
-{
-    this->selected_view.set_view(view);
-
-    this->selected_view.fill_embeddings(this->depthmap_cb,
-        mve::IMAGE_TYPE_FLOAT, "depthmap");
-    this->selected_view.fill_embeddings(this->confidence_cb,
-        mve::IMAGE_TYPE_FLOAT, "confidence");
-    this->selected_view.fill_embeddings(this->colorimage_cb,
-        mve::IMAGE_TYPE_UINT8, "undistorted");
-
-    QLabel* message = new QLabel(tr("Please enter the names of the "
-        "view embeddings for export. Leave the text fields empty "
-        "to not incorporate the data in the export. Only the "
-        "depthmap is requried."));
-    message->setWordWrap(true);
-
-    QPushButton* cancel_but = new QPushButton
-        (/*QIcon::fromTheme("process-stop"),*/ tr("Cancel"));
-    QPushButton* ok_but = new QPushButton
-        (/*QIcon::fromTheme("go-next"),*/ tr("Ok"));
-    QBoxLayout* buttons = new QHBoxLayout();
-    buttons->addWidget(cancel_but);
-    buttons->addWidget(ok_but);
-    this->connect(cancel_but, SIGNAL(clicked()), this, SLOT(reject()));
-    this->connect(ok_but, SIGNAL(clicked()), this, SLOT(accept()));
-
-    QFormLayout* form = new QFormLayout(this);
-    form->addRow(&this->selected_view);
-    form->addRow(message);
-    form->addRow("Depthmap:", &this->depthmap_cb);
-    form->addRow("Confidence:", &this->confidence_cb);
-    form->addRow("Color image:", &this->colorimage_cb);
-    form->addRow(buttons);
-    this->setWindowTitle("Export PLY");
-}
-
-void
-PlyExportDialog::accept (void)
-{
-    this->depthmap = this->depthmap_cb.currentText().toStdString();
-    this->confidence = this->confidence_cb.currentText().toStdString();
-    this->colorimage = this->colorimage_cb.currentText().toStdString();
-    this->QDialog::accept();
-}
-
-/* ---------------------------------------------------------------- */
-/* ---------------------------------------------------------------- */
 
 QCollapsible::QCollapsible (QString title, QWidget* content)
     : content(content)
@@ -222,61 +148,4 @@ void
 QCollapsible::set_content_indent(int pixels)
 {
     this->content_indent->setFixedSize(pixels, 1);
-}
-
-/* ---------------------------------------------------------------- */
-/* ---------------------------------------------------------------- */
-
-FileSelector::FileSelector (QWidget* parent)
-    : QPushButton(parent)
-{
-    this->dironly = false;
-    this->setIconSize(QSize(18, 18));
-    this->setText("<none>");
-    this->setIcon(QIcon(":/images/icon_open_file.svg"));
-    this->setStyleSheet("text-align: left");
-    this->connect(this, SIGNAL(clicked()),
-        this, SLOT(on_clicked()));
-}
-
-void
-FileSelector::set_directory_mode (void)
-{
-    this->dironly = true;
-}
-
-void
-FileSelector::set_ellipsize (std::size_t chars)
-{
-    this->ellipsize = chars;
-}
-
-std::string const&
-FileSelector::get_filename (void) const
-{
-    return this->filename;
-}
-
-void
-FileSelector::on_clicked (void)
-{
-    QString filename;
-    if (this->dironly)
-        filename = QFileDialog::getExistingDirectory(this, "Select directory...");
-    else
-        filename = QFileDialog::getOpenFileName(this, "Select file...");
-
-    if (filename.isEmpty())
-        return;
-
-    this->filename = filename.toStdString();
-    std::string fname = util::fs::basename(this->filename);
-    if (this->ellipsize > 0)
-        fname = util::string::ellipsize(fname, this->ellipsize, 1);
-
-    this->setText(QString(fname.c_str()));
-    if (this->dironly)
-        this->setIcon(QIcon(":/images/icon_folder.svg"));
-    else
-        this->setIcon(QIcon(":/images/icon_file.svg"));
 }

@@ -34,9 +34,6 @@ class SceneInspect : public MainWindowTab
 public:
     SceneInspect (QWidget* parent = nullptr);
 
-    /* Loads a mesh from file and adds to mesh list. */
-    void load_file (std::string const& filename);
-
     /* Removes references to the scene. */
     void reset (void);
 
@@ -46,7 +43,6 @@ private:
     void create_actions (QToolBar* toolbar);
 
 private slots:
-    void on_open_mesh (void);
     void on_reload_shaders (void);
     void on_details_toggled (void);
     void on_save_screenshot (void);
@@ -55,13 +51,11 @@ private slots:
     void on_tab_activated (void);
 
 private:
-    std::string last_mesh_dir;
     mve::View::Ptr next_view;
 
     QTabWidget* tab_widget;
     AddinManager* addin_manager;
     GLWidget* gl_widget;
-    QAction* action_open_mesh;
     QAction* action_reload_shaders;
     QAction* action_show_details;
     QAction* action_save_screenshot;

@@ -13,6 +13,7 @@
 
 MainWindowTab::MainWindowTab (QWidget *parent)
     : QWidget(parent)
+    , is_tab_active(true)
 {
 }
 

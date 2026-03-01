@@ -37,7 +37,7 @@ print_help_and_exit (util::Arguments const& args)
 }
 
 int main (int argc, char** argv) {
-    std::cout << "sfm_view test: second pass cleanup\n";
+    std::cout << "sfm_view test: third pass cleanup\n";
     /* Parse arguments. */
     util::Arguments args;
     args.set_usage("Syntax: umve [ OPTIONS ] [ FILES | SCENEDIR ]");
