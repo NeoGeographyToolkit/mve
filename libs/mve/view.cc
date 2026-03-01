@@ -67,6 +67,7 @@ void View::load_view (std::string const& image, std::string const& camera) {
 
     std::string safe_camera_path = util::fs::sanitize_path(camera);
     safe_camera_path = util::fs::abspath(safe_camera_path);
+    this->set_name(util::fs::basename(safe_camera_path));
     this->load_meta_data_from_tsai(safe_camera_path);
 }
 

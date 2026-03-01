@@ -9,8 +9,6 @@
 
 #include <QVBoxLayout>
 
-#include "util/strings.h"
-
 #include "scenemanager.h"
 #include "sceneoverview.h"
 
@@ -64,11 +62,9 @@ SceneOverview::add_view_to_layout (std::size_t id, mve::View::Ptr view)
         return;
 
     std::string const& view_name = view->get_name();
-    std::string view_id = util::string::get(view->get_id());
     bool cam_valid = view->get_camera().flen != 0.0f;
 
-    QString name = QString("ID %2: %1")
-        .arg(QString(view_name.c_str()), QString(view_id.c_str()));
+    QString name = QString(view_name.c_str());
 
     QListWidgetItem* item = new QListWidgetItem(name);
     if (!cam_valid)
