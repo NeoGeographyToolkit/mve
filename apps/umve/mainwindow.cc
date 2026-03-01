@@ -30,6 +30,7 @@ MainWindow::MainWindow (int width, int height) {
     /* Create dock widgets. */
     this->dock_scene = new QDockWidget(tr("Scene"));
     this->dock_scene->setWidget(this->scene_overview);
+    this->dock_scene->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
     this->memory_label = new QLabel("Memory: <unknown>");
     this->statusbar = new QStatusBar();
@@ -48,7 +49,6 @@ MainWindow::MainWindow (int width, int height) {
     this->setWindowTitle(tr("sfm_view"));
     this->setCentralWidget(central_widget);
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_scene);
-    this->enable_scene_actions(false);
     this->resize(width, height);
 
     /* Start update timer and init. */
@@ -75,7 +75,6 @@ void MainWindow::load_scene (std::string const& path) {
     }
 
     SceneManager::get().select_scene(scene);
-    this->enable_scene_actions(true);
 }
 
 // Load images and tsai camera files
@@ -93,7 +92,6 @@ void MainWindow::load_scene (std::vector<std::string> const& images,
     }
 
     SceneManager::get().select_scene(scene);
-    this->enable_scene_actions(true);
 }
 
 void
@@ -104,11 +102,6 @@ MainWindow::open_scene_inspect (void)
 void
 MainWindow::create_actions (void)
 {
-    this->action_refresh_scene = new QAction(
-        tr("Refresh scene"), this);
-    this->connect(this->action_refresh_scene, SIGNAL(triggered()),
-        this, SLOT(on_refresh_scene()));
-
     this->action_exit = new QAction(tr("E&xit"), this);
     this->action_exit->setShortcut(tr("Ctrl+Q"));
     this->connect(this->action_exit, SIGNAL(triggered()),
@@ -123,8 +116,6 @@ void
 MainWindow::create_menus (void)
 {
     this->menu_scene = new QMenu(tr("&Scene"), this);
-    this->menu_scene->addAction(this->action_refresh_scene);
-    this->menu_scene->addSeparator();
     this->menu_scene->addAction(this->action_exit);
 
     this->menu_help = new QMenu(tr("&Help"), this);
@@ -133,8 +124,6 @@ MainWindow::create_menus (void)
     this->menuBar()->addMenu(this->menu_scene);
     this->menuBar()->addMenu(this->menu_help);
     this->menuBar()->show();
-
-    this->scene_overview->add_toolbar_action(this->action_refresh_scene);
 }
 
 bool
@@ -161,21 +150,8 @@ MainWindow::perform_close_scene (void)
     SceneManager::get().reset_view();
     SceneManager::get().reset_scene();
     this->tab_sceneinspect->reset();
-    this->enable_scene_actions(false);
 
     return true;
-}
-
-void
-MainWindow::enable_scene_actions (bool value)
-{
-    this->action_refresh_scene->setEnabled(value);
-}
-
-void
-MainWindow::on_refresh_scene (void)
-{
-    SceneManager::get().refresh_scene();
 }
 
 void

@@ -36,9 +36,9 @@ AddinFrustaSceneRenderer::AddinFrustaSceneRenderer (void)
     this->render_frusta_form->addRow("Frusta Size:", this->frusta_size_slider);
 
     this->connect(&SceneManager::get(), SIGNAL(scene_bundle_changed()),
-        this, SLOT(reset_frusta_renderer()));
+        this, SLOT(on_scene_changed()));
     this->connect(&SceneManager::get(), SIGNAL(scene_selected(mve::Scene::Ptr)),
-        this, SLOT(reset_frusta_renderer()));
+        this, SLOT(on_scene_changed()));
     this->connect(&SceneManager::get(), SIGNAL(view_selected(mve::View::Ptr)),
         this, SLOT(reset_viewdir_renderer()));
     this->connect(this->frusta_size_slider, SIGNAL(valueChanged(int)),
@@ -55,6 +55,14 @@ QWidget*
 AddinFrustaSceneRenderer::get_sidebar_widget (void)
 {
     return get_wrapper(this->render_frusta_form);
+}
+
+void
+AddinFrustaSceneRenderer::on_scene_changed (void)
+{
+    this->orig_cam_centers.clear();
+    this->orig_cam2world_vec.clear();
+    this->frusta_renderer.reset();
 }
 
 void
@@ -270,15 +278,19 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
         return;
     }
 
-    // Find the camera centers and camera2world matrices
-    std::vector<math::Vec3d> cam_centers;
-    std::vector<math::Matrix3d> cam2world_vec;
     mve::Scene::ViewList & views(this->state->scene->get_views());
-    extractCameraPoses(views, cam_centers, cam2world_vec);
-    if (cam_centers.empty()) {
+
+    // Cache the original poses on first call. Cleared by on_scene_changed().
+    if (this->orig_cam_centers.empty())
+        extractCameraPoses(views, this->orig_cam_centers, this->orig_cam2world_vec);
+    if (this->orig_cam_centers.empty()) {
         std::cerr << "Error: No cameras found.\n";
         return;
     }
+
+    // Work on copies so the originals are never modified
+    std::vector<math::Vec3d> cam_centers = this->orig_cam_centers;
+    std::vector<math::Matrix3d> cam2world_vec = this->orig_cam2world_vec;
 
     // Find shortest distance from camera center to the origin
     double shortest_dist = find_shortest_distance(cam_centers);

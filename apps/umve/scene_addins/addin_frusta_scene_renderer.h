@@ -15,6 +15,8 @@
 #include <QSlider>
 #include <QFormLayout>
 
+#include "math/vector.h"
+#include "math/matrix.h"
 #include "mve/view.h"
 #include "ogl/mesh_renderer.h"
 
@@ -36,6 +38,7 @@ protected:
 protected slots:
     void reset_viewdir_renderer (void);
     void reset_frusta_renderer (void);
+    void on_scene_changed (void);
 
 private:
     QFormLayout* render_frusta_form;
@@ -44,6 +47,11 @@ private:
     QSlider* frusta_size_slider;
     ogl::MeshRenderer::Ptr frusta_renderer;
     ogl::MeshRenderer::Ptr viewdir_renderer;
+
+    // Cached original poses (before GL transformation).
+    // Cleared on scene change, preserved across slider changes.
+    std::vector<math::Vec3d> orig_cam_centers;
+    std::vector<math::Matrix3d> orig_cam2world_vec;
 };
 
 #endif /* UMVE_ADDIN_FRUSTA_SCENE_RENDERER_HEADER */
