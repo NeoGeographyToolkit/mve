@@ -15,8 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "mve/scene.h"
-#include "mve/view.h"
+#include "sfm_view_utils.h"
 #include "ogl/context.h"
 #include "ogl/camera_trackball.h"
 
@@ -31,8 +30,8 @@ public:
     AddinManager (GLWidget* gl_widget);
     AddinFrustaSceneRenderer* get_frusta_renderer (void);
     virtual ~AddinManager (void) {}
-    void set_scene (mve::Scene::Ptr scene);
-    void set_view (mve::View::Ptr view);
+    void set_scene (sfm::Scene::Ptr scene);
+    void set_view (sfm::View::Ptr view);
 
     void reset_scene (void);
 

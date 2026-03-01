@@ -12,8 +12,7 @@
 
 #include <QObject>
 
-#include "mve/scene.h"
-#include "mve/view.h"
+#include "sfm_view_utils.h"
 
 /**
  * The currently active scene as well as the selected view are requried
@@ -31,23 +30,23 @@ class SceneManager : public QObject
     Q_OBJECT
 
 private:
-    mve::Scene::Ptr scene;
-    mve::View::Ptr view;
+    sfm::Scene::Ptr scene;
+    sfm::View::Ptr view;
 
 signals:
-    void scene_selected (mve::Scene::Ptr scene);
-    void view_selected (mve::View::Ptr view);
+    void scene_selected (sfm::Scene::Ptr scene);
+    void view_selected (sfm::View::Ptr view);
 
 public:
     SceneManager (void);
     ~SceneManager (void);
     static SceneManager& get (void);
 
-    void select_scene (mve::Scene::Ptr scene);
-    void select_view (mve::View::Ptr view);
+    void select_scene (sfm::Scene::Ptr scene);
+    void select_view (sfm::View::Ptr view);
 
-    mve::Scene::Ptr get_scene (void);
-    mve::View::Ptr get_view (void);
+    sfm::Scene::Ptr get_scene (void);
+    sfm::View::Ptr get_view (void);
 
     void reset_scene (void);
     void reset_view (void);
@@ -56,26 +55,26 @@ public:
 /* ---------------------------------------------------------------- */
 
 inline void
-SceneManager::select_scene (mve::Scene::Ptr scene)
+SceneManager::select_scene (sfm::Scene::Ptr scene)
 {
     this->scene = scene;
     emit this->scene_selected(scene);
 }
 
 inline void
-SceneManager::select_view (mve::View::Ptr view)
+SceneManager::select_view (sfm::View::Ptr view)
 {
     this->view = view;
     emit this->view_selected(view);
 }
 
-inline mve::Scene::Ptr
+inline sfm::Scene::Ptr
 SceneManager::get_scene (void)
 {
     return this->scene;
 }
 
-inline mve::View::Ptr
+inline sfm::View::Ptr
 SceneManager::get_view (void)
 {
     return this->view;
@@ -84,13 +83,13 @@ SceneManager::get_view (void)
 inline void
 SceneManager::reset_scene (void)
 {
-    this->select_scene(mve::Scene::Ptr());
+    this->select_scene(sfm::Scene::Ptr());
 }
 
 inline void
 SceneManager::reset_view (void)
 {
-    this->select_view(mve::View::Ptr());
+    this->select_view(sfm::View::Ptr());
 }
 
 #endif // UMVE_SCENEMANAGER_HEADER

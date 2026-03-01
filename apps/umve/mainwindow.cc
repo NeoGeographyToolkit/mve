@@ -52,26 +52,11 @@ MainWindow::MainWindow (int width, int height) {
     this->show();
 }
 
-void MainWindow::load_scene (std::string const& path) {
-    mve::Scene::Ptr scene;
-    try {
-        scene = mve::Scene::create(path);
-    } catch (std::exception& e) {
-        QMessageBox::information(this, tr("Error loading scene"),
-            tr("Scene could not be loaded.\n"
-            "Directory: %1\nError: %2").arg(QString(path.c_str()), e.what()));
-        return;
-    }
-
-    SceneManager::get().select_scene(scene);
-}
-
-// Load images and tsai camera files
 void MainWindow::load_scene (std::vector<std::string> const& images,
     std::vector<std::string> const& cameras) {
-    mve::Scene::Ptr scene;
+    sfm::Scene::Ptr scene;
     try
-    { scene = mve::Scene::create(images, cameras); }
+    { scene = sfm::Scene::create(images, cameras); }
     catch (std::exception& e)
     {
         QMessageBox::information(this, tr("Error loading scene"),
@@ -129,7 +114,7 @@ MainWindow::create_menus (void)
 bool
 MainWindow::perform_close_scene (void)
 {
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
+    sfm::Scene::Ptr scene = SceneManager::get().get_scene();
 
     if (scene == nullptr)
         return true;

@@ -29,9 +29,9 @@ AddinFrustaSceneRenderer::AddinFrustaSceneRenderer (void)
     this->frusta_size_slider->setValue(10);
     this->frusta_size_slider->setOrientation(Qt::Horizontal);
 
-    this->connect(&SceneManager::get(), SIGNAL(scene_selected(mve::Scene::Ptr)),
+    this->connect(&SceneManager::get(), SIGNAL(scene_selected(sfm::Scene::Ptr)),
         this, SLOT(on_scene_changed()));
-    this->connect(&SceneManager::get(), SIGNAL(view_selected(mve::View::Ptr)),
+    this->connect(&SceneManager::get(), SIGNAL(view_selected(sfm::View::Ptr)),
         this, SLOT(reset_viewdir_renderer()));
     this->connect(this->frusta_size_slider, SIGNAL(valueChanged(int)),
         this, SLOT(reset_frusta_renderer()));
@@ -132,7 +132,7 @@ math::Vec3d find_mean_camera_pos(std::vector<math::Vec3d> const& centers) {
 
 // Collect the cam2world matrices and camera centers
 // in vectors.
-void extractCameraPoses(mve::Scene::ViewList const & views,
+void extractCameraPoses(sfm::Scene::ViewList const & views,
     // Outputs
     std::vector<math::Vec3d> & cam_centers,
     std::vector<math::Matrix3d> & cam2world_vec) {
@@ -148,7 +148,7 @@ void extractCameraPoses(mve::Scene::ViewList const & views,
             continue;
         }
         
-        mve::CameraInfo const& cam = views[i]->get_camera(); // alias
+        sfm::CameraInfo const& cam = views[i]->get_camera(); // alias
 
         // The cameras store trans = -inverse(camera2world) * camera_center
         // and rot = inverse(camera2world).
@@ -173,7 +173,7 @@ void extractCameraPoses(mve::Scene::ViewList const & views,
 // Apply the camera2world transforms and camera centers to the cameras in the scene
 void applyCameraPoses(std::vector<math::Vec3d>    const & cam_centers,
                       std::vector<math::Matrix3d> const & cam2world_vec,
-                      mve::Scene::ViewList              & views) {
+                      sfm::Scene::ViewList              & views) {
 
     for (std::size_t i = 0; i < views.size(); i++) {
         if (views[i].get() == nullptr) {
@@ -182,7 +182,7 @@ void applyCameraPoses(std::vector<math::Vec3d>    const & cam_centers,
         }
         
         // Make a copy of the camera
-        mve::CameraInfo cam = views[i]->get_camera(); 
+        sfm::CameraInfo cam = views[i]->get_camera(); 
 
         // Compute T = -cam2word^T * C and copy to the camera
         math::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
@@ -276,7 +276,7 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
         return;
     }
 
-    mve::Scene::ViewList & views(this->state->scene->get_views());
+    sfm::Scene::ViewList & views(this->state->scene->get_views());
 
     // Cache the original poses on first call. Cleared by on_scene_changed().
     if (this->orig_cam_centers.empty())
@@ -380,7 +380,7 @@ void AddinFrustaSceneRenderer::create_frusta_renderer (void) {
             continue;
         }
 
-        mve::CameraInfo const& cam = views[i]->get_camera();
+        sfm::CameraInfo const& cam = views[i]->get_camera();
         if (cam.flen == 0.0f) {
             std::cerr << "Error: Camera focal length is 0.\n";
             continue;
@@ -427,7 +427,7 @@ AddinFrustaSceneRenderer::create_viewdir_renderer (void)
         return;
 
     math::Vec3f campos, viewdir;
-    mve::CameraInfo const& cam(this->state->view->get_camera());
+    sfm::CameraInfo const& cam(this->state->view->get_camera());
     cam.fill_camera_pos(*campos);
     cam.fill_viewing_direction(*viewdir);
 

@@ -18,8 +18,7 @@
 #include <QString>
 #include <QWidget>
 
-#include "mve/scene.h"
-#include "mve/view.h"
+#include "sfm_view_utils.h"
 
 #include "mainwindowtab.h"
 #include "glwidget.h"
@@ -37,12 +36,12 @@ public:
     virtual QString get_title (void);
 
 private slots:
-    void on_scene_selected (mve::Scene::Ptr scene);
-    void on_view_selected (mve::View::Ptr view);
+    void on_scene_selected (sfm::Scene::Ptr scene);
+    void on_view_selected (sfm::View::Ptr view);
     void on_tab_activated (void);
 
 private:
-    mve::View::Ptr next_view;
+    sfm::View::Ptr next_view;
     AddinManager* addin_manager;
     GLWidget* gl_widget;
 };

@@ -46,14 +46,14 @@ AddinManager::mouse_event (const ogl::MouseEvent &event)
 }
 
 void
-AddinManager::set_scene (mve::Scene::Ptr scene)
+AddinManager::set_scene (sfm::Scene::Ptr scene)
 {
     this->state.scene = scene;
     this->state.repaint();
 }
 
 void
-AddinManager::set_view (mve::View::Ptr view)
+AddinManager::set_view (sfm::View::Ptr view)
 {
     this->state.view = view;
     this->state.repaint();

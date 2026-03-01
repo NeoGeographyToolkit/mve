@@ -12,18 +12,18 @@
 
 #include <QListWidget>
 
-#include "mve/scene.h"
+#include "sfm_view_utils.h"
 
 class SceneOverview : public QWidget
 {
     Q_OBJECT
 
 protected slots:
-    void on_scene_changed (mve::Scene::Ptr scene);
+    void on_scene_changed (sfm::Scene::Ptr scene);
     void on_row_changed (int id);
 
 private:
-    void add_view_to_layout (std::size_t id, mve::View::Ptr view);
+    void add_view_to_layout (std::size_t id, sfm::View::Ptr view);
 
 private:
     QListWidget* viewlist;

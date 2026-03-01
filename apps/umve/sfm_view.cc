@@ -51,7 +51,7 @@ int main (int argc, char** argv) {
     char MESA_GL_ENV_STR[5012];
     putenv(strcpy(MESA_GL_ENV_STR, "MESA_GL_VERSION_OVERRIDE=3.3"));
 
-    std::vector<std::string> images, cameras, filenames;
+    std::vector<std::string> images, cameras;
     int width = 1400, height = 1200; // default window size
 
     for (int i = 1; i < argc; i++) {
@@ -70,7 +70,7 @@ int main (int argc, char** argv) {
                 images.push_back(arg);
             else if (ext == ".tsai")
                 cameras.push_back(arg);
-            filenames.push_back(arg);
+            // Other files are ignored (only .tsai + image pairs are used)
         }
     }
 
@@ -102,8 +102,6 @@ int main (int argc, char** argv) {
     // Load images and cameras with .tsai extension
     if (!images.empty() && !cameras.empty())
         win.load_scene(images, cameras);
-    else if (!filenames.empty())
-        win.load_scene(filenames[0]);
 
     return app.exec();
 }

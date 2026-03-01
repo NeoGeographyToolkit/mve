@@ -19,10 +19,10 @@ SceneInspect::SceneInspect (QWidget* parent)
     this->addin_manager = new AddinManager(this->gl_widget);
     this->gl_widget->set_context(this->addin_manager);
 
-    this->connect(&SceneManager::get(), SIGNAL(scene_selected(mve::Scene::Ptr)),
-        this, SLOT(on_scene_selected(mve::Scene::Ptr)));
-    this->connect(&SceneManager::get(), SIGNAL(view_selected(mve::View::Ptr)),
-        this, SLOT(on_view_selected(mve::View::Ptr)));
+    this->connect(&SceneManager::get(), SIGNAL(scene_selected(sfm::Scene::Ptr)),
+        this, SLOT(on_scene_selected(sfm::Scene::Ptr)));
+    this->connect(&SceneManager::get(), SIGNAL(view_selected(sfm::View::Ptr)),
+        this, SLOT(on_view_selected(sfm::View::Ptr)));
     this->connect(this, SIGNAL(tab_activated()), SLOT(on_tab_activated()));
 
     QHBoxLayout* main_layout = new QHBoxLayout(this);
@@ -45,13 +45,13 @@ SceneInspect::on_tab_activated (void)
 }
 
 void
-SceneInspect::on_scene_selected (mve::Scene::Ptr scene)
+SceneInspect::on_scene_selected (sfm::Scene::Ptr scene)
 {
     this->addin_manager->set_scene(scene);
 }
 
 void
-SceneInspect::on_view_selected (mve::View::Ptr view)
+SceneInspect::on_view_selected (sfm::View::Ptr view)
 {
     if (!this->is_tab_active)
     {

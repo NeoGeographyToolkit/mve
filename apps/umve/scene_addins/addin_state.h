@@ -10,8 +10,7 @@
 #ifndef UMVE_ADDIN_STATE_HEADER
 #define UMVE_ADDIN_STATE_HEADER
 
-#include "mve/scene.h"
-#include "mve/view.h"
+#include "sfm_view_utils.h"
 #include "ogl/shader_program.h"
 #include "ogl/camera.h"
 
@@ -22,8 +21,8 @@ struct AddinState
 public:
     GLWidget* gl_widget;
     ogl::ShaderProgram::Ptr wireframe_shader;
-    mve::Scene::Ptr scene;
-    mve::View::Ptr view;
+    sfm::Scene::Ptr scene;
+    sfm::View::Ptr view;
 
 public:
     AddinState (void);

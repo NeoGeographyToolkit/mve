@@ -25,12 +25,12 @@ SceneOverview::SceneOverview (QWidget* parent)
 
     this->connect(this->viewlist, SIGNAL(currentRowChanged(int)),
         this, SLOT(on_row_changed(int)));
-    this->connect(&SceneManager::get(), SIGNAL(scene_selected(mve::Scene::Ptr)),
-        this, SLOT(on_scene_changed(mve::Scene::Ptr)));
+    this->connect(&SceneManager::get(), SIGNAL(scene_selected(sfm::Scene::Ptr)),
+        this, SLOT(on_scene_changed(sfm::Scene::Ptr)));
 }
 
 void
-SceneOverview::on_scene_changed (mve::Scene::Ptr scene)
+SceneOverview::on_scene_changed (sfm::Scene::Ptr scene)
 {
     this->viewlist->clear();
     this->viewlist->setEnabled(false);
@@ -38,7 +38,7 @@ SceneOverview::on_scene_changed (mve::Scene::Ptr scene)
     if (scene == nullptr)
         return;
 
-    mve::Scene::ViewList& sl(scene->get_views());
+    sfm::Scene::ViewList& sl(scene->get_views());
     if (sl.empty()) {
         QListWidgetItem* item = new QListWidgetItem("Scene has no views!");
         item->setData(Qt::UserRole, -1);
@@ -48,7 +48,7 @@ SceneOverview::on_scene_changed (mve::Scene::Ptr scene)
     }
 
     for (std::size_t i = 0; i < sl.size(); ++i) {
-        mve::View::Ptr view(sl[i]);
+        sfm::View::Ptr view(sl[i]);
         if (view == nullptr)
             continue;
         this->add_view_to_layout(i, view);
@@ -56,7 +56,7 @@ SceneOverview::on_scene_changed (mve::Scene::Ptr scene)
 }
 
 void
-SceneOverview::add_view_to_layout (std::size_t id, mve::View::Ptr view)
+SceneOverview::add_view_to_layout (std::size_t id, sfm::View::Ptr view)
 {
     if (view == nullptr)
         return;
@@ -82,7 +82,7 @@ SceneOverview::on_row_changed (int id)
     QListWidgetItem* item = this->viewlist->item(id);
     std::size_t view_id = (std::size_t)item->data(Qt::UserRole).toInt();
 
-    mve::Scene::Ptr scene(SceneManager::get().get_scene());
-    mve::View::Ptr view(scene->get_view_by_id(view_id));
+    sfm::Scene::Ptr scene(SceneManager::get().get_scene());
+    sfm::View::Ptr view(scene->get_view_by_id(view_id));
     SceneManager::get().select_view(view);
 }

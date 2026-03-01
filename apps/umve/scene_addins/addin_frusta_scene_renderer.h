@@ -15,7 +15,6 @@
 
 #include "math/vector.h"
 #include "math/matrix.h"
-#include "mve/view.h"
 #include "ogl/mesh_renderer.h"
 
 #include "scene_addins/addin_base.h"
