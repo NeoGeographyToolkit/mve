@@ -10,32 +10,19 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <QBoxLayout>
-
-#include "guihelpers.h"
 #include "scene_inspect/addin_manager.h"
 
-AddinManager::AddinManager (GLWidget* gl_widget, QWidget* sidebar)
+AddinManager::AddinManager (GLWidget* gl_widget)
 {
-    /* Initialize state and widgets. */
     this->state.gl_widget = gl_widget;
-
-    /* Instanciate addins. */
     this->frusta_renderer = new AddinFrustaSceneRenderer();
-
-    /* Register addins. */
     this->addins.push_back(this->frusta_renderer);
+}
 
-    /* Create sidebar headers. */
-    QCollapsible* frusta_header = new QCollapsible("Frusta Rendering",
-        this->frusta_renderer->get_sidebar_widget());
-
-    /* Create the sidebar layout. */
-    QVBoxLayout* sidebar_layout = new QVBoxLayout(sidebar);
-    sidebar_layout->setSpacing(5);
-    sidebar_layout->setContentsMargins(5, 5, 5, 5);
-    sidebar_layout->addWidget(frusta_header, 0);
-    sidebar_layout->addStretch(1);
+AddinFrustaSceneRenderer*
+AddinManager::get_frusta_renderer (void)
+{
+    return this->frusta_renderer;
 }
 
 bool

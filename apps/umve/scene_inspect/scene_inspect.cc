@@ -9,35 +9,25 @@
 
 #include <QBoxLayout>
 
-#include "guihelpers.h"
 #include "scenemanager.h"
 #include "scene_inspect/scene_inspect.h"
 
 SceneInspect::SceneInspect (QWidget* parent)
     : MainWindowTab(parent)
 {
-    /* Create sidebar for rendering controls. */
-    this->sidebar = new QWidget();
-
-    /* Create GL context. */
     this->gl_widget = new GLWidget();
-    this->addin_manager = new AddinManager(this->gl_widget, this->sidebar);
+    this->addin_manager = new AddinManager(this->gl_widget);
     this->gl_widget->set_context(this->addin_manager);
 
-    /* Connect signals. */
     this->connect(&SceneManager::get(), SIGNAL(scene_selected(mve::Scene::Ptr)),
         this, SLOT(on_scene_selected(mve::Scene::Ptr)));
     this->connect(&SceneManager::get(), SIGNAL(view_selected(mve::View::Ptr)),
         this, SLOT(on_view_selected(mve::View::Ptr)));
     this->connect(this, SIGNAL(tab_activated()), SLOT(on_tab_activated()));
 
-    /* Pack everything together. */
     QHBoxLayout* main_layout = new QHBoxLayout(this);
     main_layout->addWidget(this->gl_widget, 1);
-    main_layout->addWidget(this->sidebar);
 
-    // Focus on this widget
-    // TODO(oalexan1): Think more about this.
     this->setFocusProxy(this->gl_widget);
 }
 
@@ -71,6 +61,12 @@ SceneInspect::on_view_selected (mve::View::Ptr view)
 
     this->addin_manager->set_view(view);
     this->next_view = nullptr;
+}
+
+AddinManager*
+SceneInspect::get_addin_manager (void)
+{
+    return this->addin_manager;
 }
 
 QString

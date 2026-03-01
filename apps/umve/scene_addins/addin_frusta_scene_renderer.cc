@@ -7,8 +7,6 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#include "guihelpers.h"
-
 #include "scenemanager.h"
 #include "scene_addins/addin_frusta_base.h"
 #include "scene_addins/addin_frusta_scene_renderer.h"
@@ -17,23 +15,19 @@
 
 AddinFrustaSceneRenderer::AddinFrustaSceneRenderer (void)
 {
-    this->render_frusta_cb = new QCheckBox("Draw camera frusta");
-    this->render_viewdir_cb = new QCheckBox("Draw viewing direction");
-    this->render_frusta_cb->setChecked(true);
-    this->render_viewdir_cb->setChecked(true);
+    this->action_frusta = new QAction("Draw camera frusta");
+    this->action_frusta->setCheckable(true);
+    this->action_frusta->setChecked(true);
+
+    this->action_viewdir = new QAction("Draw viewing direction");
+    this->action_viewdir->setCheckable(true);
+    this->action_viewdir->setChecked(true);
 
     this->frusta_size_slider = new QSlider();
     this->frusta_size_slider->setMinimum(1);
     this->frusta_size_slider->setMaximum(100);
     this->frusta_size_slider->setValue(10);
     this->frusta_size_slider->setOrientation(Qt::Horizontal);
-
-    /* Create frusta rendering layout. */
-    this->render_frusta_form = new QFormLayout();
-    this->render_frusta_form->setVerticalSpacing(0);
-    this->render_frusta_form->addRow(this->render_frusta_cb);
-    this->render_frusta_form->addRow(this->render_viewdir_cb);
-    this->render_frusta_form->addRow("Frusta Size:", this->frusta_size_slider);
 
     this->connect(&SceneManager::get(), SIGNAL(scene_bundle_changed()),
         this, SLOT(on_scene_changed()));
@@ -45,16 +39,22 @@ AddinFrustaSceneRenderer::AddinFrustaSceneRenderer (void)
         this, SLOT(reset_frusta_renderer()));
     this->connect(this->frusta_size_slider, SIGNAL(valueChanged(int)),
         this, SLOT(repaint()));
-    this->connect(this->render_frusta_cb, SIGNAL(clicked()),
+    this->connect(this->action_frusta, SIGNAL(toggled(bool)),
         this, SLOT(repaint()));
-    this->connect(this->render_viewdir_cb, SIGNAL(clicked()),
+    this->connect(this->action_viewdir, SIGNAL(toggled(bool)),
         this, SLOT(repaint()));
 }
 
-QWidget*
-AddinFrustaSceneRenderer::get_sidebar_widget (void)
+QAction*
+AddinFrustaSceneRenderer::get_action_frusta (void)
 {
-    return get_wrapper(this->render_frusta_form);
+    return this->action_frusta;
+}
+
+QAction*
+AddinFrustaSceneRenderer::get_action_viewdir (void)
+{
+    return this->action_viewdir;
 }
 
 void
@@ -80,16 +80,14 @@ AddinFrustaSceneRenderer::reset_viewdir_renderer (void)
 void
 AddinFrustaSceneRenderer::paint_impl (void)
 {
-    if (this->render_frusta_cb->isChecked())
-    {
+    if (this->action_frusta->isChecked()) {
         if (this->frusta_renderer == nullptr)
             this->create_frusta_renderer();
         if (this->frusta_renderer != nullptr)
             this->frusta_renderer->draw();
     }
 
-    if (this->render_viewdir_cb->isChecked())
-    {
+    if (this->action_viewdir->isChecked()) {
         if (this->viewdir_renderer == nullptr)
             this->create_viewdir_renderer();
         if (this->viewdir_renderer != nullptr)

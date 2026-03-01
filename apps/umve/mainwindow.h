@@ -34,6 +34,7 @@ private:
     QAction* action_about;
 
     QMenu* menu_file;
+    QMenu* menu_view;
     QMenu* menu_help;
 
 private:

@@ -28,7 +28,8 @@ class AddinManager : public QWidget, public ogl::CameraTrackballContext
     Q_OBJECT
 
 public:
-    AddinManager (GLWidget* gl_widget, QWidget* sidebar);
+    AddinManager (GLWidget* gl_widget);
+    AddinFrustaSceneRenderer* get_frusta_renderer (void);
     virtual ~AddinManager (void) {}
     void set_scene (mve::Scene::Ptr scene);
     void set_view (mve::View::Ptr view);

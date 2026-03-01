@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #include <QApplication>
+#include <QBoxLayout>
 #include <QDockWidget>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -27,6 +28,10 @@ MainWindow::MainWindow (int width, int height) {
     this->dock_scene = new QDockWidget(tr("Scene"));
     this->dock_scene->setWidget(this->scene_overview);
     this->dock_scene->setFeatures(QDockWidget::NoDockWidgetFeatures);
+
+    /* Use in-window menu bar to avoid macOS auto-injected menus
+       (Hide, Services, Window, etc.). */
+    this->menuBar()->setNativeMenuBar(false);
 
     /* Create actions and menus. */
     this->create_actions();
@@ -100,10 +105,17 @@ MainWindow::create_menus (void)
     this->menu_file = new QMenu(tr("&File"), this);
     this->menu_file->addAction(this->action_quit);
 
+    AddinFrustaSceneRenderer* fr =
+        this->tab_sceneinspect->get_addin_manager()->get_frusta_renderer();
+    this->menu_view = new QMenu(tr("&View"), this);
+    this->menu_view->addAction(fr->get_action_frusta());
+    this->menu_view->addAction(fr->get_action_viewdir());
+
     this->menu_help = new QMenu(tr("&Help"), this);
     this->menu_help->addAction(this->action_about);
 
     this->menuBar()->addMenu(this->menu_file);
+    this->menuBar()->addMenu(this->menu_view);
     this->menuBar()->addMenu(this->menu_help);
     this->menuBar()->show();
 }
@@ -140,7 +152,8 @@ void
 MainWindow::on_about (void)
 {
     QMessageBox::about(this, tr("About sfm_view"),
-        tr("sfm_view - camera position viewer for ASP."));
+        tr("Camera position viewer for ASP. Based on "
+           "<a href=\"https://github.com/simonfuhrmann/mve\">MVE</a>."));
 }
 
 void

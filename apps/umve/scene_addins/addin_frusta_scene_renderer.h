@@ -10,10 +10,8 @@
 #ifndef UMVE_ADDIN_FRUSTA_SCENE_RENDERER_HEADER
 #define UMVE_ADDIN_FRUSTA_SCENE_RENDERER_HEADER
 
-#include <QWidget>
-#include <QCheckBox>
+#include <QAction>
 #include <QSlider>
-#include <QFormLayout>
 
 #include "math/vector.h"
 #include "math/matrix.h"
@@ -28,7 +26,8 @@ class AddinFrustaSceneRenderer : public AddinBase
 
 public:
     AddinFrustaSceneRenderer (void);
-    QWidget* get_sidebar_widget (void);
+    QAction* get_action_frusta (void);
+    QAction* get_action_viewdir (void);
 
 protected:
     void create_frusta_renderer (void);
@@ -41,9 +40,8 @@ protected slots:
     void on_scene_changed (void);
 
 private:
-    QFormLayout* render_frusta_form;
-    QCheckBox* render_frusta_cb;
-    QCheckBox* render_viewdir_cb;
+    QAction* action_frusta;
+    QAction* action_viewdir;
     QSlider* frusta_size_slider;
     ogl::MeshRenderer::Ptr frusta_renderer;
     ogl::MeshRenderer::Ptr viewdir_renderer;

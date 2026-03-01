@@ -31,9 +31,8 @@ class SceneInspect : public MainWindowTab
 
 public:
     SceneInspect (QWidget* parent = nullptr);
-
-    /* Removes references to the scene. */
     void reset (void);
+    AddinManager* get_addin_manager (void);
 
     virtual QString get_title (void);
 
@@ -44,8 +43,6 @@ private slots:
 
 private:
     mve::View::Ptr next_view;
-
-    QWidget* sidebar;
     AddinManager* addin_manager;
     GLWidget* gl_widget;
 };
