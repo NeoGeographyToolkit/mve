@@ -10,9 +10,8 @@
 #ifndef UMVE_MAIN_WINDOW_HEADER
 #define UMVE_MAIN_WINDOW_HEADER
 
-#include "ogl/opengl.h"
-
 #include <string>
+#include <vector>
 #include <QMainWindow>
 
 #include "scene_inspect.h"
@@ -38,7 +37,7 @@ private:
 private:
     void create_actions (void);
     void create_menus (void);
-    bool perform_close_scene (void);
+    void perform_close_scene (void);
 
 private slots:
     void on_about (void);
@@ -52,8 +51,6 @@ public:
 
     void load_scene (std::vector<std::string> const& images,
                      std::vector<std::string> const& cameras);
-
-    void open_scene_inspect (void);
 };
 
 inline

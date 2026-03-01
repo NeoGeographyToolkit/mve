@@ -13,7 +13,7 @@
 #include "scene_inspect.h"
 
 SceneInspect::SceneInspect (QWidget* parent)
-    : MainWindowTab(parent)
+    : QWidget(parent)
 {
     this->gl_widget = new GLWidget();
     this->addin_manager = new AddinManager(this->gl_widget);
@@ -23,7 +23,6 @@ SceneInspect::SceneInspect (QWidget* parent)
         this, SLOT(on_scene_selected(sfm::Scene::Ptr)));
     this->connect(&SceneManager::get(), SIGNAL(view_selected(sfm::View::Ptr)),
         this, SLOT(on_view_selected(sfm::View::Ptr)));
-    this->connect(this, SIGNAL(tab_activated()), SLOT(on_tab_activated()));
 
     QHBoxLayout* main_layout = new QHBoxLayout(this);
     main_layout->addWidget(this->gl_widget, 1);
@@ -38,13 +37,6 @@ SceneInspect::reset (void)
 }
 
 void
-SceneInspect::on_tab_activated (void)
-{
-    if (this->next_view != nullptr)
-        this->on_view_selected(this->next_view);
-}
-
-void
 SceneInspect::on_scene_selected (sfm::Scene::Ptr scene)
 {
     this->addin_manager->set_scene(scene);
@@ -53,24 +45,11 @@ SceneInspect::on_scene_selected (sfm::Scene::Ptr scene)
 void
 SceneInspect::on_view_selected (sfm::View::Ptr view)
 {
-    if (!this->is_tab_active)
-    {
-        this->next_view = view;
-        return;
-    }
-
     this->addin_manager->set_view(view);
-    this->next_view = nullptr;
 }
 
 AddinManager*
 SceneInspect::get_addin_manager (void)
 {
     return this->addin_manager;
-}
-
-QString
-SceneInspect::get_title (void)
-{
-    return tr("Scene inspect");
 }

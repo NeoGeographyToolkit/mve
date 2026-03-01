@@ -11,9 +11,7 @@
 #define UMVE_ADDIN_BASE_HEADER
 
 #include <QWidget>
-#include <QMessageBox>
 
-#include "mve/mesh.h"
 #include "ogl/opengl.h"
 #include "ogl/context.h"
 
@@ -31,10 +29,7 @@ class AddinBase : public QObject, public ogl::Context
 
 public:
     AddinBase (void);
-    ~AddinBase (void);
-
     void set_state (AddinState* state);
-    virtual QWidget* get_sidebar_widget (void);
 
     /* Empty base class re-implementations. */
     virtual void init_impl (void);
@@ -42,15 +37,6 @@ public:
     virtual void paint_impl (void);
     virtual bool mouse_event (ogl::MouseEvent const& event);
     virtual bool keyboard_event (ogl::KeyboardEvent const& event);
-
-    virtual void redraw_gui (void);
-
-signals:
-    void mesh_generated (std::string const& name, mve::TriangleMesh::Ptr mesh);
-
-protected:
-    void show_error_box (std::string const& title, std::string const& message);
-    void show_info_box (std::string const& title, std::string const& message);
 
 protected slots:
     void repaint (void);
@@ -60,16 +46,9 @@ protected:
     AddinState* state;
 };
 
-/* ---------------------------------------------------------------- */
-
 inline
 AddinBase::AddinBase (void)
-{
-    this->state = nullptr;
-}
-
-inline
-AddinBase::~AddinBase (void)
+    : state(nullptr)
 {
 }
 
@@ -77,12 +56,6 @@ inline void
 AddinBase::set_state (AddinState* state)
 {
     this->state = state;
-}
-
-inline QWidget*
-AddinBase::get_sidebar_widget()
-{
-    return nullptr;
 }
 
 inline void
@@ -113,11 +86,6 @@ AddinBase::keyboard_event (ogl::KeyboardEvent const& /*event*/)
 }
 
 inline void
-AddinBase::redraw_gui (void)
-{
-}
-
-inline void
 AddinBase::repaint (void)
 {
     this->state->repaint();
@@ -127,20 +95,6 @@ inline void
 AddinBase::request_context (void)
 {
     this->state->make_current_context();
-}
-
-inline void
-AddinBase::show_error_box (std::string const& title, std::string const& message)
-{
-    QMessageBox::critical(this->state->gl_widget,
-        title.c_str(), message.c_str());
-}
-
-inline void
-AddinBase::show_info_box (std::string const& title, std::string const& message)
-{
-    QMessageBox::information(this->state->gl_widget,
-        title.c_str(), message.c_str());
 }
 
 #endif /* UMVE_ADDIN_BASE_HEADER */

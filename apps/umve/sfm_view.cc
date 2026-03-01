@@ -20,9 +20,9 @@
 #include "ogl/opengl.h"
 
 #include <QApplication>
+#include <QStyleFactory>
 
 #include "mainwindow.h"
-#include "guihelpers.h"
 
 void print_usage_and_exit () {
     std::cerr << "Usage: sfm_view [OPTIONS] [FILES | SCENEDIR]\n"
@@ -93,8 +93,10 @@ int main (int argc, char** argv) {
     QSurfaceFormat::setDefaultFormat(fmt);
 
     // Create application.
-    set_qt_style("Cleanlooks");
     QApplication app(argc, argv);
+    QStyle* style = QStyleFactory::create("Cleanlooks");
+    if (style != nullptr)
+        QApplication::setStyle(style);
 
     // Create main window.
     MainWindow win(width, height);

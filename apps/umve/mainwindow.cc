@@ -7,9 +7,6 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#include <iostream>
-#include <cstdlib>
-
 #include <QApplication>
 #include <QBoxLayout>
 #include <QDialog>
@@ -69,11 +66,6 @@ void MainWindow::load_scene (std::vector<std::string> const& images,
 }
 
 void
-MainWindow::open_scene_inspect (void)
-{
-}
-
-void
 MainWindow::create_actions (void)
 {
     this->action_quit = new QAction(tr("&Quit"), this);
@@ -111,31 +103,12 @@ MainWindow::create_menus (void)
     this->menuBar()->show();
 }
 
-bool
+void
 MainWindow::perform_close_scene (void)
 {
-    sfm::Scene::Ptr scene = SceneManager::get().get_scene();
-
-    if (scene == nullptr)
-        return true;
-
-    if (scene->is_dirty())
-    {
-        QMessageBox::StandardButton answer = QMessageBox::question(this,
-            tr("Close scene?"), tr("Really close scene?\n"
-            "Unsaved changes get lost, this cannot be undone."),
-            QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Yes);
-
-        if (answer != QMessageBox::Yes)
-            return false;
-    }
-
-    /* Remove references to the scene. */
     SceneManager::get().reset_view();
     SceneManager::get().reset_scene();
     this->tab_sceneinspect->reset();
-
-    return true;
 }
 
 void
@@ -167,8 +140,6 @@ MainWindow::on_frusta_size (void)
 void
 MainWindow::closeEvent (QCloseEvent* event)
 {
-    if (!this->perform_close_scene())
-        event->ignore();
-    else
-        event->accept();
+    this->perform_close_scene();
+    event->accept();
 }
