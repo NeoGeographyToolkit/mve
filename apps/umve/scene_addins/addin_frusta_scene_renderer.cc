@@ -29,8 +29,6 @@ AddinFrustaSceneRenderer::AddinFrustaSceneRenderer (void)
     this->frusta_size_slider->setValue(10);
     this->frusta_size_slider->setOrientation(Qt::Horizontal);
 
-    this->connect(&SceneManager::get(), SIGNAL(scene_bundle_changed()),
-        this, SLOT(on_scene_changed()));
     this->connect(&SceneManager::get(), SIGNAL(scene_selected(mve::Scene::Ptr)),
         this, SLOT(on_scene_changed()));
     this->connect(&SceneManager::get(), SIGNAL(view_selected(mve::View::Ptr)),

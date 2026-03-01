@@ -27,7 +27,7 @@ MainWindow::MainWindow (int width, int height) {
     this->tab_sceneinspect = new SceneInspect(this);
 
     /* Create dock widgets. */
-    this->dock_scene = new QDockWidget(tr("Scene"));
+    this->dock_scene = new QDockWidget(tr("Cameras"));
     this->dock_scene->setWidget(this->scene_overview);
     this->dock_scene->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
@@ -146,7 +146,6 @@ MainWindow::perform_close_scene (void)
     }
 
     /* Remove references to the scene. */
-    SceneManager::get().reset_image();
     SceneManager::get().reset_view();
     SceneManager::get().reset_scene();
     this->tab_sceneinspect->reset();
@@ -158,7 +157,7 @@ void
 MainWindow::on_about (void)
 {
     QMessageBox::about(this, tr("About sfm_view"),
-        tr("Camera position viewer for ASP. Based on "
+        tr("Camera pose viewer for ASP. Based on "
            "<a href=\"https://github.com/simonfuhrmann/mve\">MVE</a>."));
 }
 

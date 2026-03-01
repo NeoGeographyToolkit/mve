@@ -9,123 +9,101 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#include <vector>
-#include <string>
-#include <iostream>
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <string>
+#include <vector>
 
 #include "ogl/opengl.h"
 
 #include <QApplication>
 
-#include "util/file_system.h"
-#include "util/arguments.h"
-
 #include "mainwindow.h"
 #include "guihelpers.h"
 
-struct AppSettings
-{
-    std::vector<std::string> filenames;
-};
-
-void
-print_help_and_exit (util::Arguments const& args)
-{
-    args.generate_helptext(std::cerr);
+void print_usage_and_exit () {
+    std::cerr << "Usage: sfm_view [OPTIONS] [FILES | SCENEDIR]\n"
+              << "Options:\n"
+              << "  -h, --help      Print this help and exit\n"
+              << "  --width VALUE   Window width in pixels\n"
+              << "  --height VALUE  Window height in pixels\n";
     std::exit(EXIT_FAILURE);
 }
 
+// Return lowercase file extension including the dot (e.g. ".tsai").
+std::string get_file_extension (std::string const& path) {
+    std::string::size_type pos = path.rfind('.');
+    if (pos == std::string::npos)
+        return "";
+    std::string ext = path.substr(pos);
+    std::transform(ext.begin(), ext.end(), ext.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return ext;
+}
+
 int main (int argc, char** argv) {
-    util::Arguments args;
-    args.set_usage("Syntax: sfm_view [ OPTIONS ] [ FILES | SCENEDIR ]");
-    args.set_helptext_indent(14);
-    args.set_exit_on_error(true);
-    args.add_option('h', "help", false, "Prints this help text and exits");
-    args.add_option('\0', "width", true, "Window width in pixels");
-    args.add_option('\0', "height", true, "Window height in pixels");
-    args.parse(argc, argv);
 
     // Must set this before any GUI is created, for OpenGL to work.
     // This variable must not go out of scope till this program exits.
     char MESA_GL_ENV_STR[5012];
     putenv(strcpy(MESA_GL_ENV_STR, "MESA_GL_VERSION_OVERRIDE=3.3"));
 
-    /* Set default startup config. */
-    AppSettings conf;
-    /* Handle arguments.*/
-    std::vector<std::string> images, cameras;
+    std::vector<std::string> images, cameras, filenames;
     int width = 1400, height = 1200; // default window size
-    util::ArgResult const* arg;
-    while ((arg = args.next_result())) {
 
-        if (arg->opt == nullptr) {
-            // Keep track of images and camera files in .tsai format
-            std::string file = arg->arg;
-            std::string ext4 = util::string::right(file, 4);
-            std::string ext5 = util::string::right(file, 5);
-            ext4 = util::string::lowercase(ext4);
-            ext5 = util::string::lowercase(ext5);
-            if (ext4 == ".png" || ext4 == ".jpg" || ext4 == ".tif" ||
-                ext5 == ".jpeg" || ext5 == ".tiff")
-                images.push_back(file);
-            else if (ext5 == ".tsai")
-                cameras.push_back(file);
-
-            // This will also cover the case of input images with no .tsai cameras
-            conf.filenames.push_back(arg->arg);
-            continue;
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg == "-h" || arg == "--help") {
+            print_usage_and_exit();
+        } else if (arg == "--width" && i + 1 < argc) {
+            width = std::atoi(argv[++i]);
+        } else if (arg == "--height" && i + 1 < argc) {
+            height = std::atoi(argv[++i]);
+        } else {
+            // Classify positional arg as image, camera, or scene dir
+            std::string ext = get_file_extension(arg);
+            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" ||
+                ext == ".tif" || ext == ".tiff")
+                images.push_back(arg);
+            else if (ext == ".tsai")
+                cameras.push_back(arg);
+            filenames.push_back(arg);
         }
-
-        if (arg->opt->lopt == "width")
-            width = atoi(arg->arg.c_str());
-        else if (arg->opt->lopt == "height")
-            height = atoi(arg->arg.c_str());
-        else
-            print_help_and_exit(args);
     }
 
-    /* Check if we have as many images as cameras. */
     if (images.size() != cameras.size()) {
-        std::cerr << "Number of images and cameras do not match." << "\n";
+        std::cerr << "Number of images and cameras do not match.\n";
         std::exit(EXIT_FAILURE);
     }
 
-    // Sanity check for width and height
     if (width < 10 || height < 10) {
-      std::cerr << "Invalid width or height. Must be at least 10." << "\n";
-      std::exit(EXIT_FAILURE);
+        std::cerr << "Invalid width or height. Must be at least 10.\n";
+        std::exit(EXIT_FAILURE);
     }
 
-    /* Set OpenGL version that Qt should use when creating a context.*/
+    // Set OpenGL version that Qt should use when creating a context.
     QSurfaceFormat fmt;
     fmt.setVersion(3, 3);
     fmt.setDepthBufferSize(24);
     fmt.setStencilBufferSize(8);
-#if defined(_WIN32)
-    fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
-#else
     fmt.setProfile(QSurfaceFormat::CoreProfile);
-#endif
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    /* Create application. */
+    // Create application.
     set_qt_style("Cleanlooks");
-#if defined(_WIN32)
-    QCoreApplication::addLibraryPath(QString::fromStdString(
-        util::fs::join_path(util::fs::dirname(util::fs::get_binary_path()),
-        "qt_plugins")));
-#endif
     QApplication app(argc, argv);
 
-    /* Create main window. */
+    // Create main window.
     MainWindow win(width, height);
 
     // Load images and cameras with .tsai extension
-    if (images.size() > 0 && cameras.size() > 0)
+    if (!images.empty() && !cameras.empty())
         win.load_scene(images, cameras);
-    else if (!conf.filenames.empty())
-        win.load_scene(conf.filenames[0]);
+    else if (!filenames.empty())
+        win.load_scene(filenames[0]);
 
     return app.exec();
 }
