@@ -30,13 +30,7 @@
 #include "scene_addins/addin_sfm_renderer.h"
 #include "scene_addins/addin_frusta_scene_renderer.h"
 #include "scene_addins/addin_mesh_renderer.h"
-#include "scene_addins/addin_dm_triangulate.h"
-#include "scene_addins/addin_offscreen_renderer.h"
-#include "scene_addins/addin_rephotographer.h"
-#include "scene_addins/addin_aabb_creator.h"
 #include "scene_addins/addin_plane_creator.h"
-#include "scene_addins/addin_sphere_creator.h"
-#include "scene_addins/addin_selection.h"
 
 /*
  * The addin manager sets up the basic OpenGL context, creates the shaders
@@ -79,18 +73,11 @@ private:
     AddinSfmRenderer* sfm_renderer;
     AddinFrustaSceneRenderer* frusta_renderer;
     AddinMeshesRenderer* mesh_renderer;
-    AddinDMTriangulate* dm_triangulate;
-    AddinOffscreenRenderer* offscreen_renderer;
-    AddinRephotographer* rephotographer;
-    AddinAABBCreator* aabb_creator;
     AddinPlaneCreator* plane_creator;
-    AddinSphereCreator* sphere_creator;
-    AddinSelection* selection;
 
     /* UI elements. */
     QTabWidget* tab_widget;
     SelectedView* selected_view_1;
-    SelectedView* selected_view_2;
     QColor clear_color;
     QCheckBox* clear_color_cb;
 };

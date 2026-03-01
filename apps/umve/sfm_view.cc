@@ -39,6 +39,7 @@ print_help_and_exit (util::Arguments const& args)
 }
 
 int main (int argc, char** argv) {
+    std::cout << "sfm_view test: binary is alive\n";
     /* Parse arguments. */
     util::Arguments args;
     args.set_usage("Syntax: umve [ OPTIONS ] [ FILES | SCENEDIR ]");
@@ -137,29 +138,12 @@ int main (int argc, char** argv) {
     if (conf.gl_mode)
         win.open_scene_inspect();
 
-    bool scene_opened = false;
-    
-    // The case when we have input images and cameras with .tsai extension
-    if (images.size() > 0 && cameras.size() > 0) {
+    // Load images and cameras with .tsai extension
+    if (images.size() > 0 && cameras.size() > 0)
         win.load_scene(images, cameras);
-        scene_opened = true;
-    } else {
-        for (std::size_t i = 0; i < conf.filenames.size(); i++) {
-            std::string const& filename = conf.filenames[i];
-            if (util::fs::file_exists(filename.c_str())) {
-                win.load_file(filename);
-            } else if (!scene_opened) {
-                win.load_scene(filename);
-                scene_opened = true;
-            } else {
-                std::cerr << "Ignoring extra directory argument: "
-                    << filename << std::endl;
-                continue;
-            }
-        }
-    }
-
-    if (!scene_opened && conf.open_dialog)
+    else if (!conf.filenames.empty())
+        win.load_scene(conf.filenames[0]);
+    else if (conf.open_dialog)
         win.raise_open_scene_dialog();
 
     return app.exec();

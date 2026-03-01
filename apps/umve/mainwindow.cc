@@ -12,34 +12,26 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QDockWidget>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
 
 #include "util/exception.h"
 #include "util/file_system.h"
-#include "mve/mesh_io_ply.h"
 
-#include "fshelpers.h"
 #include "guihelpers.h"
-#include "batchoperations.h"
 #include "scenemanager.h"
 #include "mainwindow.h"
 
-#include <QPluginLoader>
-
 MainWindow::MainWindow (int width, int height) {
     this->scene_overview = new SceneOverview(this);
-    this->jobqueue = JobQueue::get();
 
     /* Populate notebook. */
-    this->tab_viewinspect = new ViewInspect(this);
     this->tab_sceneinspect = new SceneInspect(this);
 
     this->tabs = new QTabWidget(this);
-    this->tabs->addTab(this->tab_viewinspect, this->tab_viewinspect->get_title());
     this->tabs->addTab(this->tab_sceneinspect, this->tab_sceneinspect->get_title());
-    this->load_plugins();
 
     this->memory_label = new QLabel("Memory: <unknown>");
     this->statusbar = new QStatusBar();
@@ -49,11 +41,6 @@ MainWindow::MainWindow (int width, int height) {
     /* Create dock widgets. */
     this->dock_scene = new QDockWidget(tr("Scene"));
     this->dock_scene->setWidget(this->scene_overview);
-    //this->dock_scene->setSizeHint(175, 0);
-
-    this->dock_jobs = new QDockWidget(tr("Jobs"));
-    this->dock_jobs->setWidget(this->jobqueue);
-    this->jobqueue->set_dock_widget(this->dock_jobs);
 
     /* Create actions and menus. */
     this->create_actions();
@@ -68,7 +55,6 @@ MainWindow::MainWindow (int width, int height) {
     this->setWindowIcon(QIcon(":/images/icon_window.png"));
     this->setCentralWidget(central_widget);
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_scene);
-    this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_jobs);
     this->enable_scene_actions(false);
     this->resize(width, height);
     
@@ -83,44 +69,9 @@ MainWindow::MainWindow (int width, int height) {
     this->connect(this->tabs, SIGNAL(currentChanged(int)),
         this, SLOT(on_switch_tabs(int)));
 
-    /* Trick to get job queue dock widget smaller. */
-    this->jobqueue->setMaximumHeight(100); // Dock widget trick
     this->show();
-    this->jobqueue->setMaximumHeight(QWIDGETSIZE_MAX); // Dock widget trick
 
     this->on_switch_tabs(0);
-}
-
-/* ---------------------------------------------------------------- */
-
-void MainWindow::load_plugins (void) {
-    std::vector<std::string> plugin_paths;
-    get_search_paths(&plugin_paths, "plugins");
-    plugin_paths.push_back(":/plugins");
-
-    for (std::size_t i = 0; i < plugin_paths.size(); ++i)
-    {
-        QDir plugins_dir(QString::fromStdString(plugin_paths[i]));
-        QFileInfoList plugin_files = plugins_dir.entryInfoList(QDir::Files);
-
-        for (int j = 0; j < plugin_files.size(); ++j)
-        {
-            QString fp = plugin_files[j].absoluteFilePath();
-            //std::cout << "Loading " << fp.toStdString() << "..." << std::flush;
-            QPluginLoader pl(fp, this);
-            MainWindowTab *pl_tab = dynamic_cast<MainWindowTab*>(pl.instance());
-            if (pl_tab)
-            {
-                this->tabs->addTab(pl_tab, pl_tab->get_title());
-                std::cout << " ok." << std::endl;
-            }
-            else
-            {
-                std::cout << " error (skipping)." << std::endl;
-                std::cout << pl.errorString().toStdString() << std::endl;
-            }
-        }
-    }
 }
 
 /* ---------------------------------------------------------------- */
@@ -161,44 +112,9 @@ void MainWindow::load_scene (std::vector<std::string> const& images,
 /* ---------------------------------------------------------------- */
 
 void
-MainWindow::load_file (const std::string& filename)
-{
-    try
-    {
-        std::string ext4 = util::string::lowercase(
-            util::string::right(filename, 4));
-        std::string ext5 = util::string::lowercase(
-            util::string::right(filename, 5));
-        if (ext4 == ".off" || ext4 == ".ply" || ext4 == ".obj")
-        {
-            this->tab_sceneinspect->load_file(filename);
-            this->tabs->setCurrentIndex(1);
-        }
-        else if (ext4 == ".mve" || ext4 == ".tif" || ext5 == ".tiff"
-            || ext4 == ".pfm" || ext4 == ".png"
-            || ext4 == ".jpg" || ext5 == ".jpeg")
-        {
-            this->tab_viewinspect->load_file(filename.c_str());
-            this->tabs->setCurrentIndex(0);
-        }
-        else
-            throw util::Exception("No file handler for " + filename);
-    }
-    catch (std::exception& e)
-    {
-        QMessageBox::information(this, tr("Error loading file"),
-            tr("File name: %1\nError: %2")
-            .arg(QString(filename.c_str()), e.what()));
-        return;
-    }
-}
-
-/* ---------------------------------------------------------------- */
-
-void
 MainWindow::open_scene_inspect (void)
 {
-    this->tabs->setCurrentIndex(1);
+    this->tabs->setCurrentIndex(0);
 }
 
 /* ---------------------------------------------------------------- */
@@ -342,20 +258,6 @@ MainWindow::perform_close_scene (void)
 
     if (scene == nullptr)
         return true;
-
-    if (!this->jobqueue->is_empty())
-    {
-        QMessageBox::StandardButton answer = QMessageBox::question(this,
-            tr("Jobs still running!"),
-            tr("There are still running jobs that probably keep "
-            "references to parts of the scene that is about to be "
-            "closed. This can cause unexpected behaviour. Do you "
-            "want to continue anyway?"),
-            QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Yes);
-
-        if (answer != QMessageBox::Yes)
-            return false;
-    }
 
     if (scene->is_dirty())
     {
@@ -516,82 +418,11 @@ MainWindow::on_update_memory (void)
 
 /* ---------------------------------------------------------------- */
 
-void
-MainWindow::on_import_images (void)
-{
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
-    if (scene == nullptr)
-    {
-        QMessageBox::information(this, "Error exporting!",
-            "No scene is loaded, rookie.");
-        return;
-    }
-
-    BatchImportImages dialog(this);
-    dialog.setModal(true);
-    dialog.set_scene(scene);
-    dialog.exec();
-
-    SceneManager::get().refresh_scene();
-}
-
-/* ---------------------------------------------------------------- */
-// TODO Move to Batch operations? Provide combo boxes for embeddings?
-
-void
-MainWindow::on_recon_export (void)
-{
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
-    if (scene == nullptr)
-    {
-        QMessageBox::information(this, "Error exporting!",
-            "No scene is loaded, rookie.");
-        return;
-    }
-
-    BatchExport dialog(this);
-    dialog.setModal(true);
-    dialog.set_scene(scene);
-    dialog.exec();
-}
-
-/* ---------------------------------------------------------------- */
-
-void
-MainWindow::on_batch_delete (void)
-{
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
-    if (scene == nullptr)
-    {
-        QMessageBox::information(this, "Error exporting!",
-            "No scene is loaded, rookie.");
-        return;
-    }
-
-    BatchDelete dialog(this);
-    dialog.setModal(true);
-    dialog.set_scene(scene);
-    dialog.exec();
-}
-
-/* ---------------------------------------------------------------- */
-
-void
-MainWindow::on_generate_thumbs (void)
-{
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
-    if (scene == nullptr)
-    {
-        QMessageBox::information(this, "Error generating thumbnails!",
-            "No scene is loaded, rookie.");
-        return;
-    }
-
-    BatchGenerateThumbs dialog(this);
-    dialog.setModal(this);
-    dialog.set_scene(scene);
-    dialog.exec();
-}
+// Batch operations stubs - to be removed with menu cleanup
+void MainWindow::on_import_images (void) {}
+void MainWindow::on_recon_export (void) {}
+void MainWindow::on_batch_delete (void) {}
+void MainWindow::on_generate_thumbs (void) {}
 
 /* ---------------------------------------------------------------- */
 

@@ -26,37 +26,20 @@ AddinManager::AddinManager (GLWidget* gl_widget, QTabWidget* tab_widget)
     this->state.gl_widget = gl_widget;
     this->state.ui_needs_redraw = true;
     this->selected_view_1 = new SelectedView();
-    this->selected_view_2 = new SelectedView();
 
     /* Instanciate addins. */
     this->axis_renderer = new AddinAxisRenderer();
     this->sfm_renderer = new AddinSfmRenderer();
     this->frusta_renderer = new AddinFrustaSceneRenderer();
     this->mesh_renderer = new AddinMeshesRenderer();
-    this->dm_triangulate = new AddinDMTriangulate();
-    this->dm_triangulate->set_selected_view(this->selected_view_2);
-    this->offscreen_renderer = new AddinOffscreenRenderer();
-    this->offscreen_renderer->set_scene_camera(&this->camera);
-    this->rephotographer = new AddinRephotographer();
-    this->rephotographer->set_scene_camera(&this->camera);
-    this->aabb_creator = new AddinAABBCreator();
     this->plane_creator = new AddinPlaneCreator();
-    this->sphere_creator = new AddinSphereCreator();
-    this->selection = new AddinSelection();
-    this->selection->set_scene_camera(&this->camera);
 
     /* Register addins. */
     this->addins.push_back(this->axis_renderer);
     this->addins.push_back(this->sfm_renderer);
     this->addins.push_back(this->frusta_renderer);
     this->addins.push_back(this->mesh_renderer);
-    this->addins.push_back(this->dm_triangulate);
-    this->addins.push_back(this->offscreen_renderer);
-    this->addins.push_back(this->rephotographer);
-    this->addins.push_back(this->aabb_creator);
     this->addins.push_back(this->plane_creator);
-    this->addins.push_back(this->sphere_creator);
-    this->addins.push_back(this->selection);
 
     /* Create scene rendering form. */
     QFormLayout* rendering_form = new QFormLayout();
@@ -73,23 +56,9 @@ AddinManager::AddinManager (GLWidget* gl_widget, QTabWidget* tab_widget)
     QCollapsible* mesh_header = new QCollapsible("Mesh Rendering",
         this->mesh_renderer->get_sidebar_widget());
     mesh_header->set_collapsible(false);
-    QCollapsible* dm_triangulate_header = new QCollapsible("DM Triangulate",
-        this->dm_triangulate->get_sidebar_widget());
-    QCollapsible* offscreen_header = new QCollapsible("Offscreen Rendering",
-        this->offscreen_renderer->get_sidebar_widget());
-    offscreen_header->set_collapsed(true);
-    QCollapsible* rephotographer_header = new QCollapsible("Rephotographer",
-        this->rephotographer->get_sidebar_widget());
-    rephotographer_header->set_collapsed(true);
-    QCollapsible* aabb_creator_header = new QCollapsible("AABB Creator",
-        this->aabb_creator->get_sidebar_widget());
-    aabb_creator_header->set_collapsed(true);
     QCollapsible* plane_creator_header = new QCollapsible("Plane Creator",
         this->plane_creator->get_sidebar_widget());
     plane_creator_header->set_collapsed(true);
-    QCollapsible* sphere_creator_header = new QCollapsible("Sphere Creator",
-        this->sphere_creator->get_sidebar_widget());
-    sphere_creator_header->set_collapsed(true);
 
     /* Create the rendering tab. */
     QVBoxLayout* rendering_layout = new QVBoxLayout();
@@ -99,21 +68,10 @@ AddinManager::AddinManager (GLWidget* gl_widget, QTabWidget* tab_widget)
     rendering_layout->addWidget(frusta_header, 0);
     rendering_layout->addWidget(mesh_header, 1);
 
-    /* Create the operations tab. */
-    QVBoxLayout* operations_layout = new QVBoxLayout();
-    operations_layout->setSpacing(5);
-    operations_layout->addWidget(this->selected_view_2, 0);
-    operations_layout->addWidget(dm_triangulate_header, 0);
-    operations_layout->addWidget(offscreen_header, 0);
-    operations_layout->addWidget(rephotographer_header, 0);
-    operations_layout->addWidget(aabb_creator_header, 0);
-    operations_layout->addWidget(plane_creator_header, 0);
-    operations_layout->addWidget(sphere_creator_header, 0);
-    operations_layout->addStretch(1);
+    rendering_layout->addWidget(plane_creator_header, 0);
 
     /* Setup tab widget. */
     this->tab_widget->addTab(get_wrapper(rendering_layout, 5), "Rendering");
-    this->tab_widget->addTab(get_wrapper(operations_layout, 5), "Operations");
 
     /* Connect signals. */
     this->connect(this->clear_color_cb, SIGNAL(clicked()),
@@ -165,7 +123,6 @@ AddinManager::set_view (mve::View::Ptr view)
 {
     this->state.view = view;
     this->selected_view_1->set_view(this->state.view);
-    this->selected_view_2->set_view(this->state.view);
     this->state.repaint();
 }
 
@@ -181,7 +138,6 @@ AddinManager::reset_scene (void)
     this->state.scene = nullptr;
     this->state.view = nullptr;
     this->selected_view_1->set_view(mve::View::Ptr());
-    this->selected_view_2->set_view(mve::View::Ptr());
     this->state.repaint();
 }
 
