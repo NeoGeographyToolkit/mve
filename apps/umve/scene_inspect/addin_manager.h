@@ -23,11 +23,6 @@
 #include "glwidget.h"
 #include "scene_addins/addin_base.h"
 #include "scene_addins/addin_frusta_scene_renderer.h"
-
-/*
- * The addin manager sets up the basic OpenGL context, creates the shaders
- * and refers rendering to a set of addins.
- */
 class AddinManager : public QWidget, public ogl::CameraTrackballContext
 {
     Q_OBJECT

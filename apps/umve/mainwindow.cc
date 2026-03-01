@@ -12,12 +12,8 @@
 
 #include <QApplication>
 #include <QDockWidget>
-#include <QLabel>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QStatusBar>
-
-#include "util/file_system.h"
 
 #include "scenemanager.h"
 #include "mainwindow.h"
@@ -32,11 +28,6 @@ MainWindow::MainWindow (int width, int height) {
     this->dock_scene->setWidget(this->scene_overview);
     this->dock_scene->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
-    this->memory_label = new QLabel("Memory: <unknown>");
-    this->statusbar = new QStatusBar();
-    this->statusbar->addWidget(this->memory_label);
-    this->setStatusBar(this->statusbar);
-
     /* Create actions and menus. */
     this->create_actions();
     this->create_menus();
@@ -50,15 +41,6 @@ MainWindow::MainWindow (int width, int height) {
     this->setCentralWidget(central_widget);
     this->addDockWidget(Qt::LeftDockWidgetArea, this->dock_scene);
     this->resize(width, height);
-
-    /* Start update timer and init. */
-    this->update_timer = new QTimer(this);
-    this->update_timer->start(2000);
-    this->on_update_memory();
-
-    /* Connect signals. */
-    this->connect(this->update_timer, SIGNAL(timeout()),
-        this, SLOT(on_update_memory()));
 
     this->show();
 }
@@ -159,18 +141,6 @@ MainWindow::on_about (void)
 {
     QMessageBox::about(this, tr("About sfm_view"),
         tr("sfm_view - camera position viewer for ASP."));
-}
-
-void
-MainWindow::on_update_memory (void)
-{
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
-    std::size_t mem = 0;
-    if (scene != nullptr)
-        mem = scene->get_total_mem_usage();
-
-    std::string memstr = util::string::get_size_string(mem);
-    this->memory_label->setText(tr("Memory: %1").arg(memstr.c_str()));
 }
 
 void

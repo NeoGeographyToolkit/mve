@@ -27,10 +27,6 @@ class MainWindow : public QMainWindow
 private:
     QDockWidget* dock_scene;
 
-    QStatusBar* statusbar;
-    QLabel* memory_label;
-    QTimer* update_timer;
-
     SceneOverview* scene_overview;
     SceneInspect* tab_sceneinspect;
 
@@ -47,7 +43,6 @@ private:
 
 private slots:
     void on_about (void);
-    void on_update_memory (void);
 
     void closeEvent (QCloseEvent* event);
 

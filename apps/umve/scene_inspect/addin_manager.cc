@@ -19,7 +19,6 @@ AddinManager::AddinManager (GLWidget* gl_widget, QWidget* sidebar)
 {
     /* Initialize state and widgets. */
     this->state.gl_widget = gl_widget;
-    this->state.ui_needs_redraw = true;
 
     /* Instanciate addins. */
     this->frusta_renderer = new AddinFrustaSceneRenderer();
@@ -96,9 +95,7 @@ AddinManager::init_impl (void)
     }
 #endif
 
-    /* Load shaders. */
     this->state.load_shaders();
-    this->state.init_ui();
 
     for (std::size_t i = 0; i < this->addins.size(); ++i)
     {
@@ -114,14 +111,11 @@ AddinManager::resize_impl (int old_width, int old_height)
     for (std::size_t i = 0; i < this->addins.size(); ++i)
         this->addins[i]->resize(this->ogl::Context::width,
                                 this->ogl::Context::height);
-
-    this->state.ui_needs_redraw = true;
 }
 
 void
 AddinManager::paint_impl (void)
 {
-    /* Set clear color (black) and depth. */
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     glDepthFunc(GL_LESS);
@@ -131,29 +125,7 @@ AddinManager::paint_impl (void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->state.send_uniform(this->camera);
-    if (this->state.ui_needs_redraw)
-        this->state.clear_ui(ogl::Context::width, ogl::Context::height);
 
-    /* Paint all implementations. */
     for (std::size_t i = 0; i < this->addins.size(); ++i)
-    {
-        if (this->state.ui_needs_redraw)
-            this->addins[i]->redraw_gui();
         this->addins[i]->paint();
-    }
-
-    /* Draw UI. */
-    if (this->state.ui_needs_redraw)
-        this->state.gui_texture->upload(this->state.ui_image);
-
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    this->state.gui_texture->bind();
-    this->state.texture_shader->bind();
-    this->state.gui_renderer->draw();
-    this->state.ui_needs_redraw = false;
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
 }

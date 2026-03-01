@@ -30,15 +30,6 @@ find_package(Qt5OpenGL REQUIRED)
 # Source files
 file(GLOB SOURCES *.cc *.h scene_addins/*.cc scene_addins/*.h scene_inspect/*.cc scene_inspect/*.h)
 
-# SET(QT5_UIS )
-
-qt_add_resources(RCC_SOURCES umve.qrc)
-
-#QT5_ADD_RESOURCES ( ${APP_NAME}_RCCS ${umve_resource_files})
-# QT5_WRAP_UI(UIS_HDRS
-#     ${QT5_UIS}
-# )
-
 # Additional dependencies
 include_directories(../../libs)
 include_directories(.)
@@ -53,9 +44,7 @@ endif()
 
 add_executable(${APP_NAME}
   WIN32
-  ${SOURCES} ${${APP_NAME}_RCCS} ${UIS_HDRS}
-  ${SHADER_SOURCES}
-  ${RCC_SOURCES})
+  ${SOURCES})
 
 TARGET_LINK_LIBRARIES (${APP_NAME}
   mveCore mveUtil mveDmrecon mveOgl
@@ -102,6 +91,3 @@ endif()
 
 # Install
 install(TARGETS ${APP_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-# Install shaders. These will need to be shipped. See scene_addins/addin_state.cc.
-install(DIRECTORY "shaders" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/sfm_view)

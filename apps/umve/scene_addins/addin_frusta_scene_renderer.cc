@@ -80,10 +80,6 @@ AddinFrustaSceneRenderer::reset_viewdir_renderer (void)
 void
 AddinFrustaSceneRenderer::paint_impl (void)
 {
-    // Use vertex colors (not the shader's default flat ccolor)
-    this->state->wireframe_shader->bind();
-    this->state->wireframe_shader->send_uniform("ccolor", math::Vec4f(0.0f));
-
     if (this->render_frusta_cb->isChecked())
     {
         if (this->frusta_renderer == nullptr)

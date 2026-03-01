@@ -16,8 +16,8 @@ void
 add_camera_to_mesh (mve::CameraInfo const& camera,
     float size, mve::TriangleMesh::Ptr mesh)
 {
-    math::Vec4f const frustum_start_color(0.5f, 0.5f, 0.5f, 1.0f);
-    math::Vec4f const frustum_end_color(0.5f, 0.5f, 0.5f, 1.0f);
+    math::Vec4f const frustum_start_color(1.0f, 1.0f, 1.0f, 1.0f);
+    math::Vec4f const frustum_end_color(1.0f, 1.0f, 1.0f, 1.0f);
 
     mve::TriangleMesh::VertexList& verts = mesh->get_vertices();
     mve::TriangleMesh::ColorList& colors = mesh->get_vertex_colors();
