@@ -12,9 +12,11 @@
 
 #include <QApplication>
 #include <QBoxLayout>
+#include <QDialog>
 #include <QDockWidget>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QSlider>
 
 #include "scenemanager.h"
 #include "mainwindow.h"
@@ -110,6 +112,10 @@ MainWindow::create_menus (void)
     this->menu_view = new QMenu(tr("&View"), this);
     this->menu_view->addAction(fr->get_action_frusta());
     this->menu_view->addAction(fr->get_action_viewdir());
+    QAction* action_frusta_size = new QAction(tr("Set frusta size"), this);
+    this->connect(action_frusta_size, SIGNAL(triggered()),
+        this, SLOT(on_frusta_size()));
+    this->menu_view->addAction(action_frusta_size);
 
     this->menu_help = new QMenu(tr("&Help"), this);
     this->menu_help->addAction(this->action_about);
@@ -154,6 +160,24 @@ MainWindow::on_about (void)
     QMessageBox::about(this, tr("About sfm_view"),
         tr("Camera position viewer for ASP. Based on "
            "<a href=\"https://github.com/simonfuhrmann/mve\">MVE</a>."));
+}
+
+void
+MainWindow::on_frusta_size (void)
+{
+    AddinFrustaSceneRenderer* fr =
+        this->tab_sceneinspect->get_addin_manager()->get_frusta_renderer();
+    QSlider* slider = fr->get_frusta_size_slider();
+
+    QDialog dlg(this);
+    dlg.setWindowTitle(tr("Frusta size"));
+    QVBoxLayout* layout = new QVBoxLayout(&dlg);
+    layout->addWidget(slider);
+    dlg.resize(300, 60);
+    dlg.exec();
+
+    // Reparent slider back so it survives the dialog destruction
+    slider->setParent(nullptr);
 }
 
 void

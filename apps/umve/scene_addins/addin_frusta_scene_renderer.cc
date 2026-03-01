@@ -57,6 +57,12 @@ AddinFrustaSceneRenderer::get_action_viewdir (void)
     return this->action_viewdir;
 }
 
+QSlider*
+AddinFrustaSceneRenderer::get_frusta_size_slider (void)
+{
+    return this->frusta_size_slider;
+}
+
 void
 AddinFrustaSceneRenderer::on_scene_changed (void)
 {

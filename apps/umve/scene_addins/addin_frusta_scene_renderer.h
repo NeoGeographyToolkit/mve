@@ -28,6 +28,7 @@ public:
     AddinFrustaSceneRenderer (void);
     QAction* get_action_frusta (void);
     QAction* get_action_viewdir (void);
+    QSlider* get_frusta_size_slider (void);
 
 protected:
     void create_frusta_renderer (void);

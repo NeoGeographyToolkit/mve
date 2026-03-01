@@ -44,6 +44,7 @@ private:
 
 private slots:
     void on_about (void);
+    void on_frusta_size (void);
 
     void closeEvent (QCloseEvent* event);
 
