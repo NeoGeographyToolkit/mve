@@ -34,7 +34,6 @@ private:
     SceneOverview* scene_overview;
     SceneInspect* tab_sceneinspect;
 
-    QAction* action_cache_cleanup;
     QAction* action_refresh_scene;
     QAction* action_exit;
     QAction* action_about;
@@ -52,7 +51,6 @@ private slots:
     void on_refresh_scene (void);
     void on_about (void);
     void on_update_memory (void);
-    void on_cache_cleanup (void);
 
     void closeEvent (QCloseEvent* event);
 

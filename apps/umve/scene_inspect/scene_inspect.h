@@ -17,7 +17,6 @@
 #include <QGLWidget>
 #include <QString>
 #include <QWidget>
-#include <QToolBar>
 
 #include "mve/scene.h"
 #include "mve/view.h"
@@ -38,12 +37,7 @@ public:
 
     virtual QString get_title (void);
 
-private:
-    void create_actions (QToolBar* toolbar);
-
 private slots:
-    void on_details_toggled (void);
-    void on_save_screenshot (void);
     void on_scene_selected (mve::Scene::Ptr scene);
     void on_view_selected (mve::View::Ptr view);
     void on_tab_activated (void);
@@ -54,8 +48,6 @@ private:
     QWidget* sidebar;
     AddinManager* addin_manager;
     GLWidget* gl_widget;
-    QAction* action_show_details;
-    QAction* action_save_screenshot;
 };
 
 #endif /* UMVE_SCENE_INSPECT_HEADER */

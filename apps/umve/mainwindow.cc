@@ -104,11 +104,6 @@ MainWindow::open_scene_inspect (void)
 void
 MainWindow::create_actions (void)
 {
-    this->action_cache_cleanup = new QAction(
-        tr("Cache cleanup"), this);
-    this->connect(this->action_cache_cleanup, SIGNAL(triggered()),
-        this, SLOT(on_cache_cleanup()));
-
     this->action_refresh_scene = new QAction(
         tr("Refresh scene"), this);
     this->connect(this->action_refresh_scene, SIGNAL(triggered()),
@@ -128,7 +123,6 @@ void
 MainWindow::create_menus (void)
 {
     this->menu_scene = new QMenu(tr("&Scene"), this);
-    this->menu_scene->addAction(this->action_cache_cleanup);
     this->menu_scene->addAction(this->action_refresh_scene);
     this->menu_scene->addSeparator();
     this->menu_scene->addAction(this->action_exit);
@@ -140,7 +134,6 @@ MainWindow::create_menus (void)
     this->menuBar()->addMenu(this->menu_help);
     this->menuBar()->show();
 
-    this->scene_overview->add_toolbar_action(this->action_cache_cleanup);
     this->scene_overview->add_toolbar_action(this->action_refresh_scene);
 }
 
@@ -176,7 +169,6 @@ MainWindow::perform_close_scene (void)
 void
 MainWindow::enable_scene_actions (bool value)
 {
-    this->action_cache_cleanup->setEnabled(value);
     this->action_refresh_scene->setEnabled(value);
 }
 
@@ -203,17 +195,6 @@ MainWindow::on_update_memory (void)
 
     std::string memstr = util::string::get_size_string(mem);
     this->memory_label->setText(tr("Memory: %1").arg(memstr.c_str()));
-}
-
-void
-MainWindow::on_cache_cleanup (void)
-{
-    mve::Scene::Ptr scene = SceneManager::get().get_scene();
-    if (scene == nullptr)
-        return;
-
-    scene->cache_cleanup();
-    this->on_update_memory();
 }
 
 void
