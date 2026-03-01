@@ -17,7 +17,7 @@
 #include "math/matrix.h"
 #include "ogl/mesh_renderer.h"
 
-#include "scene_addins/addin_base.h"
+#include "addin_base.h"
 
 class AddinFrustaSceneRenderer : public AddinBase
 {

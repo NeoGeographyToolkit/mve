@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-#include "scene_addins/addin_state.h"
+#include "addin_state.h"
 
 // Inline GLSL shaders. Colors are baked into mesh vertices:
 // green for the ground grid, white for camera frusta,

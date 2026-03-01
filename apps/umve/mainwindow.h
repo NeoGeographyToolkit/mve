@@ -15,7 +15,7 @@
 #include <string>
 #include <QMainWindow>
 
-#include "scene_inspect/scene_inspect.h"
+#include "scene_inspect.h"
 #include "sceneoverview.h"
 
 class MainWindow : public QMainWindow

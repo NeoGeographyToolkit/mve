@@ -20,8 +20,8 @@
 #include "ogl/camera_trackball.h"
 
 #include "glwidget.h"
-#include "scene_addins/addin_base.h"
-#include "scene_addins/addin_frusta_scene_renderer.h"
+#include "addin_base.h"
+#include "addin_frusta_scene_renderer.h"
 class AddinManager : public QWidget, public ogl::CameraTrackballContext
 {
     Q_OBJECT

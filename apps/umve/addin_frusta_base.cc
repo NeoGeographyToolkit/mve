@@ -10,7 +10,7 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 
-#include "scene_addins/addin_frusta_base.h"
+#include "addin_frusta_base.h"
 
 void
 add_camera_to_mesh (sfm::CameraInfo const& camera,

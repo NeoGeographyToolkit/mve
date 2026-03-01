@@ -8,8 +8,8 @@
  */
 
 #include "scenemanager.h"
-#include "scene_addins/addin_frusta_base.h"
-#include "scene_addins/addin_frusta_scene_renderer.h"
+#include "addin_frusta_base.h"
+#include "addin_frusta_scene_renderer.h"
 
 #include <iostream>
 

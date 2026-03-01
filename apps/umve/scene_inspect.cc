@@ -10,7 +10,7 @@
 #include <QBoxLayout>
 
 #include "scenemanager.h"
-#include "scene_inspect/scene_inspect.h"
+#include "scene_inspect.h"
 
 SceneInspect::SceneInspect (QWidget* parent)
     : MainWindowTab(parent)

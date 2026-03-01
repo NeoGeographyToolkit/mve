@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "scene_inspect/addin_manager.h"
+#include "addin_manager.h"
 
 AddinManager::AddinManager (GLWidget* gl_widget)
 {

@@ -22,7 +22,7 @@
 
 #include "mainwindowtab.h"
 #include "glwidget.h"
-#include "scene_inspect/addin_manager.h"
+#include "addin_manager.h"
 
 class SceneInspect : public MainWindowTab
 {

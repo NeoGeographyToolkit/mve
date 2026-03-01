@@ -28,7 +28,7 @@ find_package(Qt5OpenGL REQUIRED)
 #						mainwindow.cpp glwidget.cpp )
 
 # Source files
-file(GLOB SOURCES *.cc *.h scene_addins/*.cc scene_addins/*.h scene_inspect/*.cc scene_inspect/*.h)
+file(GLOB SOURCES *.cc *.h)
 
 # Additional dependencies
 include_directories(../../libs)
