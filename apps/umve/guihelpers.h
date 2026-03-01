@@ -12,9 +12,7 @@
 
 #include <QLayout>
 #include <QPushButton>
-#include "mve/image.h"
 
-QPixmap get_pixmap_from_image (mve::ByteImage::ConstPtr img);
 QWidget* get_separator (void);
 QWidget* get_expander (void);
 QWidget* get_wrapper (QLayout* layout, int margin = 0);

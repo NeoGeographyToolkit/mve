@@ -10,43 +10,9 @@
 #include <QApplication>
 #include <QFrame>
 #include <QLabel>
-#include <QPainter>
 #include <QStyleFactory>
 
 #include "guihelpers.h"
-
-QPixmap
-get_pixmap_from_image (mve::ByteImage::ConstPtr img)
-{
-    std::size_t iw = img->width();
-    std::size_t ih = img->height();
-    std::size_t ic = img->channels();
-    bool is_gray = (ic == 1 || ic == 2);
-    bool has_alpha = (ic == 2 || ic == 4);
-
-    QImage img_qimage(iw, ih, QImage::Format_ARGB32);
-    {
-        QPainter painter(&img_qimage);
-        std::size_t inpos = 0;
-        for (std::size_t y = 0; y < ih; ++y)
-            for (std::size_t x = 0; x < iw; ++x)
-            {
-                unsigned char alpha = has_alpha
-                    ? img->at(inpos + 1 + !is_gray * 2)
-                    : 255;
-                unsigned int argb
-                    = (alpha << 24)
-                    | (img->at(inpos) << 16)
-                    | (img->at(inpos + !is_gray * 1) << 8)
-                    | (img->at(inpos + !is_gray * 2) << 0);
-
-                img_qimage.setPixel(x, y, argb);
-                inpos += ic;
-            }
-    }
-
-    return QPixmap::fromImage(img_qimage);
-}
 
 QWidget*
 get_separator (void)
@@ -86,9 +52,7 @@ QCollapsible::QCollapsible (QString title, QWidget* content)
     : content(content)
 {
     QLabel* label = new QLabel(title);
-    this->collapse_but = new QPushButton();
-    this->collapse_but->setIcon(QIcon(":/images/icon_large_minus.png"));
-    this->collapse_but->setIconSize(QSize(13, 13));
+    this->collapse_but = new QPushButton("-");
     this->collapse_but->setFlat(true);
     this->collapse_but->setMinimumSize(17, 17);
     this->collapse_but->setMaximumSize(17, 17);
@@ -131,9 +95,7 @@ void
 QCollapsible::set_collapsed (bool value)
 {
     this->content_wrapper->setVisible(!value);
-    this->collapse_but->setIcon(value
-        ? QIcon(":/images/icon_large_plus.png")
-        : QIcon(":/images/icon_large_minus.png"));
+    this->collapse_but->setText(value ? "+" : "-");
 }
 
 void
