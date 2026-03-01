@@ -84,9 +84,9 @@ MainWindow::open_scene_inspect (void)
 void
 MainWindow::create_actions (void)
 {
-    this->action_exit = new QAction(tr("E&xit"), this);
-    this->action_exit->setShortcut(tr("Ctrl+Q"));
-    this->connect(this->action_exit, SIGNAL(triggered()),
+    this->action_quit = new QAction(tr("&Quit"), this);
+    this->action_quit->setShortcut(tr("Ctrl+Q"));
+    this->connect(this->action_quit, SIGNAL(triggered()),
         this, SLOT(close()));
 
     this->action_about = new QAction(tr("&About"), this);
@@ -97,13 +97,13 @@ MainWindow::create_actions (void)
 void
 MainWindow::create_menus (void)
 {
-    this->menu_scene = new QMenu(tr("&Scene"), this);
-    this->menu_scene->addAction(this->action_exit);
+    this->menu_file = new QMenu(tr("&File"), this);
+    this->menu_file->addAction(this->action_quit);
 
     this->menu_help = new QMenu(tr("&Help"), this);
     this->menu_help->addAction(this->action_about);
 
-    this->menuBar()->addMenu(this->menu_scene);
+    this->menuBar()->addMenu(this->menu_file);
     this->menuBar()->addMenu(this->menu_help);
     this->menuBar()->show();
 }

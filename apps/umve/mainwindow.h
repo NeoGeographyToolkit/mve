@@ -30,10 +30,10 @@ private:
     SceneOverview* scene_overview;
     SceneInspect* tab_sceneinspect;
 
-    QAction* action_exit;
+    QAction* action_quit;
     QAction* action_about;
 
-    QMenu* menu_scene;
+    QMenu* menu_file;
     QMenu* menu_help;
 
 private:

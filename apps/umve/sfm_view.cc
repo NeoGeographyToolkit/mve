@@ -37,10 +37,8 @@ print_help_and_exit (util::Arguments const& args)
 }
 
 int main (int argc, char** argv) {
-    std::cout << "sfm_view test: third pass cleanup\n";
-    /* Parse arguments. */
     util::Arguments args;
-    args.set_usage("Syntax: umve [ OPTIONS ] [ FILES | SCENEDIR ]");
+    args.set_usage("Syntax: sfm_view [ OPTIONS ] [ FILES | SCENEDIR ]");
     args.set_helptext_indent(14);
     args.set_exit_on_error(true);
     args.add_option('h', "help", false, "Prints this help text and exits");
@@ -63,7 +61,7 @@ int main (int argc, char** argv) {
 
         if (arg->opt == nullptr) {
             // Keep track of images and camera files in .tsai format
-            std::string file = arg->arg; 
+            std::string file = arg->arg;
             std::string ext4 = util::string::right(file, 4);
             std::string ext5 = util::string::right(file, 5);
             ext4 = util::string::lowercase(ext4);
@@ -89,13 +87,13 @@ int main (int argc, char** argv) {
 
     /* Check if we have as many images as cameras. */
     if (images.size() != cameras.size()) {
-        std::cerr << "Number of images and cameras do not match." << std::endl;
+        std::cerr << "Number of images and cameras do not match." << "\n";
         std::exit(EXIT_FAILURE);
     }
 
     // Sanity check for width and height
     if (width < 10 || height < 10) {
-      std::cerr << "Invalid width or height. Must be at least 10." << std::endl;
+      std::cerr << "Invalid width or height. Must be at least 10." << "\n";
       std::exit(EXIT_FAILURE);
     }
 
