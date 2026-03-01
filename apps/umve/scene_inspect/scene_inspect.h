@@ -15,7 +15,6 @@
 #include <string>
 
 #include <QGLWidget>
-#include <QTabWidget>
 #include <QString>
 #include <QWidget>
 #include <QToolBar>
@@ -43,7 +42,6 @@ private:
     void create_actions (QToolBar* toolbar);
 
 private slots:
-    void on_reload_shaders (void);
     void on_details_toggled (void);
     void on_save_screenshot (void);
     void on_scene_selected (mve::Scene::Ptr scene);
@@ -53,10 +51,9 @@ private slots:
 private:
     mve::View::Ptr next_view;
 
-    QTabWidget* tab_widget;
+    QWidget* sidebar;
     AddinManager* addin_manager;
     GLWidget* gl_widget;
-    QAction* action_reload_shaders;
     QAction* action_show_details;
     QAction* action_save_screenshot;
 };

@@ -15,7 +15,7 @@
 #include "guihelpers.h"
 #include "scene_inspect/addin_manager.h"
 
-AddinManager::AddinManager (GLWidget* gl_widget, QTabWidget* tab_widget)
+AddinManager::AddinManager (GLWidget* gl_widget, QWidget* sidebar)
 {
     /* Initialize state and widgets. */
     this->state.gl_widget = gl_widget;
@@ -31,14 +31,12 @@ AddinManager::AddinManager (GLWidget* gl_widget, QTabWidget* tab_widget)
     QCollapsible* frusta_header = new QCollapsible("Frusta Rendering",
         this->frusta_renderer->get_sidebar_widget());
 
-    /* Create the rendering tab. */
-    QVBoxLayout* rendering_layout = new QVBoxLayout();
-    rendering_layout->setSpacing(5);
-    rendering_layout->addWidget(frusta_header, 0);
-    rendering_layout->addStretch(1);
-
-    /* Setup tab widget. */
-    tab_widget->addTab(get_wrapper(rendering_layout, 5), "Rendering");
+    /* Create the sidebar layout. */
+    QVBoxLayout* sidebar_layout = new QVBoxLayout(sidebar);
+    sidebar_layout->setSpacing(5);
+    sidebar_layout->setContentsMargins(5, 5, 5, 5);
+    sidebar_layout->addWidget(frusta_header, 0);
+    sidebar_layout->addStretch(1);
 }
 
 bool
@@ -73,12 +71,6 @@ AddinManager::set_view (mve::View::Ptr view)
 {
     this->state.view = view;
     this->state.repaint();
-}
-
-void
-AddinManager::load_shaders (void)
-{
-    this->state.load_shaders();
 }
 
 void

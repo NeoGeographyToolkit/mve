@@ -15,8 +15,6 @@
 #include <string>
 #include <vector>
 
-#include <QTabWidget>
-
 #include "mve/scene.h"
 #include "mve/view.h"
 #include "ogl/context.h"
@@ -35,12 +33,11 @@ class AddinManager : public QWidget, public ogl::CameraTrackballContext
     Q_OBJECT
 
 public:
-    AddinManager (GLWidget* gl_widget, QTabWidget* tab_widget);
+    AddinManager (GLWidget* gl_widget, QWidget* sidebar);
     virtual ~AddinManager (void) {}
     void set_scene (mve::Scene::Ptr scene);
     void set_view (mve::View::Ptr view);
 
-    void load_shaders (void);
     void reset_scene (void);
 
     virtual bool keyboard_event (ogl::KeyboardEvent const& event);

@@ -104,11 +104,6 @@ MainWindow::open_scene_inspect (void)
 void
 MainWindow::create_actions (void)
 {
-    this->action_close_scene = new QAction(
-        tr("Close scene"), this);
-    this->connect(this->action_close_scene, SIGNAL(triggered()),
-        this, SLOT(on_close_scene()));
-
     this->action_cache_cleanup = new QAction(
         tr("Cache cleanup"), this);
     this->connect(this->action_cache_cleanup, SIGNAL(triggered()),
@@ -133,8 +128,6 @@ void
 MainWindow::create_menus (void)
 {
     this->menu_scene = new QMenu(tr("&Scene"), this);
-    this->menu_scene->addAction(this->action_close_scene);
-    this->menu_scene->addSeparator();
     this->menu_scene->addAction(this->action_cache_cleanup);
     this->menu_scene->addAction(this->action_refresh_scene);
     this->menu_scene->addSeparator();
@@ -147,7 +140,6 @@ MainWindow::create_menus (void)
     this->menuBar()->addMenu(this->menu_help);
     this->menuBar()->show();
 
-    this->scene_overview->add_toolbar_action(this->action_close_scene);
     this->scene_overview->add_toolbar_action(this->action_cache_cleanup);
     this->scene_overview->add_toolbar_action(this->action_refresh_scene);
 }
@@ -184,15 +176,8 @@ MainWindow::perform_close_scene (void)
 void
 MainWindow::enable_scene_actions (bool value)
 {
-    this->action_close_scene->setEnabled(value);
     this->action_cache_cleanup->setEnabled(value);
     this->action_refresh_scene->setEnabled(value);
-}
-
-void
-MainWindow::on_close_scene (void)
-{
-    this->perform_close_scene();
 }
 
 void

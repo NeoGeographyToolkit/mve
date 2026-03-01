@@ -25,13 +25,12 @@ SceneInspect::SceneInspect (QWidget* parent)
     QToolBar* toolbar = new QToolBar("Tools");
     this->create_actions(toolbar);
 
-    /* Create details notebook. */
-    this->tab_widget = new QTabWidget();
-    this->tab_widget->setTabPosition(QTabWidget::East);
+    /* Create sidebar for rendering controls. */
+    this->sidebar = new QWidget();
 
     /* Create GL context. */
     this->gl_widget = new GLWidget();
-    this->addin_manager = new AddinManager(this->gl_widget, this->tab_widget);
+    this->addin_manager = new AddinManager(this->gl_widget, this->sidebar);
     this->gl_widget->set_context(this->addin_manager);
 
     /* Connect signals. */
@@ -48,7 +47,7 @@ SceneInspect::SceneInspect (QWidget* parent)
 
     QHBoxLayout* main_layout = new QHBoxLayout(this);
     main_layout->addLayout(vbox, 1);
-    main_layout->addWidget(this->tab_widget);
+    main_layout->addWidget(this->sidebar);
 
     // Focus on this widget
     // TODO(oalexan1): Think more about this.
@@ -71,10 +70,6 @@ SceneInspect::on_tab_activated (void)
 void
 SceneInspect::create_actions (QToolBar* toolbar)
 {
-    this->action_reload_shaders = new QAction(tr("Reload shaders"), this);
-    this->connect(this->action_reload_shaders, SIGNAL(triggered()),
-        this, SLOT(on_reload_shaders()));
-
     this->action_show_details = new QAction(tr("Show &Details"), this);
     this->action_show_details->setCheckable(true);
     this->action_show_details->setChecked(true);
@@ -85,8 +80,6 @@ SceneInspect::create_actions (QToolBar* toolbar)
     this->connect(this->action_save_screenshot, SIGNAL(triggered()),
         this, SLOT(on_save_screenshot()));
 
-    toolbar->addAction(this->action_reload_shaders);
-    toolbar->addSeparator();
     toolbar->addAction(this->action_save_screenshot);
     toolbar->addWidget(get_expander());
     toolbar->addAction(this->action_show_details);
@@ -96,13 +89,7 @@ void
 SceneInspect::on_details_toggled (void)
 {
     bool show = this->action_show_details->isChecked();
-    this->tab_widget->setVisible(show);
-}
-
-void
-SceneInspect::on_reload_shaders (void)
-{
-    this->addin_manager->load_shaders();
+    this->sidebar->setVisible(show);
 }
 
 void
