@@ -233,11 +233,7 @@ matrix_rotation_from_axis_angle(Vector<T,3> const& axis, T const& angle) {
   return rot;
 }
 
-} // namespace math
-
 // TriangleMesh
-
-namespace sfm {
 
 class TriangleMesh {
 public:
@@ -272,13 +268,7 @@ private:
   FaceList faces;
 };
 
-} // namespace sfm
-
-// SfmCamera
-
-namespace sfm {
-
-// SfmCamera with viewing and projection matrices for OpenGL rendering.
+// Camera with viewing and projection matrices for OpenGL rendering.
 class SfmCamera {
 public:
   sfm::Vec3f pos;
@@ -326,6 +316,6 @@ SfmCamera::update_proj_mat(void) {
     this->z_far, this->top, this->right);
 }
 
-} // namespace gl
+} // namespace sfm
 
 #endif // SFM_MATH_HEADER
