@@ -68,9 +68,6 @@ GlWidget::paintGL()
     {
         if (this->init_set.find(this->context) == this->init_set.end())
         {
-            std::cout << "Using OpenGL " << this->format().majorVersion()
-                      << '.' << this->format().minorVersion() << " ..."
-                      << std::endl;
             this->context->init();
             this->context->resize(this->gl_width, this->gl_height);
             this->init_set.insert(this->context); // Mark initialized
