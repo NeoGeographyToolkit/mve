@@ -7,15 +7,15 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef OGL_GL_CONTEXT_HEADER
-#define OGL_GL_CONTEXT_HEADER
+#ifndef GL_CONTEXT_HEADER
+#define GL_CONTEXT_HEADER
 
 #include <algorithm>
 
-#include "sfm_math.h"
-#include "ogl_common.h"
+#include "SfmMath.h"
+#include "GlCommon.h"
 
-OGL_NAMESPACE_BEGIN
+GL_NAMESPACE_BEGIN
 
 /* ---- Trackball ---- */
 
@@ -81,10 +81,10 @@ CamTrackball::get_upvec (void) const
 
 // Rendering context with trackball camera control.
 // Subclass and override init_impl, resize_impl, paint_impl.
-class Context
+class GlContext
 {
 public:
-    virtual ~Context (void) {}
+    virtual ~GlContext (void) {}
 
     void init (void);
     void resize (int new_width, int new_height);
@@ -105,14 +105,14 @@ protected:
 };
 
 inline void
-Context::init (void)
+GlContext::init (void)
 {
     this->controller.set_camera(&this->camera);
     this->init_impl();
 }
 
 inline void
-Context::resize (int new_width, int new_height)
+GlContext::resize (int new_width, int new_height)
 {
     std::swap(new_width, this->width);
     std::swap(new_height, this->height);
@@ -120,13 +120,13 @@ Context::resize (int new_width, int new_height)
 }
 
 inline void
-Context::paint (void)
+GlContext::paint (void)
 {
     this->paint_impl();
 }
 
 inline bool
-Context::mouse_event (MouseEvent const& event)
+GlContext::mouse_event (MouseEvent const& event)
 {
     bool is_handled = this->controller.consume_event(event);
     this->update_camera();
@@ -134,7 +134,7 @@ Context::mouse_event (MouseEvent const& event)
 }
 
 inline void
-Context::resize_impl (int /*old_width*/, int /*old_height*/)
+GlContext::resize_impl (int /*old_width*/, int /*old_height*/)
 {
     glViewport(0, 0, this->width, this->height);
     this->camera.width = this->width;
@@ -154,7 +154,7 @@ Context::resize_impl (int /*old_width*/, int /*old_height*/)
 }
 
 inline void
-Context::update_camera (void)
+GlContext::update_camera (void)
 {
     this->camera.pos = this->controller.get_campos();
     this->camera.viewing_dir = this->controller.get_viewdir();
@@ -162,6 +162,6 @@ Context::update_camera (void)
     this->camera.update_view_mat();
 }
 
-OGL_NAMESPACE_END
+GL_NAMESPACE_END
 
-#endif /* OGL_GL_CONTEXT_HEADER */
+#endif /* GL_CONTEXT_HEADER */

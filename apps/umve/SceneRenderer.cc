@@ -10,8 +10,8 @@
 #include <iostream>
 #include <limits>
 
-#include "scenemanager.h"
-#include "scene_renderer.h"
+#include "SceneManager.h"
+#include "SceneRenderer.h"
 
 #ifdef _WIN32
 #include <cstdlib>
@@ -46,21 +46,21 @@ void
 SceneRenderer::load_shaders (void)
 {
     if (!this->wireframe_shader)
-        this->wireframe_shader = ogl::ShaderProgram::create();
+        this->wireframe_shader = gl::SfmShader::create();
 
     this->wireframe_shader->load_vert_code(WIREFRAME_VERT);
     this->wireframe_shader->load_frag_code(WIREFRAME_FRAG);
 }
 
 void
-SceneRenderer::send_uniform (ogl::Camera const& cam)
+SceneRenderer::send_uniform (gl::Camera const& cam)
 {
     this->wireframe_shader->bind();
     this->wireframe_shader->send_uniform("viewmat", cam.view);
     this->wireframe_shader->send_uniform("projmat", cam.proj);
 }
 
-SceneRenderer::SceneRenderer (GLWidget* gl_widget)
+SceneRenderer::SceneRenderer (GlWidget* gl_widget)
 {
     this->gl_widget = gl_widget;
 
@@ -193,7 +193,7 @@ SceneRenderer::init_impl (void)
 void
 SceneRenderer::resize_impl (int old_width, int old_height)
 {
-    this->ogl::Context::resize_impl(old_width, old_height);
+    this->gl::GlContext::resize_impl(old_width, old_height);
 }
 
 void
@@ -557,7 +557,7 @@ void SceneRenderer::create_frusta_renderer (void) {
         add_camera_to_mesh(cam, size, mesh);
     }
 
-    this->frusta_renderer = ogl::MeshRenderer::create(mesh);
+    this->frusta_renderer = gl::MeshRenderer::create(mesh);
     this->frusta_renderer->set_shader(this->wireframe_shader);
     this->frusta_renderer->set_primitive(GL_LINES);
 }
@@ -594,7 +594,7 @@ void SceneRenderer::create_ground_renderer (void) {
         colors.push_back(color);
     }
 
-    this->ground_renderer = ogl::MeshRenderer::create(mesh);
+    this->ground_renderer = gl::MeshRenderer::create(mesh);
     this->ground_renderer->set_shader(this->wireframe_shader);
     this->ground_renderer->set_primitive(GL_LINES);
 }
@@ -618,7 +618,7 @@ SceneRenderer::create_viewdir_renderer (void)
     colors.push_back(math::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));
     colors.push_back(math::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));
 
-    this->viewdir_renderer = ogl::MeshRenderer::create(mesh);
+    this->viewdir_renderer = gl::MeshRenderer::create(mesh);
     this->viewdir_renderer->set_shader(this->wireframe_shader);
     this->viewdir_renderer->set_primitive(GL_LINES);
 }

@@ -7,12 +7,12 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef UMVE_SCENEMANAGER_HEADER
-#define UMVE_SCENEMANAGER_HEADER
+#ifndef SFM_SCENE_MANAGER_HEADER
+#define SFM_SCENE_MANAGER_HEADER
 
 #include <QObject>
 
-#include "sfm_view_utils.h"
+#include "SfmUtils.h"
 
 /**
  * The currently active scene as well as the selected view are requried
@@ -85,4 +85,4 @@ SceneManager::reset_view (void)
     this->select_view(sfm::View::Ptr());
 }
 
-#endif // UMVE_SCENEMANAGER_HEADER
+#endif // SFM_SCENE_MANAGER_HEADER

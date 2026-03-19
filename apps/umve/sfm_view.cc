@@ -17,12 +17,12 @@
 #include <string>
 #include <vector>
 
-#include "ogl_common.h"
+#include "GlCommon.h"
 
 #include <QApplication>
 #include <QStyleFactory>
 
-#include "mainwindow.h"
+#include "SfmMainWindow.h"
 
 void print_usage_and_exit () {
     std::cerr << "Usage: sfm_view [OPTIONS] [FILES | SCENEDIR]\n"
@@ -99,7 +99,7 @@ int main (int argc, char** argv) {
         QApplication::setStyle(style);
 
     // Create main window.
-    MainWindow win(width, height);
+    SfmMainWindow win(width, height);
 
     // Load images and cameras with .tsai extension
     if (!images.empty() && !cameras.empty())

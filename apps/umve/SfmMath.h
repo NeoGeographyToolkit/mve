@@ -293,7 +293,7 @@ private:
 
 /* ---- Camera ---- */
 
-namespace ogl {
+namespace gl {
 
 // Camera with viewing and projection matrices for OpenGL rendering.
 class Camera
@@ -350,6 +350,6 @@ Camera::update_proj_mat (void)
         this->z_far, this->top, this->right);
 }
 
-} // namespace ogl
+} // namespace gl
 
 #endif /* SFM_MATH_HEADER */

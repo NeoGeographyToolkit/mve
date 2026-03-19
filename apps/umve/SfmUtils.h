@@ -8,8 +8,8 @@
 // used by sfm_view. These avoid pulling in the full MVE library for types
 // that are simple data containers in this application.
 
-#ifndef SFM_VIEW_UTILS_HEADER
-#define SFM_VIEW_UTILS_HEADER
+#ifndef SFM_UTILS_HEADER
+#define SFM_UTILS_HEADER
 
 #include <memory>
 #include <string>
@@ -123,4 +123,4 @@ inline View::Ptr Scene::get_view_by_id(std::size_t id) {
 
 } // namespace sfm
 
-#endif // SFM_VIEW_UTILS_HEADER
+#endif // SFM_UTILS_HEADER

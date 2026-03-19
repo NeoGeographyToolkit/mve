@@ -9,9 +9,9 @@
 
 #include <stdexcept>
 
-#include "mesh_renderer.h"
+#include "MeshRenderer.h"
 
-OGL_NAMESPACE_BEGIN
+GL_NAMESPACE_BEGIN
 
 /* ---- VertexBuffer ---- */
 
@@ -87,7 +87,7 @@ VertexArray::draw (void)
 
     this->shader->bind();
 
-    this->assign_attrib(BoundVBO(this->vert_vbo, OGL_ATTRIB_POSITION));
+    this->assign_attrib(BoundVBO(this->vert_vbo, SFM_ATTRIB_POSITION));
 
     for (std::size_t i = 0; i < this->vbo_list.size(); ++i)
         this->assign_attrib(this->vbo_list[i]);
@@ -138,20 +138,20 @@ MeshRenderer::set_mesh (mve::TriangleMesh::ConstPtr mesh)
     if (!vnormals.empty()) {
         VertexBuffer::Ptr vbo = VertexBuffer::create();
         vbo->set_data(&vnormals[0][0], (GLsizei)vnormals.size(), 3);
-        this->add_vbo(vbo, OGL_ATTRIB_NORMAL);
+        this->add_vbo(vbo, SFM_ATTRIB_NORMAL);
     }
 
     if (!vcolors.empty()) {
         VertexBuffer::Ptr vbo = VertexBuffer::create();
         vbo->set_data(&vcolors[0][0], (GLsizei)vcolors.size(), 4);
-        this->add_vbo(vbo, OGL_ATTRIB_COLOR);
+        this->add_vbo(vbo, SFM_ATTRIB_COLOR);
     }
 
     if (!vtexuv.empty()) {
         VertexBuffer::Ptr vbo = VertexBuffer::create();
         vbo->set_data(&vtexuv[0][0], (GLsizei)vtexuv.size(), 2);
-        this->add_vbo(vbo, OGL_ATTRIB_TEXCOORD);
+        this->add_vbo(vbo, SFM_ATTRIB_TEXCOORD);
     }
 }
 
-OGL_NAMESPACE_END
+GL_NAMESPACE_END

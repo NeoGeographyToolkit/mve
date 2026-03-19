@@ -10,12 +10,12 @@
 #include <string>
 #include <stdexcept>
 
-#include "sfm_shader.h"
+#include "SfmShader.h"
 
-OGL_NAMESPACE_BEGIN
+GL_NAMESPACE_BEGIN
 
 void
-ShaderProgram::load_shader_code (GLuint& shader_id, GLuint shader_type,
+SfmShader::load_shader_code (GLuint& shader_id, GLuint shader_type,
     std::string const& code)
 {
     if (shader_id == 0) {
@@ -30,7 +30,7 @@ ShaderProgram::load_shader_code (GLuint& shader_id, GLuint shader_type,
 }
 
 void
-ShaderProgram::compile_shader (GLuint shader_id, std::string const& code)
+SfmShader::compile_shader (GLuint shader_id, std::string const& code)
 {
     char const* data[1] = { code.c_str() };
     glShaderSource(shader_id, 1, data, nullptr);
@@ -51,7 +51,7 @@ ShaderProgram::compile_shader (GLuint shader_id, std::string const& code)
 }
 
 void
-ShaderProgram::ensure_linked (void)
+SfmShader::ensure_linked (void)
 {
     if (this->need_to_link) {
         glLinkProgram(this->prog_id);
@@ -70,4 +70,4 @@ ShaderProgram::ensure_linked (void)
     }
 }
 
-OGL_NAMESPACE_END
+GL_NAMESPACE_END

@@ -15,14 +15,14 @@
 #include <QMessageBox>
 #include <QSlider>
 
-#include "scenemanager.h"
-#include "mainwindow.h"
+#include "SceneManager.h"
+#include "SfmMainWindow.h"
 
-MainWindow::MainWindow (int width, int height) {
+SfmMainWindow::SfmMainWindow (int width, int height) {
     this->scene_overview = new SceneOverview(this);
 
     // Create GL widget and scene renderer
-    this->gl_widget = new GLWidget();
+    this->gl_widget = new GlWidget();
     this->scene_renderer = new SceneRenderer(this->gl_widget);
     this->gl_widget->set_context(this->scene_renderer);
 
@@ -54,7 +54,7 @@ MainWindow::MainWindow (int width, int height) {
     this->show();
 }
 
-void MainWindow::load_scene (std::vector<std::string> const& images,
+void SfmMainWindow::load_scene (std::vector<std::string> const& images,
     std::vector<std::string> const& cameras) {
     sfm::Scene::Ptr scene;
     try
@@ -71,7 +71,7 @@ void MainWindow::load_scene (std::vector<std::string> const& images,
 }
 
 void
-MainWindow::create_actions (void)
+SfmMainWindow::create_actions (void)
 {
     this->action_quit = new QAction(tr("&Quit"), this);
     this->action_quit->setShortcut(tr("Ctrl+Q"));
@@ -84,7 +84,7 @@ MainWindow::create_actions (void)
 }
 
 void
-MainWindow::create_menus (void)
+SfmMainWindow::create_menus (void)
 {
     this->menu_file = new QMenu(tr("&File"), this);
     this->menu_file->addAction(this->action_quit);
@@ -108,19 +108,19 @@ MainWindow::create_menus (void)
 }
 
 void
-MainWindow::on_scene_selected (sfm::Scene::Ptr scene)
+SfmMainWindow::on_scene_selected (sfm::Scene::Ptr scene)
 {
     this->scene_renderer->set_scene(scene);
 }
 
 void
-MainWindow::on_view_selected (sfm::View::Ptr view)
+SfmMainWindow::on_view_selected (sfm::View::Ptr view)
 {
     this->scene_renderer->set_view(view);
 }
 
 void
-MainWindow::perform_close_scene (void)
+SfmMainWindow::perform_close_scene (void)
 {
     SceneManager::get().reset_view();
     SceneManager::get().reset_scene();
@@ -128,7 +128,7 @@ MainWindow::perform_close_scene (void)
 }
 
 void
-MainWindow::on_about (void)
+SfmMainWindow::on_about (void)
 {
     QMessageBox::about(this, tr("About sfm_view"),
         tr("Camera pose viewer for ASP. Based on "
@@ -136,7 +136,7 @@ MainWindow::on_about (void)
 }
 
 void
-MainWindow::on_frusta_size (void)
+SfmMainWindow::on_frusta_size (void)
 {
     QSlider* slider = this->scene_renderer->get_frusta_size_slider();
 
@@ -152,7 +152,7 @@ MainWindow::on_frusta_size (void)
 }
 
 void
-MainWindow::closeEvent (QCloseEvent* event)
+SfmMainWindow::closeEvent (QCloseEvent* event)
 {
     this->perform_close_scene();
     event->accept();

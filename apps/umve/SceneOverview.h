@@ -7,12 +7,12 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef SCENE_OVERVIEW_HEADER
-#define SCENE_OVERVIEW_HEADER
+#ifndef SFM_SCENE_OVERVIEW_HEADER
+#define SFM_SCENE_OVERVIEW_HEADER
 
 #include <QListWidget>
 
-#include "sfm_view_utils.h"
+#include "SfmUtils.h"
 
 class SceneOverview : public QWidget
 {
@@ -39,4 +39,4 @@ SceneOverview::sizeHint (void) const
     return QSize(175, 0);
 }
 
-#endif /* SCENE_OVERVIEW_HEADER */
+#endif /* SFM_SCENE_OVERVIEW_HEADER */

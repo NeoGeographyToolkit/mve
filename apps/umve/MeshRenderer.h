@@ -7,19 +7,19 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef OGL_MESH_RENDERER_HEADER
-#define OGL_MESH_RENDERER_HEADER
+#ifndef SFM_MESH_RENDERER_HEADER
+#define SFM_MESH_RENDERER_HEADER
 
 #include <utility>
 #include <vector>
 #include <string>
 #include <memory>
 
-#include "sfm_math.h"
-#include "ogl_common.h"
-#include "sfm_shader.h"
+#include "SfmMath.h"
+#include "GlCommon.h"
+#include "SfmShader.h"
 
-OGL_NAMESPACE_BEGIN
+GL_NAMESPACE_BEGIN
 
 /* ---- VertexBuffer ---- */
 
@@ -105,7 +105,7 @@ public:
     virtual ~VertexArray (void);
 
     void set_primitive (GLuint primitive);
-    void set_shader (ShaderProgram::Ptr shader);
+    void set_shader (SfmShader::Ptr shader);
     void set_vertex_vbo (VertexBuffer::Ptr vbo);
     void set_index_vbo (VertexBuffer::Ptr vbo);
     void add_vbo (VertexBuffer::Ptr vbo, std::string const& name);
@@ -119,7 +119,7 @@ protected:
 private:
     GLuint vao_id;
     GLuint primitive;
-    ShaderProgram::Ptr shader;
+    SfmShader::Ptr shader;
 
     VertexBuffer::Ptr vert_vbo;
     VertexBuffer::Ptr index_vbo;
@@ -178,7 +178,7 @@ VertexArray::reset_vertex_array(void)
 }
 
 inline void
-VertexArray::set_shader (ShaderProgram::Ptr shader)
+VertexArray::set_shader (SfmShader::Ptr shader)
 {
     this->shader = shader;
 }
@@ -211,6 +211,6 @@ MeshRenderer::MeshRenderer (mve::TriangleMesh::ConstPtr mesh)
     this->set_mesh(mesh);
 }
 
-OGL_NAMESPACE_END
+GL_NAMESPACE_END
 
-#endif /* OGL_MESH_RENDERER_HEADER */
+#endif /* SFM_MESH_RENDERER_HEADER */

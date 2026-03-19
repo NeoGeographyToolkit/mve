@@ -7,25 +7,25 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef UMVE_GL_WIDGET_HEADER
-#define UMVE_GL_WIDGET_HEADER
+#ifndef SFM_GL_WIDGET_HEADER
+#define SFM_GL_WIDGET_HEADER
 
 #include <set>
 #include <QOpenGLWidget>
 #include <QMouseEvent>
 #include <QTimer>
 
-#include "gl_context.h"
+#include "GlContext.h"
 
-class GLWidget : public QOpenGLWidget
+class GlWidget : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-    GLWidget(QWidget* parent = nullptr);
-    ~GLWidget();
+    GlWidget(QWidget* parent = nullptr);
+    ~GlWidget();
 
-    void set_context (ogl::Context* context);
+    void set_context (gl::GlContext* context);
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
@@ -44,31 +44,31 @@ protected:
     void wheelEvent (QWheelEvent* event);
 
 private:
-    ogl::Context* context;
+    gl::GlContext* context;
     int gl_width;
     int gl_height;
     qreal device_pixel_ratio;
     bool cx_init;
-    std::set<ogl::Context*> init_set;
+    std::set<gl::GlContext*> init_set;
     QTimer* repaint_timer;
 };
 
 /* ---------------------------------------------------------------- */
 
 inline QSize
-GLWidget::minimumSizeHint() const
+GlWidget::minimumSizeHint() const
 {
     return QSize(50, 50);
 }
 
 inline QSize
-GLWidget::sizeHint() const
+GlWidget::sizeHint() const
 {
     return QSize(400, 400);
 }
 
 inline void
-GLWidget::repaint_async (void)
+GlWidget::repaint_async (void)
 {
     /* Don't issue an immediate repaint but let the timer trigger
      * a repaint after all events have been processed. */
@@ -79,4 +79,4 @@ GLWidget::repaint_async (void)
     this->repaint_timer->start();
 }
 
-#endif /* UMVE_GL_WIDGET_HEADER */
+#endif /* SFM_GL_WIDGET_HEADER */

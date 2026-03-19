@@ -9,9 +9,9 @@
 
 #include <iostream>
 
-#include "gl_context.h"
+#include "GlContext.h"
 
-OGL_NAMESPACE_BEGIN
+GL_NAMESPACE_BEGIN
 
 CamTrackball::CamTrackball (void)
 {
@@ -135,4 +135,4 @@ CamTrackball::get_ball_normal (int x, int y)
 
 /* ---------------------------------------------------------------- */
 
-OGL_NAMESPACE_END
+GL_NAMESPACE_END

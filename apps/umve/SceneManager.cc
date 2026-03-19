@@ -7,7 +7,7 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#include "scenemanager.h"
+#include "SceneManager.h"
 
 SceneManager::SceneManager (void)
 {

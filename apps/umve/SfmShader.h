@@ -7,29 +7,29 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef OGL_SFM_SHADER_HEADER
-#define OGL_SFM_SHADER_HEADER
+#ifndef SFM_SHADER_HEADER
+#define SFM_SHADER_HEADER
 
 #include <string>
 #include <memory>
 
-#include "sfm_math.h"
-#include "ogl_common.h"
+#include "SfmMath.h"
+#include "GlCommon.h"
 
-#define OGL_ATTRIB_POSITION "pos"
-#define OGL_ATTRIB_NORMAL "normal"
-#define OGL_ATTRIB_COLOR "color"
-#define OGL_ATTRIB_TEXCOORD "texuv"
+#define SFM_ATTRIB_POSITION "pos"
+#define SFM_ATTRIB_NORMAL "normal"
+#define SFM_ATTRIB_COLOR "color"
+#define SFM_ATTRIB_TEXCOORD "texuv"
 
-OGL_NAMESPACE_BEGIN
+GL_NAMESPACE_BEGIN
 
-class ShaderProgram
+class SfmShader
 {
 public:
-    typedef std::shared_ptr<ShaderProgram> Ptr;
+    typedef std::shared_ptr<SfmShader> Ptr;
 
 public:
-    ~ShaderProgram (void);
+    ~SfmShader (void);
     static Ptr create (void);
 
     /** Loads a vertex shader from code in memory. */
@@ -51,7 +51,7 @@ public:
     void unbind (void) const;
 
 private:
-    ShaderProgram (void);
+    SfmShader (void);
 
     void load_shader_code (GLuint& shader_id, GLuint shader_type,
         std::string const& code);
@@ -73,7 +73,7 @@ private:
 /* ---------------------------------------------------------------- */
 
 inline
-ShaderProgram::ShaderProgram (void)
+SfmShader::SfmShader (void)
 {
     this->vert_id = 0;
     this->frag_id = 0;
@@ -83,7 +83,7 @@ ShaderProgram::ShaderProgram (void)
 }
 
 inline
-ShaderProgram::~ShaderProgram (void)
+SfmShader::~SfmShader (void)
 {
     glDeleteProgram(this->prog_id);
     check_gl_error();
@@ -93,40 +93,40 @@ ShaderProgram::~ShaderProgram (void)
     check_gl_error();
 }
 
-inline ShaderProgram::Ptr
-ShaderProgram::create (void)
+inline SfmShader::Ptr
+SfmShader::create (void)
 {
-    return Ptr(new ShaderProgram);
+    return Ptr(new SfmShader);
 }
 
 inline void
-ShaderProgram::load_vert_code (std::string const& code)
+SfmShader::load_vert_code (std::string const& code)
 {
     this->load_shader_code(this->vert_id, GL_VERTEX_SHADER, code);
 }
 
 inline void
-ShaderProgram::load_frag_code (std::string const& code)
+SfmShader::load_frag_code (std::string const& code)
 {
     this->load_shader_code(this->frag_id, GL_FRAGMENT_SHADER, code);
 }
 
 inline GLint
-ShaderProgram::get_attrib_location (char const* name)
+SfmShader::get_attrib_location (char const* name)
 {
     this->ensure_linked();
     return glGetAttribLocation(this->prog_id, name);
 }
 
 inline GLint
-ShaderProgram::get_uniform_location (char const* name)
+SfmShader::get_uniform_location (char const* name)
 {
     this->ensure_linked();
     return glGetUniformLocation(this->prog_id, name);
 }
 
 inline void
-ShaderProgram::send_uniform (const char* name, math::Matrix4f const& m)
+SfmShader::send_uniform (const char* name, math::Matrix4f const& m)
 {
     GLint loc = this->get_uniform_location(name);
     if (loc < 0)
@@ -135,7 +135,7 @@ ShaderProgram::send_uniform (const char* name, math::Matrix4f const& m)
 }
 
 inline void
-ShaderProgram::bind (void)
+SfmShader::bind (void)
 {
     this->ensure_linked();
     glUseProgram(this->prog_id);
@@ -143,14 +143,14 @@ ShaderProgram::bind (void)
 }
 
 inline void
-ShaderProgram::unbind (void) const
+SfmShader::unbind (void) const
 {
     glUseProgram(0);
     check_gl_error();
 }
 
 inline GLint
-ShaderProgram::get_program_property (int pname)
+SfmShader::get_program_property (int pname)
 {
     GLint ret;
     glGetProgramiv(this->prog_id, pname, &ret);
@@ -159,7 +159,7 @@ ShaderProgram::get_program_property (int pname)
 }
 
 inline GLint
-ShaderProgram::get_shader_property (GLuint shader_id, int pname)
+SfmShader::get_shader_property (GLuint shader_id, int pname)
 {
     GLint ret;
     glGetShaderiv(shader_id, pname, &ret);
@@ -167,6 +167,6 @@ ShaderProgram::get_shader_property (GLuint shader_id, int pname)
     return ret;
 }
 
-OGL_NAMESPACE_END
+GL_NAMESPACE_END
 
-#endif /* OGL_SFM_SHADER_HEADER */
+#endif /* SFM_SHADER_HEADER */

@@ -7,18 +7,18 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef UMVE_MAIN_WINDOW_HEADER
-#define UMVE_MAIN_WINDOW_HEADER
+#ifndef SFM_MAIN_WINDOW_HEADER
+#define SFM_MAIN_WINDOW_HEADER
 
 #include <string>
 #include <vector>
 #include <QMainWindow>
 
-#include "glwidget.h"
-#include "scene_renderer.h"
-#include "sceneoverview.h"
+#include "GlWidget.h"
+#include "SceneRenderer.h"
+#include "SceneOverview.h"
 
-class MainWindow : public QMainWindow
+class SfmMainWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -26,7 +26,7 @@ private:
     QDockWidget* dock_scene;
 
     SceneOverview* scene_overview;
-    GLWidget* gl_widget;
+    GlWidget* gl_widget;
     SceneRenderer* scene_renderer;
 
     QAction* action_quit;
@@ -50,16 +50,16 @@ private slots:
     void closeEvent (QCloseEvent* event);
 
 public:
-    MainWindow (int width, int height);
-    ~MainWindow (void);
+    SfmMainWindow (int width, int height);
+    ~SfmMainWindow (void);
 
     void load_scene (std::vector<std::string> const& images,
                      std::vector<std::string> const& cameras);
 };
 
 inline
-MainWindow::~MainWindow (void)
+SfmMainWindow::~SfmMainWindow (void)
 {
 }
 
-#endif /* UMVE_MAIN_WINDOW_HEADER */
+#endif /* SFM_MAIN_WINDOW_HEADER */

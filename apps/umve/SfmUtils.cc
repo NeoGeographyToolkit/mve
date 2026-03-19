@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "sfm_view_utils.h"
+#include "SfmUtils.h"
 
 namespace sfm {
 

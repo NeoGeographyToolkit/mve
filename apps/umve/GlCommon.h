@@ -7,8 +7,8 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef OGL_COMMON_HEADER
-#define OGL_COMMON_HEADER
+#ifndef GL_COMMON_HEADER
+#define GL_COMMON_HEADER
 
 #include <stdexcept>
 #include <string>
@@ -30,10 +30,10 @@
 
 /* --- Namespace macros --- */
 
-#define OGL_NAMESPACE_BEGIN namespace ogl {
-#define OGL_NAMESPACE_END }
+#define GL_NAMESPACE_BEGIN namespace gl {
+#define GL_NAMESPACE_END }
 
-OGL_NAMESPACE_BEGIN
+GL_NAMESPACE_BEGIN
 
 /* --- GL error checking --- */
 
@@ -73,6 +73,6 @@ struct MouseEvent
     int y;
 };
 
-OGL_NAMESPACE_END
+GL_NAMESPACE_END
 
-#endif /* OGL_COMMON_HEADER */
+#endif /* GL_COMMON_HEADER */

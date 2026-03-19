@@ -7,27 +7,27 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef UMVE_SCENE_RENDERER_HEADER
-#define UMVE_SCENE_RENDERER_HEADER
+#ifndef SFM_SCENE_RENDERER_HEADER
+#define SFM_SCENE_RENDERER_HEADER
 
-#include "ogl_common.h"
+#include "GlCommon.h"
 
 #include <QAction>
 #include <QSlider>
 
-#include "sfm_view_utils.h"
-#include "gl_context.h"
-#include "mesh_renderer.h"
+#include "SfmUtils.h"
+#include "GlContext.h"
+#include "MeshRenderer.h"
 
-#include "glwidget.h"
+#include "GlWidget.h"
 
 // 3D renderer: draws camera frusta, ground plane, viewing direction.
-class SceneRenderer : public QWidget, public ogl::Context
+class SceneRenderer : public QWidget, public gl::GlContext
 {
     Q_OBJECT
 
 public:
-    SceneRenderer (GLWidget* gl_widget);
+    SceneRenderer (GlWidget* gl_widget);
     void set_scene (sfm::Scene::Ptr scene);
     void set_view (sfm::View::Ptr view);
     void reset_scene (void);
@@ -50,13 +50,13 @@ private slots:
 
 private:
     void load_shaders (void);
-    void send_uniform (ogl::Camera const& cam);
+    void send_uniform (gl::Camera const& cam);
     void create_frusta_renderer (void);
     void create_ground_renderer (void);
     void create_viewdir_renderer (void);
 
-    GLWidget* gl_widget;
-    ogl::ShaderProgram::Ptr wireframe_shader;
+    GlWidget* gl_widget;
+    gl::SfmShader::Ptr wireframe_shader;
     sfm::Scene::Ptr scene;
     sfm::View::Ptr view;
 
@@ -64,9 +64,9 @@ private:
     QAction* action_viewdir;
     QAction* action_ground;
     QSlider* frusta_size_slider;
-    ogl::MeshRenderer::Ptr frusta_renderer;
-    ogl::MeshRenderer::Ptr ground_renderer;
-    ogl::MeshRenderer::Ptr viewdir_renderer;
+    gl::MeshRenderer::Ptr frusta_renderer;
+    gl::MeshRenderer::Ptr ground_renderer;
+    gl::MeshRenderer::Ptr viewdir_renderer;
 
     // Cached original poses (before GL transformation).
     // Cleared on scene change, preserved across slider changes.
@@ -74,4 +74,4 @@ private:
     std::vector<math::Matrix3d> orig_cam2world_vec;
 };
 
-#endif /* UMVE_SCENE_RENDERER_HEADER */
+#endif /* SFM_SCENE_RENDERER_HEADER */

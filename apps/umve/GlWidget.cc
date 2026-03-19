@@ -11,10 +11,10 @@
 #include <iostream>
 #include <QApplication>
 
-#include "ogl_common.h"
-#include "glwidget.h"
+#include "GlCommon.h"
+#include "GlWidget.h"
 
-GLWidget::GLWidget (QWidget *parent)
+GlWidget::GlWidget (QWidget *parent)
     : QOpenGLWidget(parent)
     , context(nullptr)
     , gl_width(500)
@@ -38,20 +38,20 @@ GLWidget::GLWidget (QWidget *parent)
 
 /* ---------------------------------------------------------------- */
 
-GLWidget::~GLWidget (void)
+GlWidget::~GlWidget (void)
 {
 }
 
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::initializeGL() {
+GlWidget::initializeGL() {
 }
 
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::resizeGL(int width, int height)
+GlWidget::resizeGL(int width, int height)
 {
     width *= this->device_pixel_ratio;
     height *= this->device_pixel_ratio;
@@ -65,7 +65,7 @@ GLWidget::resizeGL(int width, int height)
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::paintGL()
+GlWidget::paintGL()
 {
     if (this->context == 0)
         return;
@@ -92,7 +92,7 @@ GLWidget::paintGL()
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::set_context (ogl::Context* context)
+GlWidget::set_context (gl::GlContext* context)
 {
     this->context = context;
     this->cx_init = true;
@@ -101,12 +101,12 @@ GLWidget::set_context (ogl::Context* context)
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::mousePressEvent (QMouseEvent *event)
+GlWidget::mousePressEvent (QMouseEvent *event)
 {
     this->makeCurrent();
-    ogl::MouseEvent e;
-    e.type = ogl::MOUSE_EVENT_PRESS;
-    e.button = (ogl::MouseButton)event->button();
+    gl::MouseEvent e;
+    e.type = gl::MOUSE_EVENT_PRESS;
+    e.button = (gl::MouseButton)event->button();
     e.button_mask = event->buttons();
     e.x = event->x() * this->device_pixel_ratio;
     e.y = event->y() * this->device_pixel_ratio;
@@ -117,12 +117,12 @@ GLWidget::mousePressEvent (QMouseEvent *event)
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::mouseReleaseEvent (QMouseEvent *event)
+GlWidget::mouseReleaseEvent (QMouseEvent *event)
 {
     this->makeCurrent();
-    ogl::MouseEvent e;
-    e.type = ogl::MOUSE_EVENT_RELEASE;
-    e.button = (ogl::MouseButton)event->button();
+    gl::MouseEvent e;
+    e.type = gl::MOUSE_EVENT_RELEASE;
+    e.button = (gl::MouseButton)event->button();
     e.button_mask = event->buttons();
     e.x = event->x() * this->device_pixel_ratio;
     e.y = event->y() * this->device_pixel_ratio;
@@ -133,12 +133,12 @@ GLWidget::mouseReleaseEvent (QMouseEvent *event)
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::mouseMoveEvent (QMouseEvent *event)
+GlWidget::mouseMoveEvent (QMouseEvent *event)
 {
     this->makeCurrent();
-    ogl::MouseEvent e;
-    e.type = ogl::MOUSE_EVENT_MOVE;
-    e.button = (ogl::MouseButton)event->button();
+    gl::MouseEvent e;
+    e.type = gl::MOUSE_EVENT_MOVE;
+    e.button = (gl::MouseButton)event->button();
     e.button_mask = event->buttons();
     e.x = event->x() * this->device_pixel_ratio;
     e.y = event->y() * this->device_pixel_ratio;
@@ -149,15 +149,15 @@ GLWidget::mouseMoveEvent (QMouseEvent *event)
 /* ---------------------------------------------------------------- */
 
 void
-GLWidget::wheelEvent (QWheelEvent* event)
+GlWidget::wheelEvent (QWheelEvent* event)
 {
     this->makeCurrent();
-    ogl::MouseEvent e;
+    gl::MouseEvent e;
     if (event->delta() < 0)
-        e.type = ogl::MOUSE_EVENT_WHEEL_DOWN;
+        e.type = gl::MOUSE_EVENT_WHEEL_DOWN;
     else
-        e.type = ogl::MOUSE_EVENT_WHEEL_UP;
-    e.button = ogl::MOUSE_BUTTON_NONE;
+        e.type = gl::MOUSE_EVENT_WHEEL_UP;
+    e.button = gl::MOUSE_BUTTON_NONE;
     e.button_mask = event->buttons();
     e.x = event->x() * this->device_pixel_ratio;
     e.y = event->y() * this->device_pixel_ratio;

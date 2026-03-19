@@ -9,8 +9,8 @@
 
 #include <QVBoxLayout>
 
-#include "scenemanager.h"
-#include "sceneoverview.h"
+#include "SceneManager.h"
+#include "SceneOverview.h"
 
 SceneOverview::SceneOverview (QWidget* parent)
     : QWidget(parent)
