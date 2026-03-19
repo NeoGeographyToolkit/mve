@@ -45,18 +45,15 @@ private:
   QTimer* repaint_timer;
 };
 
-inline QSize
-inline GlWidget::minimumSizeHint() const {
+inline QSize GlWidget::minimumSizeHint() const {
   return QSize(50, 50);
 }
 
-inline QSize
-inline GlWidget::sizeHint() const {
+inline QSize GlWidget::sizeHint() const {
   return QSize(400, 400);
 }
 
-inline void
-inline GlWidget::repaint_async(void) {
+inline void GlWidget::repaint_async(void) {
   // Don't issue an immediate repaint but let the timer trigger
   // a repaint after all events have been processed.
   if (this->repaint_timer->isActive())
