@@ -31,9 +31,7 @@ public:
     QSize sizeHint() const;
 
 public slots:
-    void repaint_gl (void);
     void repaint_async (void);
-    void gl_context (void);
 
 protected:
     void initializeGL (void);
@@ -70,11 +68,6 @@ GLWidget::sizeHint() const
 }
 
 inline void
-GLWidget::repaint_gl (void)
-{
-}
-
-inline void
 GLWidget::repaint_async (void)
 {
     /* Don't issue an immediate repaint but let the timer trigger
@@ -84,12 +77,6 @@ GLWidget::repaint_async (void)
         return;
 
     this->repaint_timer->start();
-}
-
-inline void
-GLWidget::gl_context (void)
-{
-    this->makeCurrent();
 }
 
 #endif /* UMVE_GL_WIDGET_HEADER */

@@ -46,7 +46,6 @@ public:
     void select_view (sfm::View::Ptr view);
 
     sfm::Scene::Ptr get_scene (void);
-    sfm::View::Ptr get_view (void);
 
     void reset_scene (void);
     void reset_view (void);
@@ -72,12 +71,6 @@ inline sfm::Scene::Ptr
 SceneManager::get_scene (void)
 {
     return this->scene;
-}
-
-inline sfm::View::Ptr
-SceneManager::get_view (void)
-{
-    return this->view;
 }
 
 inline void

@@ -51,15 +51,6 @@ AddinState::repaint (void)
 }
 
 void
-AddinState::make_current_context (void)
-{
-    if (this->gl_widget == nullptr)
-        return;
-
-    this->gl_widget->makeCurrent();
-}
-
-void
 AddinState::load_shaders (void)
 {
     if (!this->wireframe_shader)

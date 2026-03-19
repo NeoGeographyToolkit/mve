@@ -148,9 +148,6 @@ public:
     void paint (void);
     bool mouse_event (MouseEvent const& event);
 
-    int get_width (void) const;
-    int get_height (void) const;
-
 protected:
     virtual void init_impl (void) = 0;
     virtual void resize_impl (int old_width, int old_height);
@@ -191,18 +188,6 @@ Context::mouse_event (MouseEvent const& event)
     bool is_handled = this->controller.consume_event(event);
     this->update_camera();
     return is_handled;
-}
-
-inline int
-Context::get_width (void) const
-{
-    return this->width;
-}
-
-inline int
-Context::get_height (void) const
-{
-    return this->height;
 }
 
 inline void

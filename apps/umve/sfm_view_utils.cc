@@ -17,11 +17,6 @@ namespace sfm {
 
 CameraInfo::CameraInfo() {
   flen = 0.0f;
-  paspect = 1.0f;
-  ppoint[0] = 0.5f;
-  ppoint[1] = 0.5f;
-  dist[0] = 0.0f;
-  dist[1] = 0.0f;
   std::fill(trans, trans + 3, 0.0);
   std::fill(rot, rot + 9, 0.0);
   rot[0] = rot[4] = rot[8] = 1.0; // identity
@@ -61,11 +56,9 @@ void CameraInfo::read_tsai(std::string const& filename) {
     throw std::invalid_argument(
       "CameraInfo::read_tsai: Could not open file: " + filename);
 
-  // Use a fixed focal length and optical center for frustum display.
-  // The true values are not needed for camera pose visualization.
+  // Use a fixed focal length for frustum display.
+  // The true value is not needed for camera pose visualization.
   this->flen = 1.0f;
-  this->ppoint[0] = 0.5f;
-  this->ppoint[1] = 0.5f;
 
   std::string line;
 

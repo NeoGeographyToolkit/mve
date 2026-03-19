@@ -36,9 +36,6 @@ struct CameraInfo {
 
   // Intrinsic parameters
   float flen;
-  float ppoint[2];
-  float paspect;
-  float dist[2];
 
   // Extrinsic parameters (double for large satellite orbit values)
   double trans[3]; // Camera translation: pos = -R^T * trans
@@ -57,7 +54,6 @@ public:
                  std::string const& camera_path);
 
   std::string const& get_name() const;
-  void set_name(std::string const& name);
 
   CameraInfo const& get_camera() const;
   void set_camera(CameraInfo const& cam);
@@ -85,9 +81,6 @@ public:
   ViewList& get_views();
   View::Ptr get_view_by_id(std::size_t id);
 
-  // Always returns false (we never modify scenes).
-  bool is_dirty() const;
-
 private:
   Scene() = default;
   ViewList views_;
@@ -101,10 +94,6 @@ inline View::Ptr View::create() {
 
 inline std::string const& View::get_name() const {
   return name_;
-}
-
-inline void View::set_name(std::string const& name) {
-  name_ = name;
 }
 
 inline CameraInfo const& View::get_camera() const {
@@ -130,10 +119,6 @@ inline View::Ptr Scene::get_view_by_id(std::size_t id) {
   if (id < views_.size())
     return views_[id];
   return View::Ptr();
-}
-
-inline bool Scene::is_dirty() const {
-  return false;
 }
 
 } // namespace sfm

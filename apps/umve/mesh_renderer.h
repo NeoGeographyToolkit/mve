@@ -36,7 +36,6 @@ public:
     void set_data (GLfloat const* data, GLsizei elems, GLint vpv);
     void set_indices (GLuint const* data, GLsizei num_indices);
 
-    GLenum get_vbo_target (void) const;
     GLenum get_data_type (void) const;
     GLint get_values_per_vertex (void) const;
     GLsizei get_element_amount (void) const;
@@ -65,12 +64,6 @@ inline VertexBuffer::Ptr
 VertexBuffer::create (void)
 {
     return Ptr(new VertexBuffer);
-}
-
-inline GLenum
-VertexBuffer::get_vbo_target (void) const
-{
-    return this->vbo_target;
 }
 
 inline GLint
@@ -199,30 +192,17 @@ public:
     typedef std::shared_ptr<MeshRenderer> Ptr;
 
 public:
-    static Ptr create (void);
     static Ptr create (mve::TriangleMesh::ConstPtr mesh);
     void set_mesh (mve::TriangleMesh::ConstPtr mesh);
 
 private:
-    MeshRenderer (void);
     MeshRenderer (mve::TriangleMesh::ConstPtr mesh);
 };
-
-inline MeshRenderer::Ptr
-MeshRenderer::create (void)
-{
-    return Ptr(new MeshRenderer());
-}
 
 inline MeshRenderer::Ptr
 MeshRenderer::create (mve::TriangleMesh::ConstPtr mesh)
 {
     return Ptr(new MeshRenderer(mesh));
-}
-
-inline
-MeshRenderer::MeshRenderer (void)
-{
 }
 
 inline

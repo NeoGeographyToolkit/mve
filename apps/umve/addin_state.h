@@ -30,7 +30,6 @@ public:
     void send_uniform (ogl::Camera const& cam);
 
     void repaint (void);
-    void make_current_context (void);
 };
 
 #endif // UMVE_ADDIN_STATE_HEADER
