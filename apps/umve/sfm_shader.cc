@@ -10,7 +10,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "shader_program.h"
+#include "sfm_shader.h"
 
 OGL_NAMESPACE_BEGIN
 

@@ -17,7 +17,7 @@
 
 #include "sfm_math.h"
 #include "ogl_common.h"
-#include "shader_program.h"
+#include "sfm_shader.h"
 
 OGL_NAMESPACE_BEGIN
 

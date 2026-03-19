@@ -7,8 +7,8 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef OGL_SHADER_PROGRAM_HEADER
-#define OGL_SHADER_PROGRAM_HEADER
+#ifndef OGL_SFM_SHADER_HEADER
+#define OGL_SFM_SHADER_HEADER
 
 #include <string>
 #include <memory>
@@ -169,4 +169,4 @@ ShaderProgram::get_shader_property (GLuint shader_id, int pname)
 
 OGL_NAMESPACE_END
 
-#endif /* OGL_SHADER_PROGRAM_HEADER */
+#endif /* OGL_SFM_SHADER_HEADER */
