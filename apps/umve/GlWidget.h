@@ -17,7 +17,7 @@ public:
   GlWidget(QWidget* parent = nullptr);
   ~GlWidget();
 
-  void set_context(gl::GlContext* context);
+  void set_context(sfm::GlContext* context);
 
   QSize minimumSizeHint() const;
   QSize sizeHint() const;
@@ -36,12 +36,12 @@ protected:
   void wheelEvent(QWheelEvent* event);
 
 private:
-  gl::GlContext* context;
+  sfm::GlContext* context;
   int gl_width;
   int gl_height;
   qreal device_pixel_ratio;
   bool cx_init;
-  std::set<gl::GlContext*> init_set;
+  std::set<sfm::GlContext*> init_set;
   QTimer* repaint_timer;
 };
 

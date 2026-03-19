@@ -10,19 +10,13 @@
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLContext>
 
-// Namespace macros
-#define GL_NAMESPACE_BEGIN namespace gl {
-#define GL_NAMESPACE_END }
-
 // Get GL 3.3 functions from the current Qt GL context.
 inline QOpenGLFunctions_3_3_Core* glFunctions() {
   return QOpenGLContext::currentContext()
     ->versionFunctions<QOpenGLFunctions_3_3_Core>();
 }
 
-GL_NAMESPACE_BEGIN
-
-// Mouse events
+namespace sfm {
 
 enum MouseEventType {
   MOUSE_EVENT_PRESS,
@@ -47,6 +41,6 @@ struct MouseEvent {
   int y;
 };
 
-GL_NAMESPACE_END
+} // namespace sfm
 
 #endif // GL_COMMON_HEADER

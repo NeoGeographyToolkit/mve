@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-namespace math {
+namespace sfm {
 
 // Vector
 
@@ -245,10 +245,10 @@ public:
   typedef std::shared_ptr<TriangleMesh const> ConstPtr;
 
   typedef unsigned int VertexID;
-  typedef std::vector<math::Vec3f> VertexList;
-  typedef std::vector<math::Vec4f> ColorList;
-  typedef std::vector<math::Vec3f> NormalList;
-  typedef std::vector<math::Vec2f> TexCoordList;
+  typedef std::vector<sfm::Vec3f> VertexList;
+  typedef std::vector<sfm::Vec4f> ColorList;
+  typedef std::vector<sfm::Vec3f> NormalList;
+  typedef std::vector<sfm::Vec2f> TexCoordList;
   typedef std::vector<VertexID> FaceList;
 
   static Ptr create(void) { return Ptr(new TriangleMesh); }
@@ -274,16 +274,16 @@ private:
 
 } // namespace sfm
 
-// Camera
+// SfmCamera
 
-namespace gl {
+namespace sfm {
 
-// Camera with viewing and projection matrices for OpenGL rendering.
-class Camera {
+// SfmCamera with viewing and projection matrices for OpenGL rendering.
+class SfmCamera {
 public:
-  math::Vec3f pos;
-  math::Vec3f viewing_dir;
-  math::Vec3f up_vec;
+  sfm::Vec3f pos;
+  sfm::Vec3f viewing_dir;
+  sfm::Vec3f up_vec;
 
   float z_near;
   float z_far;
@@ -293,16 +293,16 @@ public:
   int width;
   int height;
 
-  math::Matrix4f view;
-  math::Matrix4f proj;
+  sfm::Matrix4f view;
+  sfm::Matrix4f proj;
 
-  Camera(void);
+  SfmCamera(void);
   void update_view_mat(void);
   void update_proj_mat(void);
 };
 
 inline
-Camera::Camera(void): pos(0.0f, 0.0f, 5.0f), viewing_dir(0.0f, 0.0f, -1.0f)
+SfmCamera::SfmCamera(void): pos(0.0f, 0.0f, 5.0f), viewing_dir(0.0f, 0.0f, -1.0f)
   , up_vec(0.0f, 1.0f, 0.0f)
   , z_near(0.1f)
   , z_far(500.0f)
@@ -315,14 +315,14 @@ Camera::Camera(void): pos(0.0f, 0.0f, 5.0f), viewing_dir(0.0f, 0.0f, -1.0f)
 }
 
 inline void
-Camera::update_view_mat(void) {
-  this->view = math::matrix_viewtrans(this->pos,
+SfmCamera::update_view_mat(void) {
+  this->view = sfm::matrix_viewtrans(this->pos,
     this->viewing_dir, this->up_vec);
 }
 
 inline void
-Camera::update_proj_mat(void) {
-  this->proj = math::matrix_gl_projection(this->z_near,
+SfmCamera::update_proj_mat(void) {
+  this->proj = sfm::matrix_gl_projection(this->z_near,
     this->z_far, this->top, this->right);
 }
 

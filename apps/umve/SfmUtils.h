@@ -4,7 +4,7 @@
 // All rights reserved.
 // BSD 3-Clause license. See LICENSE.txt.
 //
-// Lightweight replacements for sfm::CameraInfo, sfm::View, and sfm::Scene
+// Lightweight replacements for sfm::SfmCameraInfo, sfm::View, and sfm::Scene
 // used by sfm_view. These avoid pulling in the full MVE library for types
 // that are simple data containers in this application.
 
@@ -17,10 +17,10 @@
 
 namespace sfm {
 
-// Camera intrinsic and extrinsic parameters.
+// SfmCamera intrinsic and extrinsic parameters.
 // Stores world-to-camera rotation and translation.
-struct CameraInfo {
-  CameraInfo();
+struct SfmCameraInfo {
+  SfmCameraInfo();
 
   // Compute camera position: pos = -R^T * t. Output is 3 floats.
   void fill_camera_pos(float* pos) const;
@@ -38,7 +38,7 @@ struct CameraInfo {
   float flen;
 
   // Extrinsic parameters (double for large satellite orbit values)
-  double trans[3]; // Camera translation: pos = -R^T * trans
+  double trans[3]; // SfmCamera translation: pos = -R^T * trans
   double rot[9];   // World-to-camera rotation (row-major 3x3)
 };
 
@@ -55,8 +55,8 @@ public:
 
   std::string const& get_name() const;
 
-  CameraInfo const& get_camera() const;
-  void set_camera(CameraInfo const& cam);
+  SfmCameraInfo const& get_camera() const;
+  void set_camera(SfmCameraInfo const& cam);
 
   // No-op. Kept for API compatibility with code that prevents save prompts.
   void set_dirty(bool dirty);
@@ -64,7 +64,7 @@ public:
 private:
   View() = default;
   std::string name_;
-  CameraInfo camera_;
+  SfmCameraInfo camera_;
 };
 
 // A collection of camera views.
@@ -96,11 +96,11 @@ inline std::string const& View::get_name() const {
   return name_;
 }
 
-inline CameraInfo const& View::get_camera() const {
+inline SfmCameraInfo const& View::get_camera() const {
   return camera_;
 }
 
-inline void View::set_camera(CameraInfo const& cam) {
+inline void View::set_camera(SfmCameraInfo const& cam) {
   camera_ = cam;
 }
 

@@ -62,16 +62,16 @@ void GlWidget::paintGL() {
   this->context->paint();
 }
 
-void GlWidget::set_context(gl::GlContext* context) {
+void GlWidget::set_context(sfm::GlContext* context) {
   this->context = context;
   this->cx_init = true;
 }
 
 void GlWidget::mousePressEvent(QMouseEvent *event) {
   this->makeCurrent();
-  gl::MouseEvent e;
-  e.type = gl::MOUSE_EVENT_PRESS;
-  e.button = (gl::MouseButton)event->button();
+  sfm::MouseEvent e;
+  e.type = sfm::MOUSE_EVENT_PRESS;
+  e.button = (sfm::MouseButton)event->button();
   e.button_mask = event->buttons();
   e.x = event->x() * this->device_pixel_ratio;
   e.y = event->y() * this->device_pixel_ratio;
@@ -81,9 +81,9 @@ void GlWidget::mousePressEvent(QMouseEvent *event) {
 
 void GlWidget::mouseReleaseEvent(QMouseEvent *event) {
   this->makeCurrent();
-  gl::MouseEvent e;
-  e.type = gl::MOUSE_EVENT_RELEASE;
-  e.button = (gl::MouseButton)event->button();
+  sfm::MouseEvent e;
+  e.type = sfm::MOUSE_EVENT_RELEASE;
+  e.button = (sfm::MouseButton)event->button();
   e.button_mask = event->buttons();
   e.x = event->x() * this->device_pixel_ratio;
   e.y = event->y() * this->device_pixel_ratio;
@@ -93,9 +93,9 @@ void GlWidget::mouseReleaseEvent(QMouseEvent *event) {
 
 void GlWidget::mouseMoveEvent(QMouseEvent *event) {
   this->makeCurrent();
-  gl::MouseEvent e;
-  e.type = gl::MOUSE_EVENT_MOVE;
-  e.button = (gl::MouseButton)event->button();
+  sfm::MouseEvent e;
+  e.type = sfm::MOUSE_EVENT_MOVE;
+  e.button = (sfm::MouseButton)event->button();
   e.button_mask = event->buttons();
   e.x = event->x() * this->device_pixel_ratio;
   e.y = event->y() * this->device_pixel_ratio;
@@ -105,12 +105,12 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event) {
 
 void GlWidget::wheelEvent(QWheelEvent* event) {
   this->makeCurrent();
-  gl::MouseEvent e;
+  sfm::MouseEvent e;
   if (event->delta() < 0)
-    e.type = gl::MOUSE_EVENT_WHEEL_DOWN;
+    e.type = sfm::MOUSE_EVENT_WHEEL_DOWN;
   else
-    e.type = gl::MOUSE_EVENT_WHEEL_UP;
-  e.button = gl::MOUSE_BUTTON_NONE;
+    e.type = sfm::MOUSE_EVENT_WHEEL_UP;
+  e.button = sfm::MOUSE_BUTTON_NONE;
   e.button_mask = event->buttons();
   e.x = event->x() * this->device_pixel_ratio;
   e.y = event->y() * this->device_pixel_ratio;

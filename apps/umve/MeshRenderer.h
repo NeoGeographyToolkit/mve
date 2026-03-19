@@ -18,7 +18,7 @@
 #define SFM_ATTRIB_COLOR "color"
 #define SFM_ATTRIB_TEXCOORD "texuv"
 
-GL_NAMESPACE_BEGIN
+namespace sfm {
 
 // VertexBuffer
 
@@ -137,6 +137,6 @@ private:
   MeshRenderer(sfm::TriangleMesh::ConstPtr mesh);
 };
 
-GL_NAMESPACE_END
+}
 
 #endif // SFM_MESH_RENDERER_HEADER

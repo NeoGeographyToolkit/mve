@@ -25,7 +25,7 @@ SfmMainWindow::SfmMainWindow(int width, int height) {
     this, SLOT(on_view_selected(sfm::View::Ptr)));
 
   // Create dock widgets
-  this->dock_scene = new QDockWidget(tr("Cameras"));
+  this->dock_scene = new QDockWidget(tr("SfmCameras"));
   this->dock_scene->setWidget(this->scene_overview);
   this->dock_scene->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
@@ -111,7 +111,7 @@ void SfmMainWindow::perform_close_scene(void) {
 
 void SfmMainWindow::on_about(void) {
   QMessageBox::about(this, tr("About sfm_view"),
-    tr("Camera pose viewer for ASP. Based on "
+    tr("SfmCamera pose viewer for ASP. Based on "
        "<a href=\"https://github.com/simonfuhrmann/mve\">MVE</a>."));
 }
 

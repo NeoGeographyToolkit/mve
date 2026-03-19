@@ -4,7 +4,7 @@
 
 #include "MeshRenderer.h"
 
-GL_NAMESPACE_BEGIN
+namespace sfm {
 
 // VertexBuffer
 
@@ -165,4 +165,4 @@ MeshRenderer::MeshRenderer(sfm::TriangleMesh::ConstPtr mesh) {
   this->set_mesh(mesh);
 }
 
-GL_NAMESPACE_END
+}
