@@ -53,10 +53,13 @@ void
 SceneRenderer::send_uniform (gl::Camera const& cam)
 {
     this->wireframe_shader->bind();
-    this->wireframe_shader->setUniformValue("viewmat",
-        QMatrix4x4(*cam.view, 4, 4));
-    this->wireframe_shader->setUniformValue("projmat",
-        QMatrix4x4(*cam.proj, 4, 4));
+    // transpose=true: our matrices are row-major, GL expects column-major
+    GLint loc_view = this->wireframe_shader->uniformLocation("viewmat");
+    if (loc_view >= 0)
+        glUniformMatrix4fv(loc_view, 1, GL_TRUE, *cam.view);
+    GLint loc_proj = this->wireframe_shader->uniformLocation("projmat");
+    if (loc_proj >= 0)
+        glUniformMatrix4fv(loc_proj, 1, GL_TRUE, *cam.proj);
 }
 
 SceneRenderer::SceneRenderer (GlWidget* gl_widget)
