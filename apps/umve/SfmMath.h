@@ -43,7 +43,7 @@ public:
 
   // Conversion from different scalar type
   template <typename U>
-  Vector(Vector<U,N> const& o)
+  Vector(Vector<U, N> const& o)
   { for (int i = 0; i < N; i++) v[i] = T(o[i]); }
 
   // Construction from raw pointer
@@ -75,12 +75,12 @@ public:
 };
 
 template <typename T, int N>
-Vector<T,N> operator*(T const& s, Vector<T,N> const& v) { return v * s; }
+Vector<T, N> operator*(T const& s, Vector<T, N> const& v) { return v * s; }
 
-typedef Vector<float,2> Vec2f;
-typedef Vector<float,3> Vec3f;
-typedef Vector<double,3> Vec3d;
-typedef Vector<float,4> Vec4f;
+typedef Vector<float, 2> Vec2f;
+typedef Vector<float, 3> Vec3f;
+typedef Vector<double, 3> Vec3d;
+typedef Vector<float, 4> Vec4f;
 
 // Matrix
 
@@ -102,8 +102,8 @@ public:
   T const& operator()(int r, int c) const { return m[r * C + c]; }
 
   // Matrix<R,C> * Vector<C> -> Vector<R>
-  Vector<T,R> operator*(Vector<T,C> const& v) const {
-    Vector<T,R> r;
+  Vector<T, R> operator*(Vector<T, C> const& v) const {
+    Vector<T, R> r;
     for (int i = 0; i < R; i++)
       for (int j = 0; j < C; j++)
         r[i] += m[i*C + j] * v[j];
@@ -112,43 +112,43 @@ public:
 
   // Matrix<R,C> * Matrix<C,C2> -> Matrix<R,C2>
   template <int C2>
-  Matrix<T,R,C2> mult(Matrix<T,C,C2> const& o) const {
-    Matrix<T,R,C2> r;
+  Matrix<T, R, C2> mult(Matrix<T, C, C2> const& o) const {
+    Matrix<T, R, C2> r;
     for (int i = 0; i < R; i++)
       for (int j = 0; j < C2; j++)
         for (int k = 0; k < C; k++)
-          r(i,j) += m[i*C + k] * o(k,j);
+          r(i, j) += m[i*C + k] * o(k, j);
     return r;
   }
 
   // Multiply 4x4 matrix by 3-vector with homogeneous w coordinate
-  Vector<T,3> mult(Vector<T,3> const& v, T const& w) const {
-    Vector<T,3> r;
+  Vector<T, 3> mult(Vector<T, 3> const& v, T const& w) const {
+    Vector<T, 3> r;
     for (int i = 0; i < 3; i++)
       r[i] = m[i*C]*v[0] + m[i*C+1]*v[1] + m[i*C+2]*v[2] + m[i*C+3]*w;
     return r;
   }
 
   // Multiply 3x3 matrix by 3-vector
-  Vector<T,3> mult(Vector<T,3> const& v) const {
-    Vector<T,3> r;
+  Vector<T, 3> mult(Vector<T, 3> const& v) const {
+    Vector<T, 3> r;
     for (int i = 0; i < 3; i++)
       r[i] = m[i*C]*v[0] + m[i*C+1]*v[1] + m[i*C+2]*v[2];
     return r;
   }
 
-  Matrix<T,C,R> transposed(void) const {
-    Matrix<T,C,R> r;
+  Matrix<T, C, R> transposed(void) const {
+    Matrix<T, C, R> r;
     for (int i = 0; i < R; i++)
       for (int j = 0; j < C; j++)
-        r(j,i) = m[i*C + j];
+        r(j, i) = m[i*C + j];
     return r;
   }
 };
 
-typedef Matrix<float,3,3> Matrix3f;
-typedef Matrix<double,3,3> Matrix3d;
-typedef Matrix<float,4,4> Matrix4f;
+typedef Matrix<float, 3, 3> Matrix3f;
+typedef Matrix<double, 3, 3> Matrix3d;
+typedef Matrix<float, 4, 4> Matrix4f;
 
 // Free functions
 
@@ -159,10 +159,10 @@ T clamp(T const& v, T const& lo, T const& hi) {
 
 // OpenGL symmetric projection matrix
 template <typename T>
-Matrix<T,4,4>
+Matrix<T, 4, 4>
 matrix_gl_projection(T const& znear, T const& zfar,
     T const& top, T const& right) {
-  Matrix<T,4,4> proj(T(0));
+  Matrix<T, 4, 4> proj(T(0));
   proj(0,0) = znear / right;
   proj(1,1) = znear / top;
   proj(2,2) = -(zfar + znear) / (zfar - znear);
@@ -173,20 +173,20 @@ matrix_gl_projection(T const& znear, T const& zfar,
 
 // View transformation matrix from camera pos, viewing direction, up vector
 template <typename T>
-Matrix<T,4,4>
-matrix_viewtrans(Vector<T,3> const& campos,
-    Vector<T,3> const& viewdir, Vector<T,3> const& upvec) {
-  Vector<T,3> z(-viewdir);
-  Vector<T,3> x(upvec.cross(z).normalized());
-  Vector<T,3> y(z.cross(x));
+Matrix<T, 4, 4>
+matrix_viewtrans(Vector<T, 3> const& campos,
+    Vector<T, 3> const& viewdir, Vector<T, 3> const& upvec) {
+  Vector<T, 3> z(-viewdir);
+  Vector<T, 3> x(upvec.cross(z).normalized());
+  Vector<T, 3> y(z.cross(x));
 
-  Matrix<T,4,4> m;
+  Matrix<T, 4, 4> m;
   m(0,0) = x[0]; m(0,1) = x[1]; m(0,2) = x[2]; m(0,3) = T(0);
   m(1,0) = y[0]; m(1,1) = y[1]; m(1,2) = y[2]; m(1,3) = T(0);
   m(2,0) = z[0]; m(2,1) = z[1]; m(2,2) = z[2]; m(2,3) = T(0);
   m(3,0) = T(0); m(3,1) = T(0); m(3,2) = T(0); m(3,3) = T(1);
 
-  Vector<T,3> t(-campos);
+  Vector<T, 3> t(-campos);
   m(0,3) = m(0,0)*t[0] + m(0,1)*t[1] + m(0,2)*t[2];
   m(1,3) = m(1,0)*t[0] + m(1,1)*t[1] + m(1,2)*t[2];
   m(2,3) = m(2,0)*t[0] + m(2,1)*t[1] + m(2,2)*t[2];
@@ -195,14 +195,14 @@ matrix_viewtrans(Vector<T,3> const& campos,
 
 // Inverse view transformation matrix
 template <typename T>
-Matrix<T,4,4>
-matrix_inverse_viewtrans(Vector<T,3> const& campos,
-    Vector<T,3> const& viewdir, Vector<T,3> const& upvec) {
-  Vector<T,3> z(-viewdir);
-  Vector<T,3> x(upvec.cross(z).normalized());
-  Vector<T,3> y(z.cross(x));
+Matrix<T, 4, 4>
+matrix_inverse_viewtrans(Vector<T, 3> const& campos,
+    Vector<T, 3> const& viewdir, Vector<T, 3> const& upvec) {
+  Vector<T, 3> z(-viewdir);
+  Vector<T, 3> x(upvec.cross(z).normalized());
+  Vector<T, 3> y(z.cross(x));
 
-  Matrix<T,4,4> m;
+  Matrix<T, 4, 4> m;
   m(0,0) = x[0]; m(0,1) = y[0]; m(0,2) = z[0]; m(0,3) = campos[0];
   m(1,0) = x[1]; m(1,1) = y[1]; m(1,2) = z[1]; m(1,3) = campos[1];
   m(2,0) = x[2]; m(2,1) = y[2]; m(2,2) = z[2]; m(2,3) = campos[2];
@@ -212,13 +212,13 @@ matrix_inverse_viewtrans(Vector<T,3> const& campos,
 
 // Rotation matrix from axis and angle (Rodrigues)
 template <typename T>
-Matrix<T,3,3>
-matrix_rotation_from_axis_angle(Vector<T,3> const& axis, T const& angle) {
+Matrix<T, 3, 3>
+matrix_rotation_from_axis_angle(Vector<T, 3> const& axis, T const& angle) {
   T const ca = std::cos(angle);
   T const sa = std::sin(angle);
   T const omca = T(1) - ca;
 
-  Matrix<T,3,3> rot;
+  Matrix<T, 3, 3> rot;
   rot[0] = ca + axis[0]*axis[0] * omca;
   rot[1] = axis[0]*axis[1] * omca - axis[2] * sa;
   rot[2] = axis[0]*axis[2] * omca + axis[1] * sa;
