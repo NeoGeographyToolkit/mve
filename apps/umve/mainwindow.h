@@ -15,7 +15,7 @@
 #include <QMainWindow>
 
 #include "glwidget.h"
-#include "addin_manager.h"
+#include "scene_renderer.h"
 #include "sceneoverview.h"
 
 class MainWindow : public QMainWindow
@@ -27,7 +27,7 @@ private:
 
     SceneOverview* scene_overview;
     GLWidget* gl_widget;
-    AddinManager* addin_manager;
+    SceneRenderer* scene_renderer;
 
     QAction* action_quit;
     QAction* action_about;

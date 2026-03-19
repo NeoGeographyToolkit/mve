@@ -21,10 +21,10 @@
 MainWindow::MainWindow (int width, int height) {
     this->scene_overview = new SceneOverview(this);
 
-    // Create GL widget and addin manager (replaces SceneInspect)
+    // Create GL widget and scene renderer
     this->gl_widget = new GLWidget();
-    this->addin_manager = new AddinManager(this->gl_widget);
-    this->gl_widget->set_context(this->addin_manager);
+    this->scene_renderer = new SceneRenderer(this->gl_widget);
+    this->gl_widget->set_context(this->scene_renderer);
 
     this->connect(&SceneManager::get(), SIGNAL(scene_selected(sfm::Scene::Ptr)),
         this, SLOT(on_scene_selected(sfm::Scene::Ptr)));
@@ -90,9 +90,9 @@ MainWindow::create_menus (void)
     this->menu_file->addAction(this->action_quit);
 
     this->menu_view = new QMenu(tr("&View"), this);
-    this->menu_view->addAction(this->addin_manager->get_action_frusta());
-    this->menu_view->addAction(this->addin_manager->get_action_ground());
-    this->menu_view->addAction(this->addin_manager->get_action_viewdir());
+    this->menu_view->addAction(this->scene_renderer->get_action_frusta());
+    this->menu_view->addAction(this->scene_renderer->get_action_ground());
+    this->menu_view->addAction(this->scene_renderer->get_action_viewdir());
     QAction* action_frusta_size = new QAction(tr("Set frusta size"), this);
     this->connect(action_frusta_size, SIGNAL(triggered()),
         this, SLOT(on_frusta_size()));
@@ -110,13 +110,13 @@ MainWindow::create_menus (void)
 void
 MainWindow::on_scene_selected (sfm::Scene::Ptr scene)
 {
-    this->addin_manager->set_scene(scene);
+    this->scene_renderer->set_scene(scene);
 }
 
 void
 MainWindow::on_view_selected (sfm::View::Ptr view)
 {
-    this->addin_manager->set_view(view);
+    this->scene_renderer->set_view(view);
 }
 
 void
@@ -124,7 +124,7 @@ MainWindow::perform_close_scene (void)
 {
     SceneManager::get().reset_view();
     SceneManager::get().reset_scene();
-    this->addin_manager->reset_scene();
+    this->scene_renderer->reset_scene();
 }
 
 void
@@ -138,7 +138,7 @@ MainWindow::on_about (void)
 void
 MainWindow::on_frusta_size (void)
 {
-    QSlider* slider = this->addin_manager->get_frusta_size_slider();
+    QSlider* slider = this->scene_renderer->get_frusta_size_slider();
 
     QDialog dlg(this);
     dlg.setWindowTitle(tr("Frusta size"));

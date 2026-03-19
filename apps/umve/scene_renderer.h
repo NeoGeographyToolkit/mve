@@ -7,8 +7,8 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#ifndef UMVE_SCENE_ADDIN_MANAGER_HEADER
-#define UMVE_SCENE_ADDIN_MANAGER_HEADER
+#ifndef UMVE_SCENE_RENDERER_HEADER
+#define UMVE_SCENE_RENDERER_HEADER
 
 #include "ogl_common.h"
 
@@ -20,14 +20,14 @@
 #include "mesh_renderer.h"
 
 #include "glwidget.h"
-#include "addin_state.h"
 
-class AddinManager : public QWidget, public ogl::Context
+// 3D renderer: draws camera frusta, ground plane, viewing direction.
+class SceneRenderer : public QWidget, public ogl::Context
 {
     Q_OBJECT
 
 public:
-    AddinManager (GLWidget* gl_widget);
+    SceneRenderer (GLWidget* gl_widget);
     void set_scene (sfm::Scene::Ptr scene);
     void set_view (sfm::View::Ptr view);
     void reset_scene (void);
@@ -49,11 +49,17 @@ private slots:
     void on_scene_changed (void);
 
 private:
+    void load_shaders (void);
+    void send_uniform (ogl::Camera const& cam);
     void create_frusta_renderer (void);
     void create_ground_renderer (void);
     void create_viewdir_renderer (void);
 
-    AddinState state;
+    GLWidget* gl_widget;
+    ogl::ShaderProgram::Ptr wireframe_shader;
+    sfm::Scene::Ptr scene;
+    sfm::View::Ptr view;
+
     QAction* action_frusta;
     QAction* action_viewdir;
     QAction* action_ground;
@@ -68,4 +74,4 @@ private:
     std::vector<math::Matrix3d> orig_cam2world_vec;
 };
 
-#endif /* UMVE_SCENE_ADDIN_MANAGER_HEADER */
+#endif /* UMVE_SCENE_RENDERER_HEADER */

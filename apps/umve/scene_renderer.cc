@@ -11,15 +11,58 @@
 #include <limits>
 
 #include "scenemanager.h"
-#include "addin_manager.h"
+#include "scene_renderer.h"
 
 #ifdef _WIN32
 #include <cstdlib>
 #endif
 
-AddinManager::AddinManager (GLWidget* gl_widget)
+// Inline GLSL shaders. Colors are baked into mesh vertices:
+// green for the ground grid, white for camera frusta,
+// yellow for view direction, RGB for camera coordinate axes.
+
+static char const* const WIREFRAME_VERT =
+    "#version 330 core\n"
+    "in vec4 pos;\n"
+    "in vec4 color;\n"
+    "out vec4 ocolor;\n"
+    "uniform mat4 viewmat;\n"
+    "uniform mat4 projmat;\n"
+    "void main(void) {\n"
+    "    ocolor = color;\n"
+    "    gl_Position = projmat * (viewmat * pos);\n"
+    "}\n";
+
+static char const* const WIREFRAME_FRAG =
+    "#version 330 core\n"
+    "in vec4 ocolor;\n"
+    "layout(location=0) out vec4 frag_color;\n"
+    "void main(void) {\n"
+    "    gl_FragDepth = gl_FragCoord.z;\n"
+    "    frag_color = ocolor;\n"
+    "}\n";
+
+void
+SceneRenderer::load_shaders (void)
 {
-    this->state.gl_widget = gl_widget;
+    if (!this->wireframe_shader)
+        this->wireframe_shader = ogl::ShaderProgram::create();
+
+    this->wireframe_shader->load_vert_code(WIREFRAME_VERT);
+    this->wireframe_shader->load_frag_code(WIREFRAME_FRAG);
+}
+
+void
+SceneRenderer::send_uniform (ogl::Camera const& cam)
+{
+    this->wireframe_shader->bind();
+    this->wireframe_shader->send_uniform("viewmat", cam.view);
+    this->wireframe_shader->send_uniform("projmat", cam.proj);
+}
+
+SceneRenderer::SceneRenderer (GLWidget* gl_widget)
+{
+    this->gl_widget = gl_widget;
 
     this->action_frusta = new QAction("Draw camera frusta");
     this->action_frusta->setCheckable(true);
@@ -46,63 +89,63 @@ AddinManager::AddinManager (GLWidget* gl_widget)
     this->connect(this->frusta_size_slider, SIGNAL(valueChanged(int)),
         this, SLOT(reset_frusta_renderer()));
     this->connect(this->frusta_size_slider, SIGNAL(valueChanged(int)),
-        this->state.gl_widget, SLOT(repaint()));
+        this->gl_widget, SLOT(repaint()));
     this->connect(this->action_frusta, SIGNAL(toggled(bool)),
-        this->state.gl_widget, SLOT(repaint()));
+        this->gl_widget, SLOT(repaint()));
     this->connect(this->action_viewdir, SIGNAL(toggled(bool)),
-        this->state.gl_widget, SLOT(repaint()));
+        this->gl_widget, SLOT(repaint()));
     this->connect(this->action_ground, SIGNAL(toggled(bool)),
-        this->state.gl_widget, SLOT(repaint()));
+        this->gl_widget, SLOT(repaint()));
 }
 
 QAction*
-AddinManager::get_action_frusta (void)
+SceneRenderer::get_action_frusta (void)
 {
     return this->action_frusta;
 }
 
 QAction*
-AddinManager::get_action_viewdir (void)
+SceneRenderer::get_action_viewdir (void)
 {
     return this->action_viewdir;
 }
 
 QAction*
-AddinManager::get_action_ground (void)
+SceneRenderer::get_action_ground (void)
 {
     return this->action_ground;
 }
 
 QSlider*
-AddinManager::get_frusta_size_slider (void)
+SceneRenderer::get_frusta_size_slider (void)
 {
     return this->frusta_size_slider;
 }
 
 void
-AddinManager::set_scene (sfm::Scene::Ptr scene)
+SceneRenderer::set_scene (sfm::Scene::Ptr scene)
 {
-    this->state.scene = scene;
-    this->state.repaint();
+    this->scene = scene;
+    this->gl_widget->repaint();
 }
 
 void
-AddinManager::set_view (sfm::View::Ptr view)
+SceneRenderer::set_view (sfm::View::Ptr view)
 {
-    this->state.view = view;
-    this->state.repaint();
+    this->view = view;
+    this->gl_widget->repaint();
 }
 
 void
-AddinManager::reset_scene (void)
+SceneRenderer::reset_scene (void)
 {
-    this->state.scene = nullptr;
-    this->state.view = nullptr;
-    this->state.repaint();
+    this->scene = nullptr;
+    this->view = nullptr;
+    this->gl_widget->repaint();
 }
 
 void
-AddinManager::on_scene_changed (void)
+SceneRenderer::on_scene_changed (void)
 {
     this->orig_cam_centers.clear();
     this->orig_cam2world_vec.clear();
@@ -111,26 +154,26 @@ AddinManager::on_scene_changed (void)
 }
 
 void
-AddinManager::reset_frusta_renderer (void)
+SceneRenderer::reset_frusta_renderer (void)
 {
     this->frusta_renderer.reset();
     this->ground_renderer.reset();
 }
 
 void
-AddinManager::reset_ground_renderer (void)
+SceneRenderer::reset_ground_renderer (void)
 {
     this->ground_renderer.reset();
 }
 
 void
-AddinManager::reset_viewdir_renderer (void)
+SceneRenderer::reset_viewdir_renderer (void)
 {
     this->viewdir_renderer.reset();
 }
 
 void
-AddinManager::init_impl (void)
+SceneRenderer::init_impl (void)
 {
 #ifdef _WIN32
     /* Initialize GLEW. */
@@ -144,17 +187,17 @@ AddinManager::init_impl (void)
     }
 #endif
 
-    this->state.load_shaders();
+    this->load_shaders();
 }
 
 void
-AddinManager::resize_impl (int old_width, int old_height)
+SceneRenderer::resize_impl (int old_width, int old_height)
 {
     this->ogl::Context::resize_impl(old_width, old_height);
 }
 
 void
-AddinManager::paint_impl (void)
+SceneRenderer::paint_impl (void)
 {
     this->update_camera();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -165,7 +208,7 @@ AddinManager::paint_impl (void)
     glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    this->state.send_uniform(this->camera);
+    this->send_uniform(this->camera);
 
     if (this->action_frusta->isChecked()) {
         if (this->frusta_renderer == nullptr)
@@ -399,12 +442,12 @@ void bdBox(math::Matrix3d const& EcefToGL,
 
 // Compute a ground plane, scale the orbital camera positions relative
 // to the plane, then plot the cameras and the ground plane.
-void AddinManager::create_frusta_renderer (void) {
+void SceneRenderer::create_frusta_renderer (void) {
 
-    if (this->state.scene == nullptr)
+    if (this->scene == nullptr)
         return;
 
-    sfm::Scene::ViewList & views(this->state.scene->get_views());
+    sfm::Scene::ViewList & views(this->scene->get_views());
 
     // Cache the original poses on first call. Cleared by on_scene_changed().
     if (this->orig_cam_centers.empty())
@@ -515,11 +558,11 @@ void AddinManager::create_frusta_renderer (void) {
     }
 
     this->frusta_renderer = ogl::MeshRenderer::create(mesh);
-    this->frusta_renderer->set_shader(this->state.wireframe_shader);
+    this->frusta_renderer->set_shader(this->wireframe_shader);
     this->frusta_renderer->set_primitive(GL_LINES);
 }
 
-void AddinManager::create_ground_renderer (void) {
+void SceneRenderer::create_ground_renderer (void) {
 
     mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
     mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
@@ -552,18 +595,18 @@ void AddinManager::create_ground_renderer (void) {
     }
 
     this->ground_renderer = ogl::MeshRenderer::create(mesh);
-    this->ground_renderer->set_shader(this->state.wireframe_shader);
+    this->ground_renderer->set_shader(this->wireframe_shader);
     this->ground_renderer->set_primitive(GL_LINES);
 }
 
 void
-AddinManager::create_viewdir_renderer (void)
+SceneRenderer::create_viewdir_renderer (void)
 {
-    if (this->state.view == nullptr)
+    if (this->view == nullptr)
         return;
 
     math::Vec3f campos, viewdir;
-    sfm::CameraInfo const& cam(this->state.view->get_camera());
+    sfm::CameraInfo const& cam(this->view->get_camera());
     cam.fill_camera_pos(*campos);
     cam.fill_viewing_direction(*viewdir);
 
@@ -576,6 +619,6 @@ AddinManager::create_viewdir_renderer (void)
     colors.push_back(math::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));
 
     this->viewdir_renderer = ogl::MeshRenderer::create(mesh);
-    this->viewdir_renderer->set_shader(this->state.wireframe_shader);
+    this->viewdir_renderer->set_shader(this->wireframe_shader);
     this->viewdir_renderer->set_primitive(GL_LINES);
 }
