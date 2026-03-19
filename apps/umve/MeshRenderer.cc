@@ -8,58 +8,32 @@ namespace sfm {
 
 // VertexBuffer
 
-VertexBuffer::~VertexBuffer(void) {
-  glFunctions()->glDeleteBuffers(1, &this->vbo_id);
-}
-
-VertexBuffer::Ptr VertexBuffer::create(void) {
-  return Ptr(new VertexBuffer);
-}
-
-void VertexBuffer::bind(void) {
-  glFunctions()->glBindBuffer(this->vbo_target, this->vbo_id);
-}
-
-VertexBuffer::VertexBuffer(void) {
-  glFunctions()->glGenBuffers(1, &this->vbo_id);
-  this->vbo_target = GL_ARRAY_BUFFER;
-  this->datatype = GL_FLOAT;
-  this->vpv = 0;
-  this->elems = 0;
+VertexBuffer::Ptr VertexBuffer::create() {
+  Ptr vb(new VertexBuffer);
+  vb->buf.create();
+  return vb;
 }
 
 void VertexBuffer::set_data(GLfloat const* data, GLsizei elems, GLint vpv) {
-  this->vbo_target = GL_ARRAY_BUFFER;
   this->datatype = GL_FLOAT;
   this->vpv = vpv;
   this->elems = elems;
 
-  this->bind();
-  GLsizeiptr bytes = elems * vpv * sizeof(GLfloat);
-  glFunctions()->glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
+  this->buf.setUsagePattern(QOpenGLBuffer::StaticDraw);
+  this->buf.bind();
+  this->buf.allocate(data, elems * vpv * sizeof(GLfloat));
 }
 
 void VertexBuffer::set_indices(GLuint const* data, GLsizei num_indices) {
-  this->vbo_target = GL_ELEMENT_ARRAY_BUFFER;
+  this->buf = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+  this->buf.create();
   this->datatype = GL_UNSIGNED_INT;
   this->vpv = 3;
   this->elems = num_indices;
 
-  this->bind();
-  GLsizeiptr bytes = num_indices * sizeof(GLuint);
-  glFunctions()->glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
-}
-
-GLint VertexBuffer::get_values_per_vertex(void) const {
-  return this->vpv;
-}
-
-GLsizei VertexBuffer::get_element_amount(void) const {
-  return this->elems;
-}
-
-GLenum VertexBuffer::get_data_type(void) const {
-  return this->datatype;
+  this->buf.setUsagePattern(QOpenGLBuffer::StaticDraw);
+  this->buf.bind();
+  this->buf.allocate(data, num_indices * sizeof(GLuint));
 }
 
 // VertexArray
@@ -86,7 +60,7 @@ void VertexArray::set_index_vbo(VertexBuffer::Ptr vbo) {
 }
 
 void VertexArray::add_vbo(VertexBuffer::Ptr vbo,
-                           std::string const& name) {
+                          std::string const& name) {
   this->vbo_list.push_back(std::make_pair(vbo, name));
 }
 
@@ -110,9 +84,9 @@ void VertexArray::assign_attrib(BoundVBO const& bound_vbo) {
   if (location < 0)
     return;
 
-  vbo->bind();
-  glFunctions()->glVertexAttribPointer(location, vbo->get_values_per_vertex(),
-    vbo->get_data_type(), GL_TRUE, 0, nullptr);
+  vbo->buf.bind();
+  glFunctions()->glVertexAttribPointer(location, vbo->vpv,
+    vbo->datatype, GL_TRUE, 0, nullptr);
   glFunctions()->glEnableVertexAttribArray(location);
 }
 
@@ -134,11 +108,11 @@ void VertexArray::draw(void) {
     this->assign_attrib(this->vbo_list[i]);
 
   if (this->index_vbo != nullptr) {
-    this->index_vbo->bind();
-    f->glDrawElements(this->primitive, this->index_vbo->get_element_amount(),
+    this->index_vbo->buf.bind();
+    f->glDrawElements(this->primitive, this->index_vbo->elems,
       GL_UNSIGNED_INT, nullptr);
   } else {
-    f->glDrawArrays(this->primitive, 0, this->vert_vbo->get_element_amount());
+    f->glDrawArrays(this->primitive, 0, this->vert_vbo->elems);
   }
 
   this->shader->release();

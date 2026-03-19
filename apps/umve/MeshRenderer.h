@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 
+#include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 
 #include "SfmMath.h"
@@ -20,36 +21,19 @@
 
 namespace sfm {
 
-// VertexBuffer
-
-// OpenGL vertex buffer object (VBO) abstraction.
-class VertexBuffer {
-public:
+// VBO wrapper: QOpenGLBuffer plus metadata for vertex attributes.
+struct VertexBuffer {
   typedef std::shared_ptr<VertexBuffer> Ptr;
 
-  ~VertexBuffer(void);
-  static Ptr create(void);
+  QOpenGLBuffer buf;
+  GLenum datatype = GL_FLOAT;
+  GLint vpv = 0;       // values per vertex
+  GLsizei elems = 0;   // number of elements
 
+  static Ptr create();
   void set_data(GLfloat const* data, GLsizei elems, GLint vpv);
   void set_indices(GLuint const* data, GLsizei num_indices);
-
-  GLenum get_data_type(void) const;
-  GLint get_values_per_vertex(void) const;
-  GLsizei get_element_amount(void) const;
-
-  void bind(void);
-
-private:
-  VertexBuffer(void);
-
-  GLuint vbo_id;
-  GLenum vbo_target;
-  GLenum datatype;
-  GLint vpv;
-  GLsizei elems;
 };
-
-// VertexArray
 
 // OpenGL vertex array object (VAO) abstraction.
 class VertexArray {
@@ -82,8 +66,6 @@ private:
   VertexBuffer::Ptr index_vbo;
   VBOList vbo_list;
 };
-
-// MeshRenderer
 
 // Takes a TriangleMesh and creates VBOs for rendering.
 class MeshRenderer: public VertexArray {
