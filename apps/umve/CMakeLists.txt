@@ -14,11 +14,9 @@ include_directories(.)
 
 add_executable(${APP_NAME} ${SOURCES})
 
-find_package(OpenGL REQUIRED)
 target_link_libraries(${APP_NAME}
   Qt5::Widgets
   Qt5::OpenGL
-  ${OPENGL_LIBRARIES}
 )
 
 if (LINUX)

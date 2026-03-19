@@ -6,25 +6,23 @@
 #include <stdexcept>
 #include <string>
 
-/* OpenGL headers via Qt (portable, no system GL header dependency) */
-#include <QtGui/qopengl.h>
+/* OpenGL via Qt */
+#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLContext>
 
 /* --- Namespace macros --- */
 
 #define GL_NAMESPACE_BEGIN namespace gl {
 #define GL_NAMESPACE_END }
 
-GL_NAMESPACE_BEGIN
-
-/* --- GL error checking --- */
-
-inline void
-check_gl_error()
+// Get GL 3.3 functions from the current Qt GL context.
+inline QOpenGLFunctions_3_3_Core* glFunctions()
 {
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
-        throw std::runtime_error("GL error: " + std::to_string(err));
+    return QOpenGLContext::currentContext()
+        ->versionFunctions<QOpenGLFunctions_3_3_Core>();
 }
+
+GL_NAMESPACE_BEGIN
 
 /* --- Mouse events --- */
 

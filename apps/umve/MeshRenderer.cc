@@ -10,8 +10,7 @@ GL_NAMESPACE_BEGIN
 
 VertexBuffer::VertexBuffer (void)
 {
-    glGenBuffers(1, &this->vbo_id);
-    check_gl_error();
+    glFunctions()->glGenBuffers(1, &this->vbo_id);
     this->vbo_target = GL_ARRAY_BUFFER;
     this->datatype = GL_FLOAT;
     this->vpv = 0;
@@ -28,8 +27,7 @@ VertexBuffer::set_data (GLfloat const* data, GLsizei elems, GLint vpv)
 
     this->bind();
     GLsizeiptr bytes = elems * vpv * sizeof(GLfloat);
-    glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
-    check_gl_error();
+    glFunctions()->glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
 }
 
 void
@@ -42,8 +40,7 @@ VertexBuffer::set_indices (GLuint const* data, GLsizei num_indices)
 
     this->bind();
     GLsizeiptr bytes = num_indices * sizeof(GLuint);
-    glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
-    check_gl_error();
+    glFunctions()->glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
 }
 
 /* ---- VertexArray ---- */
@@ -59,11 +56,9 @@ VertexArray::assign_attrib (BoundVBO const& bound_vbo)
         return;
 
     vbo->bind();
-    glVertexAttribPointer(location, vbo->get_values_per_vertex(),
+    glFunctions()->glVertexAttribPointer(location, vbo->get_values_per_vertex(),
         vbo->get_data_type(), GL_TRUE, 0, nullptr);
-    check_gl_error();
-    glEnableVertexAttribArray(location);
-    check_gl_error();
+    glFunctions()->glEnableVertexAttribArray(location);
 }
 
 void
@@ -75,8 +70,8 @@ VertexArray::draw (void)
     if (this->shader == nullptr)
         throw std::runtime_error("No shader program set!");
 
-    glBindVertexArray(this->vao_id);
-    check_gl_error();
+    auto f = glFunctions();
+    f->glBindVertexArray(this->vao_id);
 
     this->shader->bind();
 
@@ -87,17 +82,14 @@ VertexArray::draw (void)
 
     if (this->index_vbo != nullptr) {
         this->index_vbo->bind();
-        glDrawElements(this->primitive, this->index_vbo->get_element_amount(),
+        f->glDrawElements(this->primitive, this->index_vbo->get_element_amount(),
             GL_UNSIGNED_INT, nullptr);
-        check_gl_error();
     } else {
-        glDrawArrays(this->primitive, 0, this->vert_vbo->get_element_amount());
-        check_gl_error();
+        f->glDrawArrays(this->primitive, 0, this->vert_vbo->get_element_amount());
     }
 
     this->shader->release();
-    glBindVertexArray(0);
-    check_gl_error();
+    f->glBindVertexArray(0);
 }
 
 /* ---- MeshRenderer ---- */

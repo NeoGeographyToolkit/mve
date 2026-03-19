@@ -5,8 +5,6 @@
 
 #include <algorithm>
 
-#include <QOpenGLFunctions_3_3_Core>
-
 #include "SfmMath.h"
 #include "GlCommon.h"
 
@@ -85,8 +83,6 @@ public:
     void resize (int new_width, int new_height);
     void paint (void);
     bool mouse_event (MouseEvent const& event);
-    void set_gl_functions (QOpenGLFunctions_3_3_Core* f);
-
 protected:
     virtual void init_impl (void) = 0;
     virtual void resize_impl (int old_width, int old_height);
@@ -96,7 +92,6 @@ protected:
 protected:
     Camera camera;
     CamTrackball controller;
-    QOpenGLFunctions_3_3_Core* gl = nullptr;
     int width = 0;
     int height = 0;
 };
@@ -133,7 +128,7 @@ GlContext::mouse_event (MouseEvent const& event)
 inline void
 GlContext::resize_impl (int /*old_width*/, int /*old_height*/)
 {
-    this->gl->glViewport(0, 0, this->width, this->height);
+    glFunctions()->glViewport(0, 0, this->width, this->height);
     this->camera.width = this->width;
     this->camera.height = this->height;
 
@@ -148,12 +143,6 @@ GlContext::resize_impl (int /*old_width*/, int /*old_height*/)
     }
 
     this->camera.update_proj_mat();
-}
-
-inline void
-GlContext::set_gl_functions (QOpenGLFunctions_3_3_Core* f)
-{
-    this->gl = f;
 }
 
 inline void

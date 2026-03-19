@@ -55,8 +55,7 @@ private:
 inline
 VertexBuffer::~VertexBuffer (void)
 {
-    glDeleteBuffers(1, &this->vbo_id);
-    check_gl_error();
+    glFunctions()->glDeleteBuffers(1, &this->vbo_id);
 }
 
 inline VertexBuffer::Ptr
@@ -86,7 +85,7 @@ VertexBuffer::get_data_type (void) const
 inline void
 VertexBuffer::bind (void)
 {
-    glBindBuffer(this->vbo_target, this->vbo_id);
+    glFunctions()->glBindBuffer(this->vbo_target, this->vbo_id);
 }
 
 /* ---- VertexArray ---- */
@@ -128,16 +127,14 @@ private:
 inline
 VertexArray::VertexArray (void)
 {
-    glGenVertexArrays(1, &this->vao_id);
-    check_gl_error();
+    glFunctions()->glGenVertexArrays(1, &this->vao_id);
     this->primitive = GL_TRIANGLES;
 }
 
 inline
 VertexArray::~VertexArray (void)
 {
-    glDeleteVertexArrays(1, &this->vao_id);
-    check_gl_error();
+    glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
 }
 
 inline void
@@ -170,10 +167,8 @@ VertexArray::reset_vertex_array(void)
     this->vert_vbo.reset();
     this->index_vbo.reset();
     this->vbo_list.clear();
-    glDeleteVertexArrays(1, &this->vao_id);
-    check_gl_error();
-    glGenVertexArrays(1, &this->vao_id);
-    check_gl_error();
+    glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
+    glFunctions()->glGenVertexArrays(1, &this->vao_id);
 }
 
 inline void
