@@ -15,11 +15,8 @@ GlWidget::GlWidget(QWidget *parent)
   , cx_init(false) {
   this->setFocusPolicy(Qt::StrongFocus);
   this->makeCurrent();
-  this->device_pixel_ratio = 1;
-#if QT_VERSION >= 0x050000
-  this->device_pixel_ratio = static_cast<QGuiApplication *>(
+  this->device_pixel_ratio = static_cast<QGuiApplication*>(
     QApplication::instance())->devicePixelRatio();
-#endif
 
   // This timer triggers a repaint after all events in the window system's
   // event queue have been processed. Thus a snappy 3D view is provided.
@@ -90,8 +87,8 @@ void GlWidget::mousePressEvent(QMouseEvent *event) {
   e.type = sfm::MOUSE_EVENT_PRESS;
   e.button = (sfm::MouseButton)event->button();
   e.button_mask = event->buttons();
-  e.x = event->x() * this->device_pixel_ratio;
-  e.y = event->y() * this->device_pixel_ratio;
+  e.x = event->localPos().x() * this->device_pixel_ratio;
+  e.y = event->localPos().y() * this->device_pixel_ratio;
   this->context->mouse_event(e);
   this->repaint_async();
 }
@@ -102,8 +99,8 @@ void GlWidget::mouseReleaseEvent(QMouseEvent *event) {
   e.type = sfm::MOUSE_EVENT_RELEASE;
   e.button = (sfm::MouseButton)event->button();
   e.button_mask = event->buttons();
-  e.x = event->x() * this->device_pixel_ratio;
-  e.y = event->y() * this->device_pixel_ratio;
+  e.x = event->localPos().x() * this->device_pixel_ratio;
+  e.y = event->localPos().y() * this->device_pixel_ratio;
   this->context->mouse_event(e);
   this->repaint_async();
 }
@@ -114,8 +111,8 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event) {
   e.type = sfm::MOUSE_EVENT_MOVE;
   e.button = (sfm::MouseButton)event->button();
   e.button_mask = event->buttons();
-  e.x = event->x() * this->device_pixel_ratio;
-  e.y = event->y() * this->device_pixel_ratio;
+  e.x = event->localPos().x() * this->device_pixel_ratio;
+  e.y = event->localPos().y() * this->device_pixel_ratio;
   this->context->mouse_event(e);
   this->repaint_async();
 }
@@ -123,14 +120,14 @@ void GlWidget::mouseMoveEvent(QMouseEvent *event) {
 void GlWidget::wheelEvent(QWheelEvent* event) {
   this->makeCurrent();
   sfm::MouseEvent e;
-  if (event->delta() < 0)
+  if (event->angleDelta().y() < 0)
     e.type = sfm::MOUSE_EVENT_WHEEL_DOWN;
   else
     e.type = sfm::MOUSE_EVENT_WHEEL_UP;
   e.button = sfm::MOUSE_BUTTON_NONE;
   e.button_mask = event->buttons();
-  e.x = event->x() * this->device_pixel_ratio;
-  e.y = event->y() * this->device_pixel_ratio;
+  e.x = event->posF().x() * this->device_pixel_ratio;
+  e.y = event->posF().y() * this->device_pixel_ratio;
   this->context->mouse_event(e);
   this->repaint_async();
 }
