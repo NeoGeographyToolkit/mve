@@ -16,8 +16,8 @@
 #include <memory>
 
 #include "mve/mesh.h"
-#include "ogl/ogl_common.h"
-#include "ogl/shader_program.h"
+#include "ogl_common.h"
+#include "shader_program.h"
 
 OGL_NAMESPACE_BEGIN
 

@@ -11,8 +11,8 @@
 #define UMVE_ADDIN_STATE_HEADER
 
 #include "sfm_view_utils.h"
-#include "ogl/shader_program.h"
-#include "ogl/trackball_context.h"
+#include "shader_program.h"
+#include "trackball_context.h"
 
 #include "glwidget.h"
 

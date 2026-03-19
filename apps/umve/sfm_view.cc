@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-#include "ogl/ogl_common.h"
+#include "ogl_common.h"
 
 #include <QApplication>
 #include <QStyleFactory>

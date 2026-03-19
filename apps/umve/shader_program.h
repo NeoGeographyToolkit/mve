@@ -14,7 +14,7 @@
 #include <memory>
 
 #include "math/matrix.h"
-#include "ogl/ogl_common.h"
+#include "ogl_common.h"
 
 #define OGL_ATTRIB_POSITION "pos"
 #define OGL_ATTRIB_NORMAL "normal"

@@ -10,7 +10,7 @@
 #ifndef UMVE_SCENE_ADDIN_MANAGER_HEADER
 #define UMVE_SCENE_ADDIN_MANAGER_HEADER
 
-#include "ogl/ogl_common.h"
+#include "ogl_common.h"
 
 #include <QAction>
 #include <QSlider>
@@ -18,8 +18,8 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 #include "sfm_view_utils.h"
-#include "ogl/trackball_context.h"
-#include "ogl/mesh_renderer.h"
+#include "trackball_context.h"
+#include "mesh_renderer.h"
 
 #include "glwidget.h"
 #include "addin_state.h"

@@ -12,7 +12,7 @@
 #include "math/matrix_tools.h"
 #include "math/quaternion.h"
 #include "math/functions.h"
-#include "ogl/trackball_context.h"
+#include "trackball_context.h"
 
 OGL_NAMESPACE_BEGIN
 

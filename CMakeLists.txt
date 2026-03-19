@@ -27,7 +27,6 @@ include_directories(${OPENGL_INCLUDE_DIR})
 add_subdirectory(libs/util)
 add_subdirectory(libs/mve)
 add_subdirectory(libs/dmrecon)
-add_subdirectory(libs/ogl)
 add_subdirectory(apps/umve)
 
 install(DIRECTORY "libs/math" DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mve)

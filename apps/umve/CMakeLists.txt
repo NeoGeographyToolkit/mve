@@ -47,7 +47,6 @@ add_executable(${APP_NAME}
   ${SOURCES})
 
 TARGET_LINK_LIBRARIES (${APP_NAME}
-  mveOgl
   ${OPENGL_LIBRARIES}
   Qt5::Widgets
   Qt5::OpenGL

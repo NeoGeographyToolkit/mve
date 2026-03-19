@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-#include "ogl/mesh_renderer.h"
+#include "mesh_renderer.h"
 
 OGL_NAMESPACE_BEGIN
 
