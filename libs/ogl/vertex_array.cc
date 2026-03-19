@@ -7,30 +7,11 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#include <algorithm>
 #include <stdexcept>
 
 #include "ogl/vertex_array.h"
 
 OGL_NAMESPACE_BEGIN
-
-struct VBORemovePred
-{
-    std::string name;
-    VBORemovePred (std::string const& name) : name(name) {}
-    bool operator() (VertexArray::BoundVBO const& o)
-    { return o.second == name; }
-};
-
-void
-VertexArray::remove_vbo (std::string const& name)
-{
-    VBOList::iterator new_end = std::remove_if(this->vbo_list.begin(),
-        this->vbo_list.end(), VBORemovePred(name));
-    this->vbo_list.erase(new_end, this->vbo_list.end());
-}
-
-/* ---------------------------------------------------------------- */
 
 void
 VertexArray::assign_attrib (BoundVBO const& bound_vbo)

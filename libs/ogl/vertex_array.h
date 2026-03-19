@@ -59,9 +59,6 @@ public:
     /** Adds a generic VBO with attribute name. */
     void add_vbo (VertexBuffer::Ptr vbo, std::string const& name);
 
-    /** Removes a VBO from the list. */
-    void remove_vbo (std::string const& name);
-
     /** Removes VBOs and creates a new vertex array. */
     void reset_vertex_array (void);
 
