@@ -179,8 +179,8 @@ void View::load_view(std::string const& /*image_path*/,
 // Scene
 
 Scene::Ptr Scene::create(
-    std::vector<std::string> const& image_files,
-    std::vector<std::string> const& camera_files) {
+  std::vector<std::string> const& image_files,
+  std::vector<std::string> const& camera_files) {
   if (image_files.size() != camera_files.size())
     throw std::invalid_argument(
       "Scene::create: Number of images and camera files do not match.");

@@ -8,92 +8,77 @@
 
 GL_NAMESPACE_BEGIN
 
-// Trackball
-
 // Trackball camera control that consumes mouse events.
-class CamTrackball
-{
+class CamTrackball {
 public:
-    CamTrackball (void);
+  CamTrackball(void);
 
-    void set_camera (Camera* camera);
-    bool consume_event (MouseEvent const& event);
+  void set_camera(Camera* camera);
+  bool consume_event(MouseEvent const& event);
 
-    math::Vec3f get_campos (void) const;
-    math::Vec3f get_viewdir (void) const;
-    math::Vec3f const& get_upvec (void) const;
-
-private:
-    void handle_tb_rotation (int x, int y);
-    math::Vec3f get_ball_normal (int x, int y);
+  math::Vec3f get_campos(void) const;
+  math::Vec3f get_viewdir(void) const;
+  math::Vec3f const& get_upvec(void) const;
 
 private:
-    Camera* cam;
+  void handle_tb_rotation(int x, int y);
+  math::Vec3f get_ball_normal(int x, int y);
 
-    float tb_radius;
-    math::Vec3f tb_center;
-    math::Vec3f tb_tocam;
-    math::Vec3f tb_upvec;
+  Camera* cam;
 
-    int rot_mouse_x;
-    int rot_mouse_y;
-    math::Vec3f rot_tb_tocam;
-    math::Vec3f rot_tb_upvec;
+  float tb_radius;
+  math::Vec3f tb_center;
+  math::Vec3f tb_tocam;
+  math::Vec3f tb_upvec;
 
-    float zoom_tb_radius;
-    int zoom_mouse_y;
+  int rot_mouse_x;
+  int rot_mouse_y;
+  math::Vec3f rot_tb_tocam;
+  math::Vec3f rot_tb_upvec;
+
+  float zoom_tb_radius;
+  int zoom_mouse_y;
 };
 
-inline void
-CamTrackball::set_camera (Camera* camera)
-{
-    this->cam = camera;
+inline void CamTrackball::set_camera(Camera* camera) {
+  this->cam = camera;
 }
 
-inline math::Vec3f
-CamTrackball::get_campos (void) const
-{
-    return this->tb_center + this->tb_tocam * this->tb_radius;
+inline math::Vec3f CamTrackball::get_campos(void) const {
+  return this->tb_center + this->tb_tocam * this->tb_radius;
 }
 
-inline math::Vec3f
-CamTrackball::get_viewdir (void) const
-{
-    return -this->tb_tocam;
+inline math::Vec3f CamTrackball::get_viewdir(void) const {
+  return -this->tb_tocam;
 }
 
-inline math::Vec3f const&
-CamTrackball::get_upvec (void) const
-{
-    return this->tb_upvec;
+inline math::Vec3f const& CamTrackball::get_upvec(void) const {
+  return this->tb_upvec;
 }
-
-// Context
 
 // Rendering context with trackball camera control.
 // Subclass and override init_impl, resize_impl, paint_impl.
-class GlContext
-{
+class GlContext {
 public:
-    virtual ~GlContext (void) {}
+  virtual ~GlContext(void) {}
 
-    void init (void);
-    void resize (int new_width, int new_height);
-    void paint (void);
-    bool mouse_event (MouseEvent const& event);
-protected:
-    virtual void init_impl (void) = 0;
-    virtual void resize_impl (int old_width, int old_height);
-    virtual void paint_impl (void) = 0;
-    void update_camera (void);
+  void init(void);
+  void resize(int new_width, int new_height);
+  void paint(void);
+  bool mouse_event(MouseEvent const& event);
 
 protected:
-    Camera camera;
-    CamTrackball controller;
-    int width = 0;
-    int height = 0;
+  virtual void init_impl(void) = 0;
+  virtual void resize_impl(int old_width, int old_height);
+  virtual void paint_impl(void) = 0;
+  void update_camera(void);
+
+  Camera camera;
+  CamTrackball controller;
+  int width = 0;
+  int height = 0;
 };
 
 GL_NAMESPACE_END
 
-#endif /* GL_CONTEXT_HEADER */
+#endif // GL_CONTEXT_HEADER

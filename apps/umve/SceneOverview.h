@@ -7,29 +7,25 @@
 
 #include "SfmUtils.h"
 
-class SceneOverview : public QWidget
-{
-    Q_OBJECT
+class SceneOverview: public QWidget {
+  Q_OBJECT
 
 protected slots:
-    void on_scene_changed (sfm::Scene::Ptr scene);
-    void on_row_changed (int id);
+  void on_scene_changed(sfm::Scene::Ptr scene);
+  void on_row_changed(int id);
 
 private:
-    void add_view_to_layout (std::size_t id, sfm::View::Ptr view);
-
-private:
-    QListWidget* viewlist;
+  void add_view_to_layout(std::size_t id, sfm::View::Ptr view);
+  QListWidget* viewlist;
 
 public:
-    SceneOverview (QWidget* parent);
-    QSize sizeHint (void) const;
+  SceneOverview(QWidget* parent);
+  QSize sizeHint(void) const;
 };
 
 inline QSize
-SceneOverview::sizeHint (void) const
-{
-    return QSize(175, 0);
+SceneOverview::sizeHint(void) const {
+  return QSize(175, 0);
 }
 
-#endif /* SFM_SCENE_OVERVIEW_HEADER */
+#endif // SFM_SCENE_OVERVIEW_HEADER
