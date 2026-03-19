@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <limits>
+#include <QOpenGLShaderProgram>
 
 #include "SceneManager.h"
 #include "SceneRenderer.h"
@@ -38,19 +39,24 @@ static char const* const WIREFRAME_FRAG =
 void
 SceneRenderer::load_shaders (void)
 {
-    if (!this->wireframe_shader)
-        this->wireframe_shader = gl::SfmShader::create();
-
-    this->wireframe_shader->load_vert_code(WIREFRAME_VERT);
-    this->wireframe_shader->load_frag_code(WIREFRAME_FRAG);
+    if (!this->wireframe_shader) {
+        this->wireframe_shader = new QOpenGLShaderProgram();
+        this->wireframe_shader->addShaderFromSourceCode(
+            QOpenGLShader::Vertex, WIREFRAME_VERT);
+        this->wireframe_shader->addShaderFromSourceCode(
+            QOpenGLShader::Fragment, WIREFRAME_FRAG);
+        this->wireframe_shader->link();
+    }
 }
 
 void
 SceneRenderer::send_uniform (gl::Camera const& cam)
 {
     this->wireframe_shader->bind();
-    this->wireframe_shader->send_uniform("viewmat", cam.view);
-    this->wireframe_shader->send_uniform("projmat", cam.proj);
+    this->wireframe_shader->setUniformValue("viewmat",
+        QMatrix4x4(*cam.view, 4, 4));
+    this->wireframe_shader->setUniformValue("projmat",
+        QMatrix4x4(*cam.proj, 4, 4));
 }
 
 SceneRenderer::SceneRenderer (GlWidget* gl_widget)

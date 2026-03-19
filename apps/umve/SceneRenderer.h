@@ -49,7 +49,7 @@ private:
     void create_viewdir_renderer (void);
 
     GlWidget* gl_widget;
-    gl::SfmShader::Ptr wireframe_shader;
+    QOpenGLShaderProgram* wireframe_shader = nullptr;
     sfm::Scene::Ptr scene;
     sfm::View::Ptr view;
 

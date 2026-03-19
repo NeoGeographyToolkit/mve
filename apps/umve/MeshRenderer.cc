@@ -54,7 +54,7 @@ VertexArray::assign_attrib (BoundVBO const& bound_vbo)
     VertexBuffer::Ptr vbo = bound_vbo.first;
     std::string const& name = bound_vbo.second;
 
-    GLint location = this->shader->get_attrib_location(name.c_str());
+    GLint location = this->shader->attributeLocation(name.c_str());
     if (location < 0)
         return;
 
@@ -95,7 +95,7 @@ VertexArray::draw (void)
         check_gl_error();
     }
 
-    this->shader->unbind();
+    this->shader->release();
     glBindVertexArray(0);
     check_gl_error();
 }

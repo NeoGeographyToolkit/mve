@@ -8,9 +8,15 @@
 #include <string>
 #include <memory>
 
+#include <QOpenGLShaderProgram>
+
 #include "SfmMath.h"
 #include "GlCommon.h"
-#include "SfmShader.h"
+
+#define SFM_ATTRIB_POSITION "pos"
+#define SFM_ATTRIB_NORMAL "normal"
+#define SFM_ATTRIB_COLOR "color"
+#define SFM_ATTRIB_TEXCOORD "texuv"
 
 GL_NAMESPACE_BEGIN
 
@@ -98,7 +104,7 @@ public:
     virtual ~VertexArray (void);
 
     void set_primitive (GLuint primitive);
-    void set_shader (SfmShader::Ptr shader);
+    void set_shader (QOpenGLShaderProgram* shader);
     void set_vertex_vbo (VertexBuffer::Ptr vbo);
     void set_index_vbo (VertexBuffer::Ptr vbo);
     void add_vbo (VertexBuffer::Ptr vbo, std::string const& name);
@@ -112,7 +118,7 @@ protected:
 private:
     GLuint vao_id;
     GLuint primitive;
-    SfmShader::Ptr shader;
+    QOpenGLShaderProgram* shader;
 
     VertexBuffer::Ptr vert_vbo;
     VertexBuffer::Ptr index_vbo;
@@ -171,7 +177,7 @@ VertexArray::reset_vertex_array(void)
 }
 
 inline void
-VertexArray::set_shader (SfmShader::Ptr shader)
+VertexArray::set_shader (QOpenGLShaderProgram* shader)
 {
     this->shader = shader;
 }
