@@ -14,7 +14,8 @@
 #include <vector>
 #include <QMainWindow>
 
-#include "scene_inspect.h"
+#include "glwidget.h"
+#include "addin_manager.h"
 #include "sceneoverview.h"
 
 class MainWindow : public QMainWindow
@@ -25,7 +26,8 @@ private:
     QDockWidget* dock_scene;
 
     SceneOverview* scene_overview;
-    SceneInspect* tab_sceneinspect;
+    GLWidget* gl_widget;
+    AddinManager* addin_manager;
 
     QAction* action_quit;
     QAction* action_about;
@@ -40,6 +42,8 @@ private:
     void perform_close_scene (void);
 
 private slots:
+    void on_scene_selected (sfm::Scene::Ptr scene);
+    void on_view_selected (sfm::View::Ptr view);
     void on_about (void);
     void on_frusta_size (void);
 

@@ -21,25 +21,30 @@
 MainWindow::MainWindow (int width, int height) {
     this->scene_overview = new SceneOverview(this);
 
-    this->tab_sceneinspect = new SceneInspect(this);
+    // Create GL widget and addin manager (replaces SceneInspect)
+    this->gl_widget = new GLWidget();
+    this->addin_manager = new AddinManager(this->gl_widget);
+    this->gl_widget->set_context(this->addin_manager);
 
-    /* Create dock widgets. */
+    this->connect(&SceneManager::get(), SIGNAL(scene_selected(sfm::Scene::Ptr)),
+        this, SLOT(on_scene_selected(sfm::Scene::Ptr)));
+    this->connect(&SceneManager::get(), SIGNAL(view_selected(sfm::View::Ptr)),
+        this, SLOT(on_view_selected(sfm::View::Ptr)));
+
+    // Create dock widgets
     this->dock_scene = new QDockWidget(tr("Cameras"));
     this->dock_scene->setWidget(this->scene_overview);
     this->dock_scene->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
-    /* Use in-window menu bar to avoid macOS auto-injected menus
-       (Hide, Services, Window, etc.). */
+    // Use in-window menu bar to avoid macOS auto-injected menus
     this->menuBar()->setNativeMenuBar(false);
 
-    /* Create actions and menus. */
     this->create_actions();
     this->create_menus();
 
-    /* Configure window. */
     QWidget* central_widget(new QWidget(this));
     QLayout* central_layout(new QVBoxLayout(central_widget));
-    central_layout->addWidget(this->tab_sceneinspect);
+    central_layout->addWidget(this->gl_widget);
 
     this->setWindowTitle(tr("sfm_view"));
     this->setCentralWidget(central_widget);
@@ -84,11 +89,10 @@ MainWindow::create_menus (void)
     this->menu_file = new QMenu(tr("&File"), this);
     this->menu_file->addAction(this->action_quit);
 
-    AddinManager* am = this->tab_sceneinspect->get_addin_manager();
     this->menu_view = new QMenu(tr("&View"), this);
-    this->menu_view->addAction(am->get_action_frusta());
-    this->menu_view->addAction(am->get_action_ground());
-    this->menu_view->addAction(am->get_action_viewdir());
+    this->menu_view->addAction(this->addin_manager->get_action_frusta());
+    this->menu_view->addAction(this->addin_manager->get_action_ground());
+    this->menu_view->addAction(this->addin_manager->get_action_viewdir());
     QAction* action_frusta_size = new QAction(tr("Set frusta size"), this);
     this->connect(action_frusta_size, SIGNAL(triggered()),
         this, SLOT(on_frusta_size()));
@@ -104,11 +108,23 @@ MainWindow::create_menus (void)
 }
 
 void
+MainWindow::on_scene_selected (sfm::Scene::Ptr scene)
+{
+    this->addin_manager->set_scene(scene);
+}
+
+void
+MainWindow::on_view_selected (sfm::View::Ptr view)
+{
+    this->addin_manager->set_view(view);
+}
+
+void
 MainWindow::perform_close_scene (void)
 {
     SceneManager::get().reset_view();
     SceneManager::get().reset_scene();
-    this->tab_sceneinspect->reset();
+    this->addin_manager->reset_scene();
 }
 
 void
@@ -122,8 +138,7 @@ MainWindow::on_about (void)
 void
 MainWindow::on_frusta_size (void)
 {
-    AddinManager* am = this->tab_sceneinspect->get_addin_manager();
-    QSlider* slider = am->get_frusta_size_slider();
+    QSlider* slider = this->addin_manager->get_frusta_size_slider();
 
     QDialog dlg(this);
     dlg.setWindowTitle(tr("Frusta size"));
