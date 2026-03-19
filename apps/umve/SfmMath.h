@@ -253,7 +253,7 @@ matrix_rotation_from_axis_angle (Vector<T,3> const& axis, T const& angle)
 
 /* ---- TriangleMesh ---- */
 
-namespace mve {
+namespace sfm {
 
 class TriangleMesh
 {
@@ -289,7 +289,7 @@ private:
     FaceList faces;
 };
 
-} // namespace mve
+} // namespace sfm
 
 /* ---- Camera ---- */
 

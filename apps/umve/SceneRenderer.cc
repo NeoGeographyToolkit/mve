@@ -235,14 +235,14 @@ SceneRenderer::paint_impl (void)
 // Add a camera frustum wireframe to a mesh.
 void
 add_camera_to_mesh (sfm::CameraInfo const& camera,
-    float size, mve::TriangleMesh::Ptr mesh)
+    float size, sfm::TriangleMesh::Ptr mesh)
 {
     math::Vec4f const frustum_start_color(1.0f, 1.0f, 1.0f, 1.0f);
     math::Vec4f const frustum_end_color(1.0f, 1.0f, 1.0f, 1.0f);
 
-    mve::TriangleMesh::VertexList& verts = mesh->get_vertices();
-    mve::TriangleMesh::ColorList& colors = mesh->get_vertex_colors();
-    mve::TriangleMesh::FaceList& faces = mesh->get_faces();
+    sfm::TriangleMesh::VertexList& verts = mesh->get_vertices();
+    sfm::TriangleMesh::ColorList& colors = mesh->get_vertex_colors();
+    sfm::TriangleMesh::FaceList& faces = mesh->get_faces();
 
     math::Matrix4f ctw;
     camera.fill_cam_to_world(*ctw);
@@ -537,10 +537,10 @@ void SceneRenderer::create_frusta_renderer (void) {
     applyCameraPoses(cam_centers, cam2world_vec, views);
 
     // Plot the cameras as meshes
-    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
-    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
-    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
-    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
+    sfm::TriangleMesh::Ptr mesh = sfm::TriangleMesh::create();
+    sfm::TriangleMesh::VertexList& verts(mesh->get_vertices());
+    sfm::TriangleMesh::FaceList& faces(mesh->get_faces());
+    sfm::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
     math::Vec4f color(0, 1, 0, 1); // green
     float size = this->frusta_size_slider->value() / 100.0f;
     for (std::size_t i = 0; i < views.size(); i++) {
@@ -564,10 +564,10 @@ void SceneRenderer::create_frusta_renderer (void) {
 
 void SceneRenderer::create_ground_renderer (void) {
 
-    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
-    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
-    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
-    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
+    sfm::TriangleMesh::Ptr mesh = sfm::TriangleMesh::create();
+    sfm::TriangleMesh::VertexList& verts(mesh->get_vertices());
+    sfm::TriangleMesh::FaceList& faces(mesh->get_faces());
+    sfm::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
     math::Vec4f color(0, 1, 0, 1); // green
 
     // Draw a ground plane as (x, z) in [-1, 1] x [-1, 1] at some height y.
@@ -610,9 +610,9 @@ SceneRenderer::create_viewdir_renderer (void)
     cam.fill_camera_pos(*campos);
     cam.fill_viewing_direction(*viewdir);
 
-    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
-    mve::TriangleMesh::VertexList& verts = mesh->get_vertices();
-    mve::TriangleMesh::ColorList& colors = mesh->get_vertex_colors();
+    sfm::TriangleMesh::Ptr mesh = sfm::TriangleMesh::create();
+    sfm::TriangleMesh::VertexList& verts = mesh->get_vertices();
+    sfm::TriangleMesh::ColorList& colors = mesh->get_vertex_colors();
     verts.push_back(campos);
     verts.push_back(campos + viewdir * 100.0f);
     colors.push_back(math::Vec4f(1.0f, 1.0f, 0.0f, 1.0f));

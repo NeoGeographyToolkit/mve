@@ -4,7 +4,7 @@
 // All rights reserved.
 // BSD 3-Clause license. See LICENSE.txt.
 //
-// Lightweight replacements for mve::CameraInfo, mve::View, and mve::Scene
+// Lightweight replacements for sfm::CameraInfo, sfm::View, and sfm::Scene
 // used by sfm_view. These avoid pulling in the full MVE library for types
 // that are simple data containers in this application.
 

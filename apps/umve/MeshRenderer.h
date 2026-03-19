@@ -192,21 +192,21 @@ public:
     typedef std::shared_ptr<MeshRenderer> Ptr;
 
 public:
-    static Ptr create (mve::TriangleMesh::ConstPtr mesh);
-    void set_mesh (mve::TriangleMesh::ConstPtr mesh);
+    static Ptr create (sfm::TriangleMesh::ConstPtr mesh);
+    void set_mesh (sfm::TriangleMesh::ConstPtr mesh);
 
 private:
-    MeshRenderer (mve::TriangleMesh::ConstPtr mesh);
+    MeshRenderer (sfm::TriangleMesh::ConstPtr mesh);
 };
 
 inline MeshRenderer::Ptr
-MeshRenderer::create (mve::TriangleMesh::ConstPtr mesh)
+MeshRenderer::create (sfm::TriangleMesh::ConstPtr mesh)
 {
     return Ptr(new MeshRenderer(mesh));
 }
 
 inline
-MeshRenderer::MeshRenderer (mve::TriangleMesh::ConstPtr mesh)
+MeshRenderer::MeshRenderer (sfm::TriangleMesh::ConstPtr mesh)
 {
     this->set_mesh(mesh);
 }

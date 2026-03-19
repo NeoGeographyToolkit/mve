@@ -110,18 +110,18 @@ VertexArray::draw (void)
 /* ---- MeshRenderer ---- */
 
 void
-MeshRenderer::set_mesh (mve::TriangleMesh::ConstPtr mesh)
+MeshRenderer::set_mesh (sfm::TriangleMesh::ConstPtr mesh)
 {
     if (mesh == nullptr)
         throw std::invalid_argument("Got null mesh");
 
     this->reset_vertex_array();
 
-    mve::TriangleMesh::VertexList const& verts(mesh->get_vertices());
-    mve::TriangleMesh::FaceList const& faces(mesh->get_faces());
-    mve::TriangleMesh::NormalList const& vnormals(mesh->get_vertex_normals());
-    mve::TriangleMesh::ColorList const& vcolors(mesh->get_vertex_colors());
-    mve::TriangleMesh::TexCoordList const& vtexuv(mesh->get_vertex_texcoords());
+    sfm::TriangleMesh::VertexList const& verts(mesh->get_vertices());
+    sfm::TriangleMesh::FaceList const& faces(mesh->get_faces());
+    sfm::TriangleMesh::NormalList const& vnormals(mesh->get_vertex_normals());
+    sfm::TriangleMesh::ColorList const& vcolors(mesh->get_vertex_colors());
+    sfm::TriangleMesh::TexCoordList const& vtexuv(mesh->get_vertex_texcoords());
 
     {
         VertexBuffer::Ptr vbo = VertexBuffer::create();
