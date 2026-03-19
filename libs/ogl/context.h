@@ -49,12 +49,6 @@ public:
      */
     virtual bool mouse_event (MouseEvent const& event);
 
-    /**
-     * Injects a keyboard event to the context.
-     * Default implementation prints debug information only.
-     */
-    virtual bool keyboard_event (KeyboardEvent const& event);
-
     /** Returns the width of the viewport. */
     int get_width (void) const;
     /** Returns the height of the viewport. */
@@ -110,7 +104,6 @@ protected:
 public:
     CameraContext (void);
     ~CameraContext (void);
-    bool keyboard_event (KeyboardEvent const& event);
     bool mouse_event (MouseEvent const& event);
 };
 
@@ -143,13 +136,6 @@ Context::paint (void)
 
 inline bool
 Context::mouse_event (MouseEvent const& event)
-{
-    ogl::event_debug_print(event);
-    return true;
-}
-
-inline bool
-Context::keyboard_event (KeyboardEvent const& event)
 {
     ogl::event_debug_print(event);
     return true;
@@ -226,15 +212,6 @@ CameraContext<CTRL>::update_camera (void)
 template <typename CTRL>
 bool
 CameraContext<CTRL>::mouse_event (MouseEvent const& event)
-{
-    bool is_handled = this->controller.consume_event(event);
-    this->update_camera();
-    return is_handled;
-}
-
-template <typename CTRL>
-bool
-CameraContext<CTRL>::keyboard_event (KeyboardEvent const& event)
 {
     bool is_handled = this->controller.consume_event(event);
     this->update_camera();

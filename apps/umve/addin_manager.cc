@@ -157,6 +157,7 @@ AddinManager::resize_impl (int old_width, int old_height)
 void
 AddinManager::paint_impl (void)
 {
+    this->update_camera();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     glDepthFunc(GL_LESS);

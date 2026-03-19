@@ -99,14 +99,6 @@ CamTrackball::consume_event (MouseEvent const& event)
 
 /* ---------------------------------------------------------------- */
 
-bool
-CamTrackball::consume_event (KeyboardEvent const& /*event*/)
-{
-    return false;
-}
-
-/* ---------------------------------------------------------------- */
-
 void
 CamTrackball::handle_tb_rotation (int x, int y)
 {

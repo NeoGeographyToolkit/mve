@@ -86,13 +86,6 @@ GLWidget::paintGL()
         this->cx_init = false;
     }
 
-    // This block is needed to initialize the camera and paint the scene
-    // TODO(oalexan1): This may need more thought.
-    ogl::KeyboardEvent e;
-    e.type = ogl::KEYBOARD_EVENT_PRESS;
-    e.keycode = 0;
-    this->context->keyboard_event(e);
-
     /* Paint it! */
     this->context->paint();
 }
@@ -173,38 +166,3 @@ GLWidget::wheelEvent (QWheelEvent* event)
     this->repaint_async();
 }
 
-/* ---------------------------------------------------------------- */
-
-void
-GLWidget::keyPressEvent (QKeyEvent* event)
-{
-    if (event->isAutoRepeat())
-    {
-        this->QWidget::keyPressEvent(event);
-        return;
-    }
-
-    ogl::KeyboardEvent e;
-    e.type = ogl::KEYBOARD_EVENT_PRESS;
-    e.keycode = event->key();
-    this->context->keyboard_event(e);
-    this->repaint_async();
-}
-
-/* ---------------------------------------------------------------- */
-
-void
-GLWidget::keyReleaseEvent (QKeyEvent* event)
-{
-    if (event->isAutoRepeat())
-    {
-        this->QWidget::keyReleaseEvent(event);
-        return;
-    }
-
-    ogl::KeyboardEvent e;
-    e.type = ogl::KEYBOARD_EVENT_RELEASE;
-    e.keycode = event->key();
-    this->context->keyboard_event(e);
-    this->repaint_async();
-}

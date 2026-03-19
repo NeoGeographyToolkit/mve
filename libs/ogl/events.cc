@@ -43,20 +43,4 @@ event_debug_print (ogl::MouseEvent const& event)
     std::cout << " at (" << event.x << "," << event.y << ")" << std::endl;
 }
 
-/* ---------------------------------------------------------------- */
-
-void
-event_debug_print (ogl::KeyboardEvent const& event)
-{
-    std::cout << "Keyboard event ";
-    switch (event.type)
-    {
-        case ogl::KEYBOARD_EVENT_PRESS: std::cout << "PRESS"; break;
-        case ogl::KEYBOARD_EVENT_RELEASE: std::cout << "RELEASE"; break;
-        default: std::cout << "UNKNOWN"; break;
-    }
-
-    std::cout << ", keycode " << event.keycode << std::endl;
-}
-
 OGL_NAMESPACE_END

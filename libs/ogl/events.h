@@ -45,29 +45,9 @@ struct MouseEvent
     int y; ///< Mouse Y-position
 };
 
-/** Keyboard event type. */
-enum KeyboardEventType
-{
-    KEYBOARD_EVENT_PRESS,
-    KEYBOARD_EVENT_RELEASE
-};
-
-/** Keyboard event. */
-struct KeyboardEvent
-{
-    KeyboardEventType type; ///< Type of event
-    int keycode; ///< Key that caused the event (depends on generating system)
-};
-
-/* ---------------------------------------------------------------- */
-
 /** Prints debug information for mouse event 'e' to STDOUT. */
 void
 event_debug_print (MouseEvent const& e);
-
-/** Prints debug information for keyboard event 'e' to STDOUT. */
-void
-event_debug_print (KeyboardEvent const& e);
 
 OGL_NAMESPACE_END
 
