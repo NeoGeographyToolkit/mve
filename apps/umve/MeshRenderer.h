@@ -10,6 +10,7 @@
 
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
 
 #include "SfmMath.h"
 #include "GlCommon.h"
@@ -58,7 +59,7 @@ protected:
   void assign_attrib(BoundVBO const& bound_vbo);
 
 private:
-  GLuint vao_id;
+  QOpenGLVertexArrayObject vao;
   GLuint primitive;
   QOpenGLShaderProgram* shader;
 

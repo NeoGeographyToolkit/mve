@@ -39,12 +39,12 @@ void VertexBuffer::set_indices(GLuint const* data, GLsizei num_indices) {
 // VertexArray
 
 VertexArray::VertexArray(void) {
-  glFunctions()->glGenVertexArrays(1, &this->vao_id);
+  this->vao.create();
   this->primitive = GL_TRIANGLES;
 }
 
 VertexArray::~VertexArray(void) {
-  glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
+  this->vao.destroy();
 }
 
 void VertexArray::set_primitive(GLuint primitive) {
@@ -72,8 +72,8 @@ void VertexArray::reset_vertex_array(void) {
   this->vert_vbo.reset();
   this->index_vbo.reset();
   this->vbo_list.clear();
-  glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
-  glFunctions()->glGenVertexArrays(1, &this->vao_id);
+  this->vao.destroy();
+  this->vao.create();
 }
 
 void VertexArray::assign_attrib(BoundVBO const& bound_vbo) {
@@ -98,7 +98,7 @@ void VertexArray::draw(void) {
     throw std::runtime_error("No shader program set!");
 
   auto f = glFunctions();
-  f->glBindVertexArray(this->vao_id);
+  this->vao.bind();
 
   this->shader->bind();
 
@@ -116,7 +116,7 @@ void VertexArray::draw(void) {
   }
 
   this->shader->release();
-  f->glBindVertexArray(0);
+  this->vao.release();
 }
 
 // MeshRenderer
