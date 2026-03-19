@@ -138,14 +138,4 @@ CamTrackball::get_ball_normal (int x, int y)
 
 /* ---------------------------------------------------------------- */
 
-void
-CamTrackball::set_camera_params (math::Vec3f const& center,
-    math::Vec3f const& lookat, math::Vec3f const& upvec)
-{
-    this->tb_radius = (center - lookat).norm();
-    this->tb_center = lookat;
-    this->tb_tocam = (center - lookat).normalized();
-    this->tb_upvec = upvec;
-}
-
 OGL_NAMESPACE_END

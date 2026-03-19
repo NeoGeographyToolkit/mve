@@ -29,9 +29,6 @@ public:
     void set_camera (Camera* camera);
     bool consume_event (MouseEvent const& event);
 
-    void set_camera_params (math::Vec3f const& center,
-        math::Vec3f const& lookat, math::Vec3f const& upvec);
-
     math::Vec3f get_campos (void) const;
     math::Vec3f get_viewdir (void) const;
     math::Vec3f const& get_upvec (void) const;

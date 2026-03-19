@@ -29,7 +29,6 @@ class MeshRenderer : public VertexArray
 {
 public:
     typedef std::shared_ptr<MeshRenderer> Ptr;
-    typedef std::shared_ptr<MeshRenderer const> ConstPtr;
 
 public:
     static Ptr create (void);
