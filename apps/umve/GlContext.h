@@ -133,7 +133,7 @@ GlContext::mouse_event (MouseEvent const& event)
 inline void
 GlContext::resize_impl (int /*old_width*/, int /*old_height*/)
 {
-    glViewport(0, 0, this->width, this->height);
+    this->gl->glViewport(0, 0, this->width, this->height);
     this->camera.width = this->width;
     this->camera.height = this->height;
 

@@ -56,10 +56,10 @@ SceneRenderer::send_uniform (gl::Camera const& cam)
     // transpose=true: our matrices are row-major, GL expects column-major
     GLint loc_view = this->wireframe_shader->uniformLocation("viewmat");
     if (loc_view >= 0)
-        glUniformMatrix4fv(loc_view, 1, GL_TRUE, *cam.view);
+        this->gl->glUniformMatrix4fv(loc_view, 1, GL_TRUE, *cam.view);
     GLint loc_proj = this->wireframe_shader->uniformLocation("projmat");
     if (loc_proj >= 0)
-        glUniformMatrix4fv(loc_proj, 1, GL_TRUE, *cam.proj);
+        this->gl->glUniformMatrix4fv(loc_proj, 1, GL_TRUE, *cam.proj);
 }
 
 SceneRenderer::SceneRenderer (GlWidget* gl_widget)
@@ -202,13 +202,13 @@ void
 SceneRenderer::paint_impl (void)
 {
     this->update_camera();
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    this->gl->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    glDepthFunc(GL_LESS);
-    glEnable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearDepth(1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    this->gl->glDepthFunc(GL_LESS);
+    this->gl->glEnable(GL_DEPTH_TEST);
+    this->gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    this->gl->glClearDepth(1.0f);
+    this->gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->send_uniform(this->camera);
 
