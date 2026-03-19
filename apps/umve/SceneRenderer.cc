@@ -11,9 +11,9 @@
 #include <cstdlib>
 #endif
 
-// Inline GLSL shaders. Colors are baked into mesh vertices:
-// green for the ground grid, white for camera frusta,
-// yellow for view direction, RGB for camera coordinate axes.
+// GLSL shaders. Colors are baked into mesh vertices: green for the ground grid,
+// white for camera frusta, yellow for view direction, RGB for camera coordinate
+// axes.
 
 static char const* const WIREFRAME_VERT =
     "#version 330 core\n"

@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
-#include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -36,11 +35,6 @@ std::string get_file_extension(std::string const& path) {
 }
 
 int main(int argc, char** argv) {
-
-  // Must set this before any GUI is created, for OpenGL to work.
-  // This variable must not go out of scope till this program exits.
-  char MESA_GL_ENV_STR[5012];
-  putenv(strcpy(MESA_GL_ENV_STR, "MESA_GL_VERSION_OVERRIDE=3.3"));
 
   std::vector<std::string> images, cameras;
   int width = 1400, height = 1200; // default window size
