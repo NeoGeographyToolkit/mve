@@ -16,7 +16,7 @@
 #include <QSlider>
 
 #include "sfm_view_utils.h"
-#include "trackball_context.h"
+#include "gl_context.h"
 #include "mesh_renderer.h"
 
 #include "glwidget.h"

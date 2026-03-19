@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-#include "trackball_context.h"
+#include "gl_context.h"
 
 OGL_NAMESPACE_BEGIN
 

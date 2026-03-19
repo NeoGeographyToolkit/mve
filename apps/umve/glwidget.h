@@ -15,7 +15,7 @@
 #include <QMouseEvent>
 #include <QTimer>
 
-#include "trackball_context.h"
+#include "gl_context.h"
 
 class GLWidget : public QOpenGLWidget
 {
