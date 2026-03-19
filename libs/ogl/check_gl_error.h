@@ -11,10 +11,10 @@
 #define OGL_CHECK_GL_ERROR_HEADER
 
 #include <stdexcept>
+#include <string>
 
 #include "ogl/defines.h"
 #include "ogl/opengl.h"
-#include "util/strings.h"
 
 OGL_NAMESPACE_BEGIN
 
@@ -23,7 +23,7 @@ check_gl_error()
 {
     GLenum err = glGetError();
     if (err != GL_NO_ERROR)
-        throw std::runtime_error("GL error: " + util::string::get(err));
+        throw std::runtime_error("GL error: " + std::to_string(err));
 }
 
 OGL_NAMESPACE_END
