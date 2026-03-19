@@ -3,8 +3,6 @@
 #ifndef GL_CONTEXT_HEADER
 #define GL_CONTEXT_HEADER
 
-#include <algorithm>
-
 #include "SfmMath.h"
 #include "GlCommon.h"
 
@@ -95,64 +93,6 @@ protected:
     int width = 0;
     int height = 0;
 };
-
-inline void
-GlContext::init (void)
-{
-    this->controller.set_camera(&this->camera);
-    this->init_impl();
-}
-
-inline void
-GlContext::resize (int new_width, int new_height)
-{
-    std::swap(new_width, this->width);
-    std::swap(new_height, this->height);
-    this->resize_impl(new_width, new_height);
-}
-
-inline void
-GlContext::paint (void)
-{
-    this->paint_impl();
-}
-
-inline bool
-GlContext::mouse_event (MouseEvent const& event)
-{
-    bool is_handled = this->controller.consume_event(event);
-    this->update_camera();
-    return is_handled;
-}
-
-inline void
-GlContext::resize_impl (int /*old_width*/, int /*old_height*/)
-{
-    glFunctions()->glViewport(0, 0, this->width, this->height);
-    this->camera.width = this->width;
-    this->camera.height = this->height;
-
-    float aspect = (float)this->width / (float)this->height;
-    float minside = 0.05f;
-    if (this->width > this->height) {
-        this->camera.top = minside;
-        this->camera.right = minside * aspect;
-    } else {
-        this->camera.top = minside / aspect;
-        this->camera.right = minside;
-    }
-
-    this->camera.update_proj_mat();
-}
-
-inline void
-GlContext::update_camera (void)
-{
-    this->camera.pos = this->controller.get_campos();
-    this->camera.viewing_dir = this->controller.get_viewdir();
-    this->camera.up_vec = this->controller.get_upvec();
-    this->camera.update_view_mat();
-}
 
 GL_NAMESPACE_END
 

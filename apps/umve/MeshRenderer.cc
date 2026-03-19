@@ -8,6 +8,23 @@ GL_NAMESPACE_BEGIN
 
 /* ---- VertexBuffer ---- */
 
+VertexBuffer::~VertexBuffer (void)
+{
+    glFunctions()->glDeleteBuffers(1, &this->vbo_id);
+}
+
+VertexBuffer::Ptr
+VertexBuffer::create (void)
+{
+    return Ptr(new VertexBuffer);
+}
+
+void
+VertexBuffer::bind (void)
+{
+    glFunctions()->glBindBuffer(this->vbo_target, this->vbo_id);
+}
+
 VertexBuffer::VertexBuffer (void)
 {
     glFunctions()->glGenBuffers(1, &this->vbo_id);
@@ -44,6 +61,27 @@ VertexBuffer::set_indices (GLuint const* data, GLsizei num_indices)
 }
 
 /* ---- VertexArray ---- */
+
+VertexArray::VertexArray (void)
+{
+    glFunctions()->glGenVertexArrays(1, &this->vao_id);
+    this->primitive = GL_TRIANGLES;
+}
+
+VertexArray::~VertexArray (void)
+{
+    glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
+}
+
+void
+VertexArray::reset_vertex_array (void)
+{
+    this->vert_vbo.reset();
+    this->index_vbo.reset();
+    this->vbo_list.clear();
+    glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
+    glFunctions()->glGenVertexArrays(1, &this->vao_id);
+}
 
 void
 VertexArray::assign_attrib (BoundVBO const& bound_vbo)
@@ -137,6 +175,17 @@ MeshRenderer::set_mesh (sfm::TriangleMesh::ConstPtr mesh)
         vbo->set_data(&vtexuv[0][0], (GLsizei)vtexuv.size(), 2);
         this->add_vbo(vbo, SFM_ATTRIB_TEXCOORD);
     }
+}
+
+MeshRenderer::Ptr
+MeshRenderer::create (sfm::TriangleMesh::ConstPtr mesh)
+{
+    return Ptr(new MeshRenderer(mesh));
+}
+
+MeshRenderer::MeshRenderer (sfm::TriangleMesh::ConstPtr mesh)
+{
+    this->set_mesh(mesh);
 }
 
 GL_NAMESPACE_END

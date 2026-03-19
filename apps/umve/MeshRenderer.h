@@ -52,18 +52,6 @@ private:
     GLsizei elems;
 };
 
-inline
-VertexBuffer::~VertexBuffer (void)
-{
-    glFunctions()->glDeleteBuffers(1, &this->vbo_id);
-}
-
-inline VertexBuffer::Ptr
-VertexBuffer::create (void)
-{
-    return Ptr(new VertexBuffer);
-}
-
 inline GLint
 VertexBuffer::get_values_per_vertex (void) const
 {
@@ -80,12 +68,6 @@ inline GLenum
 VertexBuffer::get_data_type (void) const
 {
     return this->datatype;
-}
-
-inline void
-VertexBuffer::bind (void)
-{
-    glFunctions()->glBindBuffer(this->vbo_target, this->vbo_id);
 }
 
 /* ---- VertexArray ---- */
@@ -124,19 +106,6 @@ private:
     VBOList vbo_list;
 };
 
-inline
-VertexArray::VertexArray (void)
-{
-    glFunctions()->glGenVertexArrays(1, &this->vao_id);
-    this->primitive = GL_TRIANGLES;
-}
-
-inline
-VertexArray::~VertexArray (void)
-{
-    glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
-}
-
 inline void
 VertexArray::set_primitive (GLuint primitive)
 {
@@ -162,16 +131,6 @@ VertexArray::add_vbo (VertexBuffer::Ptr vbo, std::string const& name)
 }
 
 inline void
-VertexArray::reset_vertex_array(void)
-{
-    this->vert_vbo.reset();
-    this->index_vbo.reset();
-    this->vbo_list.clear();
-    glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
-    glFunctions()->glGenVertexArrays(1, &this->vao_id);
-}
-
-inline void
 VertexArray::set_shader (QOpenGLShaderProgram* shader)
 {
     this->shader = shader;
@@ -192,18 +151,6 @@ public:
 private:
     MeshRenderer (sfm::TriangleMesh::ConstPtr mesh);
 };
-
-inline MeshRenderer::Ptr
-MeshRenderer::create (sfm::TriangleMesh::ConstPtr mesh)
-{
-    return Ptr(new MeshRenderer(mesh));
-}
-
-inline
-MeshRenderer::MeshRenderer (sfm::TriangleMesh::ConstPtr mesh)
-{
-    this->set_mesh(mesh);
-}
 
 GL_NAMESPACE_END
 

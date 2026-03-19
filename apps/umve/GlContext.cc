@@ -1,5 +1,6 @@
 // Derived from MVE (Simon Fuhrmann, TU Darmstadt, BSD 3-Clause).
 
+#include <algorithm>
 #include <iostream>
 
 #include "GlContext.h"
@@ -127,5 +128,65 @@ CamTrackball::get_ball_normal (int x, int y)
 }
 
 /* ---------------------------------------------------------------- */
+
+/* ---- GlContext ---- */
+
+void
+GlContext::init (void)
+{
+    this->controller.set_camera(&this->camera);
+    this->init_impl();
+}
+
+void
+GlContext::resize (int new_width, int new_height)
+{
+    std::swap(new_width, this->width);
+    std::swap(new_height, this->height);
+    this->resize_impl(new_width, new_height);
+}
+
+void
+GlContext::paint (void)
+{
+    this->paint_impl();
+}
+
+bool
+GlContext::mouse_event (MouseEvent const& event)
+{
+    bool is_handled = this->controller.consume_event(event);
+    this->update_camera();
+    return is_handled;
+}
+
+void
+GlContext::resize_impl (int /*old_width*/, int /*old_height*/)
+{
+    glFunctions()->glViewport(0, 0, this->width, this->height);
+    this->camera.width = this->width;
+    this->camera.height = this->height;
+
+    float aspect = (float)this->width / (float)this->height;
+    float minside = 0.05f;
+    if (this->width > this->height) {
+        this->camera.top = minside;
+        this->camera.right = minside * aspect;
+    } else {
+        this->camera.top = minside / aspect;
+        this->camera.right = minside;
+    }
+
+    this->camera.update_proj_mat();
+}
+
+void
+GlContext::update_camera (void)
+{
+    this->camera.pos = this->controller.get_campos();
+    this->camera.viewing_dir = this->controller.get_viewdir();
+    this->camera.up_vec = this->controller.get_upvec();
+    this->camera.update_view_mat();
+}
 
 GL_NAMESPACE_END
