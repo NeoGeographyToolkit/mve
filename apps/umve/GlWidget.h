@@ -5,12 +5,13 @@
 
 #include <set>
 #include <QOpenGLWidget>
+#include <QOpenGLFunctions_3_3_Core>
 #include <QMouseEvent>
 #include <QTimer>
 
 #include "GlContext.h"
 
-class GlWidget : public QOpenGLWidget
+class GlWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
 

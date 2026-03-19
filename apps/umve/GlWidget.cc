@@ -39,6 +39,7 @@ GlWidget::~GlWidget (void)
 
 void
 GlWidget::initializeGL() {
+    initializeOpenGLFunctions();
 }
 
 /* ---------------------------------------------------------------- */
@@ -85,6 +86,7 @@ void
 GlWidget::set_context (gl::GlContext* context)
 {
     this->context = context;
+    this->context->set_gl_functions(this);
     this->cx_init = true;
 }
 
