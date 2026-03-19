@@ -9,9 +9,6 @@
 
 #include <iostream>
 
-#include "math/matrix_tools.h"
-#include "math/quaternion.h"
-#include "math/functions.h"
 #include "trackball_context.h"
 
 OGL_NAMESPACE_BEGIN

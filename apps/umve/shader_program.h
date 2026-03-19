@@ -13,7 +13,7 @@
 #include <string>
 #include <memory>
 
-#include "math/matrix.h"
+#include "sfm_math.h"
 #include "ogl_common.h"
 
 #define OGL_ATTRIB_POSITION "pos"

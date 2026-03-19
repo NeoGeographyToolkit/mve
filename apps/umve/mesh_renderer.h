@@ -15,7 +15,7 @@
 #include <string>
 #include <memory>
 
-#include "mve/mesh.h"
+#include "sfm_math.h"
 #include "ogl_common.h"
 #include "shader_program.h"
 

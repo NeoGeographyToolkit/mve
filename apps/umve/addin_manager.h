@@ -15,8 +15,6 @@
 #include <QAction>
 #include <QSlider>
 
-#include "math/vector.h"
-#include "math/matrix.h"
 #include "sfm_view_utils.h"
 #include "trackball_context.h"
 #include "mesh_renderer.h"

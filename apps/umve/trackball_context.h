@@ -12,9 +12,7 @@
 
 #include <algorithm>
 
-#include "math/vector.h"
-#include "math/matrix.h"
-#include "math/matrix_tools.h"
+#include "sfm_math.h"
 #include "ogl_common.h"
 
 OGL_NAMESPACE_BEGIN
