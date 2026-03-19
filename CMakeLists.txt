@@ -19,15 +19,11 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
-find_package(OpenGL REQUIRED)
-
 include_directories("${MULTIVIEW_DEPS_DIR}/include")
-include_directories(${OPENGL_INCLUDE_DIR})
 
 add_subdirectory(libs/util)
 add_subdirectory(libs/mve)
 add_subdirectory(libs/dmrecon)
-add_subdirectory(apps/umve)
 
 install(DIRECTORY "libs/math" DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mve)
 install(DIRECTORY "libs/util" DESTINATION ${CMAKE_INSTALL_PREFIX}/include/mve)
