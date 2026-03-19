@@ -291,17 +291,14 @@ public:
   void update_proj_mat(void);
 };
 
-inline
-SfmCamera::SfmCamera(void): pos(0.0f, 0.0f, 5.0f), viewing_dir(0.0f, 0.0f, -1.0f)
-  , up_vec(0.0f, 1.0f, 0.0f)
-  , z_near(0.1f)
-  , z_far(500.0f)
-  , top(0.1f)
-  , right(0.1f)
-  , width(0)
-  , height(0)
-  , view(0.0f)
-  , proj(0.0f) {
+inline SfmCamera::SfmCamera(void):
+  pos(0.0f, 0.0f, 5.0f),
+  viewing_dir(0.0f, 0.0f, -1.0f),
+  up_vec(0.0f, 1.0f, 0.0f),
+  z_near(0.1f), z_far(500.0f),
+  top(0.1f), right(0.1f),
+  width(0), height(0),
+  view(0.0f), proj(0.0f) {
 }
 
 inline void
