@@ -12,9 +12,7 @@
 
 #include <algorithm>
 
-#include "ogl/defines.h"
-#include "ogl/opengl.h"
-#include "ogl/events.h"
+#include "ogl/ogl_common.h"
 #include "ogl/camera.h"
 #include "ogl/camera_trackball.h"
 

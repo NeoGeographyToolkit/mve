@@ -15,9 +15,7 @@
 #include <string>
 #include <memory>
 
-#include "ogl/defines.h"
-#include "ogl/opengl.h"
-#include "ogl/check_gl_error.h"
+#include "ogl/ogl_common.h"
 #include "ogl/shader_program.h"
 #include "ogl/vertex_buffer.h"
 

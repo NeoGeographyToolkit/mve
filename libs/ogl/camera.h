@@ -13,7 +13,7 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 #include "math/matrix_tools.h"
-#include "ogl/defines.h"
+#include "ogl/ogl_common.h"
 
 OGL_NAMESPACE_BEGIN
 

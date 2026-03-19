@@ -7,7 +7,7 @@
  * of the BSD 3-Clause license. See the LICENSE.txt file for details.
  */
 
-#include "ogl/opengl.h"
+#include "ogl/ogl_common.h"
 #include "ogl/mesh_renderer.h"
 
 OGL_NAMESPACE_BEGIN

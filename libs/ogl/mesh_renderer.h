@@ -13,8 +13,7 @@
 #include <memory>
 
 #include "mve/mesh.h"
-#include "ogl/defines.h"
-#include "ogl/opengl.h"
+#include "ogl/ogl_common.h"
 #include "ogl/shader_program.h"
 #include "ogl/vertex_array.h"
 #include "ogl/vertex_buffer.h"

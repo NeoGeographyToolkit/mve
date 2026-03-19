@@ -12,9 +12,7 @@
 
 #include <memory>
 
-#include "ogl/defines.h"
-#include "ogl/opengl.h"
-#include "ogl/check_gl_error.h"
+#include "ogl/ogl_common.h"
 
 OGL_NAMESPACE_BEGIN
 

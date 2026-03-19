@@ -10,7 +10,7 @@
 #ifndef UMVE_SCENE_ADDIN_MANAGER_HEADER
 #define UMVE_SCENE_ADDIN_MANAGER_HEADER
 
-#include "ogl/opengl.h"
+#include "ogl/ogl_common.h"
 
 #include <QAction>
 #include <QSlider>
