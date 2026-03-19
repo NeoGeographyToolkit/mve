@@ -12,7 +12,6 @@
 #include "math/matrix_tools.h"
 #include "math/quaternion.h"
 #include "math/functions.h"
-#include "ogl/opengl.h"
 #include "ogl/camera_trackball.h"
 
 OGL_NAMESPACE_BEGIN
@@ -46,12 +45,6 @@ CamTrackball::consume_event (MouseEvent const& event)
         {
             this->zoom_mouse_y = event.y;
             this->zoom_tb_radius = this->tb_radius;
-        }
-        else if (event.button == MOUSE_BUTTON_RIGHT)
-        {
-            math::Vec3f center = this->get_center(event.x, event.y);
-            if (center != math::Vec3f(0.0f))
-                this->tb_center = center;
         }
         is_handled = true;
     }
@@ -126,94 +119,6 @@ CamTrackball::handle_tb_rotation (int x, int y)
     math::Matrix3f rot = matrix_rotation_from_axis_angle(axis, angle);
     this->tb_tocam = rot * this->rot_tb_tocam;
     this->tb_upvec = rot * this->rot_tb_upvec;
-}
-
-/* ---------------------------------------------------------------- */
-
-math::Vec3f
-CamTrackball::get_center (int x, int y)
-{
-    /* Try to find a valid depth value in a spiral around the click point. */
-    float depth = 1.0f;
-    {
-        /* Patchsize should be odd and larger than one. */
-        int const patch_size = 9;
-        int const patch_halfsize = patch_size / 2;
-        int const screen_width = this->cam->width;
-        int const screen_height = this->cam->height;
-        int const center_x = x;
-        int const center_y = y;
-        int dx = 1;
-        int dy = 0;
-        int radius = 0;
-        while (radius <= patch_halfsize)
-        {
-            if (x >= 0 && x < screen_width && y > 0 && y < screen_height)
-                glReadPixels(x, screen_height - y - 1, 1, 1,
-                    GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-            if (depth != 1.0f)
-                break;
-
-            x += dx;
-            y += dy;
-            if (x > center_x + radius)
-            {
-                radius += 1;
-                dx = 0;
-                dy = -1;
-            }
-            if (y <= center_y - radius)
-            {
-                dx = -1;
-                dy = 0;
-            }
-            if (x <= center_x - radius)
-            {
-                dx = 0;
-                dy = 1;
-            }
-            if (y >= center_y + radius)
-            {
-                dx = 1;
-                dy = 0;
-            }
-        }
-    }
-
-    /* Exit if depth value is not set. */
-    if (depth == 1.0f)
-        return math::Vec3f(0.0f); // TODO: Better "error" reporting
-
-    float const fx = static_cast<float>(x);
-    float const fy = static_cast<float>(y);
-    float const fw = static_cast<float>(this->cam->width);
-    float const fh = static_cast<float>(this->cam->height);
-
-    /* Calculate camera-to-surface distance (orthographic). */
-    float dist = (this->cam->z_far * this->cam->z_near)
-        / ((this->cam->z_near - this->cam->z_far) * depth + this->cam->z_far);
-
-    /* Fix distance value caused by projection. */
-    {
-        /* Create point on near plane corresponding to click coords. */
-        math::Vec3f pnp((2.0f * fx / (fw - 1.0f) - 1.0f) * this->cam->right,
-            (1.0f - 2.0f * fy / (fh - 1.0f)) * this->cam->top,
-            this->cam->z_near);
-        float cosangle = pnp.normalized()[2];
-        dist /= cosangle;
-    }
-
-    /* Create a point in unit cube corresponding to the click coords. */
-    math::Vec3f ray(2.0f * fx / (fw - 1.0f) - 1.0f,
-        1.0f - 2.0f * fy / (fh - 1.0f), 0.0f);
-    /* Convert cube click coords to ray in camera corrds. */
-    ray = this->cam->inv_proj.mult(ray, 1.0f);
-    /* Ray to new camera center in camera coords. */
-    ray = ray.normalized() * dist;
-    /* Ray to new camera center in world coords. */
-    ray = this->cam->inv_view.mult(ray, 0.0f);
-
-    return this->cam->pos + ray;
 }
 
 /* ---------------------------------------------------------------- */

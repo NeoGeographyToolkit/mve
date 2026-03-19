@@ -37,7 +37,6 @@ public:
     math::Vec3f const& get_upvec (void) const;
 
 private:
-    math::Vec3f get_center (int x, int y);
     void handle_tb_rotation (int x, int y);
     math::Vec3f get_ball_normal (int x, int y);
 

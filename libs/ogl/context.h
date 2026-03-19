@@ -109,7 +109,6 @@ Context::resize_impl (int /*old_width*/, int /*old_height*/)
     }
 
     this->camera.update_proj_mat();
-    this->camera.update_inv_proj_mat();
 }
 
 inline void
@@ -119,7 +118,6 @@ Context::update_camera (void)
     this->camera.viewing_dir = this->controller.get_viewdir();
     this->camera.up_vec = this->controller.get_upvec();
     this->camera.update_view_mat();
-    this->camera.update_inv_view_mat();
 }
 
 OGL_NAMESPACE_END
