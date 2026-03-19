@@ -19,13 +19,12 @@
 #include "math/matrix.h"
 #include "sfm_view_utils.h"
 #include "ogl/context.h"
-#include "ogl/camera_trackball.h"
 #include "ogl/mesh_renderer.h"
 
 #include "glwidget.h"
 #include "addin_state.h"
 
-class AddinManager : public QWidget, public ogl::CameraTrackballContext
+class AddinManager : public QWidget, public ogl::Context
 {
     Q_OBJECT
 

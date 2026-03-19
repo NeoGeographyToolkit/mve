@@ -151,7 +151,7 @@ AddinManager::init_impl (void)
 void
 AddinManager::resize_impl (int old_width, int old_height)
 {
-    this->ogl::CameraTrackballContext::resize_impl(old_width, old_height);
+    this->ogl::Context::resize_impl(old_width, old_height);
 }
 
 void
