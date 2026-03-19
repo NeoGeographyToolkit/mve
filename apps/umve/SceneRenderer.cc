@@ -326,7 +326,7 @@ void applySfmCameraPoses(std::vector<sfm::Vec3d> const& cam_centers,
 
     sfm::SfmCameraInfo cam = views[i]->get_camera();
 
-    // Compute T = -cam2word^T * C and copy to the camera
+    // Compute T = -cam2world^T * C and copy to the camera
     sfm::Vec3d t = -cam2world_vec[i].transposed().mult(cam_centers[i]);
     for (int coord = 0; coord < 3; coord++)
       cam.trans[coord] = t[coord];
