@@ -41,30 +41,25 @@ public:
   void reset_view(void);
 };
 
-inline void
-SceneManager::select_scene(sfm::Scene::Ptr scene) {
+inline void SceneManager::select_scene(sfm::Scene::Ptr scene) {
   this->scene = scene;
   emit this->scene_selected(scene);
 }
 
-inline void
-SceneManager::select_view(sfm::View::Ptr view) {
+inline void SceneManager::select_view(sfm::View::Ptr view) {
   this->view = view;
   emit this->view_selected(view);
 }
 
-inline sfm::Scene::Ptr
-SceneManager::get_scene(void) {
+inline sfm::Scene::Ptr SceneManager::get_scene(void) {
   return this->scene;
 }
 
-inline void
-SceneManager::reset_scene(void) {
+inline void SceneManager::reset_scene(void) {
   this->select_scene(sfm::Scene::Ptr());
 }
 
-inline void
-SceneManager::reset_view(void) {
+inline void SceneManager::reset_view(void) {
   this->select_view(sfm::View::Ptr());
 }
 

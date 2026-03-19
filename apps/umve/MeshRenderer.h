@@ -49,18 +49,15 @@ private:
   GLsizei elems;
 };
 
-inline GLint
-VertexBuffer::get_values_per_vertex(void) const {
+inline GLint VertexBuffer::get_values_per_vertex(void) const {
   return this->vpv;
 }
 
-inline GLsizei
-VertexBuffer::get_element_amount(void) const {
+inline GLsizei VertexBuffer::get_element_amount(void) const {
   return this->elems;
 }
 
-inline GLenum
-VertexBuffer::get_data_type(void) const {
+inline GLenum VertexBuffer::get_data_type(void) const {
   return this->datatype;
 }
 
@@ -99,27 +96,27 @@ private:
 };
 
 inline void
-VertexArray::set_primitive(GLuint primitive) {
+inline VertexArray::set_primitive(GLuint primitive) {
   this->primitive = primitive;
 }
 
 inline void
-VertexArray::set_vertex_vbo(VertexBuffer::Ptr vbo) {
+inline VertexArray::set_vertex_vbo(VertexBuffer::Ptr vbo) {
   this->vert_vbo = vbo;
 }
 
 inline void
-VertexArray::set_index_vbo(VertexBuffer::Ptr vbo) {
+inline VertexArray::set_index_vbo(VertexBuffer::Ptr vbo) {
   this->index_vbo = vbo;
 }
 
 inline void
-VertexArray::add_vbo(VertexBuffer::Ptr vbo, std::string const& name) {
+inline VertexArray::add_vbo(VertexBuffer::Ptr vbo, std::string const& name) {
   this->vbo_list.push_back(std::make_pair(vbo, name));
 }
 
 inline void
-VertexArray::set_shader(QOpenGLShaderProgram* shader) {
+inline VertexArray::set_shader(QOpenGLShaderProgram* shader) {
   this->shader = shader;
 }
 

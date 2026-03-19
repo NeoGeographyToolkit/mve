@@ -48,8 +48,7 @@ public:
                   std::vector<std::string> const& cameras);
 };
 
-inline
-SfmMainWindow::~SfmMainWindow(void) {
+inline SfmMainWindow::~SfmMainWindow(void) {
 }
 
 #endif // SFM_MAIN_WINDOW_HEADER

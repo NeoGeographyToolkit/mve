@@ -23,8 +23,8 @@ public:
   QSize sizeHint(void) const;
 };
 
-inline QSize
-SceneOverview::sizeHint(void) const {
+QSize
+inline SceneOverview::sizeHint(void) const {
   return QSize(175, 0);
 }
 

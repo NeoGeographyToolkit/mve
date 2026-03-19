@@ -46,17 +46,17 @@ private:
 };
 
 inline QSize
-GlWidget::minimumSizeHint() const {
+inline GlWidget::minimumSizeHint() const {
   return QSize(50, 50);
 }
 
 inline QSize
-GlWidget::sizeHint() const {
+inline GlWidget::sizeHint() const {
   return QSize(400, 400);
 }
 
 inline void
-GlWidget::repaint_async(void) {
+inline GlWidget::repaint_async(void) {
   // Don't issue an immediate repaint but let the timer trigger
   // a repaint after all events have been processed.
   if (this->repaint_timer->isActive())

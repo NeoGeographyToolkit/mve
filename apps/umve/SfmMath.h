@@ -301,14 +301,14 @@ inline SfmCamera::SfmCamera(void):
   view(0.0f), proj(0.0f) {
 }
 
-inline void
-SfmCamera::update_view_mat(void) {
+void
+inline SfmCamera::update_view_mat(void) {
   this->view = sfm::matrix_viewtrans(this->pos,
     this->viewing_dir, this->up_vec);
 }
 
-inline void
-SfmCamera::update_proj_mat(void) {
+void
+inline SfmCamera::update_proj_mat(void) {
   this->proj = sfm::matrix_gl_projection(this->z_near,
     this->z_far, this->top, this->right);
 }
