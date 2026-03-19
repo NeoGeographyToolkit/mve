@@ -12,7 +12,7 @@
 
 #include "sfm_view_utils.h"
 #include "ogl/shader_program.h"
-#include "ogl/camera.h"
+#include "ogl/trackball_context.h"
 
 #include "glwidget.h"
 

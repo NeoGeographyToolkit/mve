@@ -18,7 +18,7 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 #include "sfm_view_utils.h"
-#include "ogl/context.h"
+#include "ogl/trackball_context.h"
 #include "ogl/mesh_renderer.h"
 
 #include "glwidget.h"
