@@ -87,6 +87,7 @@ MainWindow::create_menus (void)
     AddinManager* am = this->tab_sceneinspect->get_addin_manager();
     this->menu_view = new QMenu(tr("&View"), this);
     this->menu_view->addAction(am->get_action_frusta());
+    this->menu_view->addAction(am->get_action_ground());
     this->menu_view->addAction(am->get_action_viewdir());
     QAction* action_frusta_size = new QAction(tr("Set frusta size"), this);
     this->connect(action_frusta_size, SIGNAL(triggered()),

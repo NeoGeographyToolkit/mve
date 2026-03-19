@@ -37,6 +37,7 @@ public:
 
     QAction* get_action_frusta (void);
     QAction* get_action_viewdir (void);
+    QAction* get_action_ground (void);
     QSlider* get_frusta_size_slider (void);
 
 protected:
@@ -47,17 +48,21 @@ protected:
 private slots:
     void reset_viewdir_renderer (void);
     void reset_frusta_renderer (void);
+    void reset_ground_renderer (void);
     void on_scene_changed (void);
 
 private:
     void create_frusta_renderer (void);
+    void create_ground_renderer (void);
     void create_viewdir_renderer (void);
 
     AddinState state;
     QAction* action_frusta;
     QAction* action_viewdir;
+    QAction* action_ground;
     QSlider* frusta_size_slider;
     ogl::MeshRenderer::Ptr frusta_renderer;
+    ogl::MeshRenderer::Ptr ground_renderer;
     ogl::MeshRenderer::Ptr viewdir_renderer;
 
     // Cached original poses (before GL transformation).

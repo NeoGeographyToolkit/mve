@@ -30,6 +30,10 @@ AddinManager::AddinManager (GLWidget* gl_widget)
     this->action_viewdir->setCheckable(true);
     this->action_viewdir->setChecked(true);
 
+    this->action_ground = new QAction("Draw ground plane");
+    this->action_ground->setCheckable(true);
+    this->action_ground->setChecked(true);
+
     this->frusta_size_slider = new QSlider();
     this->frusta_size_slider->setMinimum(1);
     this->frusta_size_slider->setMaximum(100);
@@ -48,6 +52,8 @@ AddinManager::AddinManager (GLWidget* gl_widget)
         this->state.gl_widget, SLOT(repaint()));
     this->connect(this->action_viewdir, SIGNAL(toggled(bool)),
         this->state.gl_widget, SLOT(repaint()));
+    this->connect(this->action_ground, SIGNAL(toggled(bool)),
+        this->state.gl_widget, SLOT(repaint()));
 }
 
 QAction*
@@ -60,6 +66,12 @@ QAction*
 AddinManager::get_action_viewdir (void)
 {
     return this->action_viewdir;
+}
+
+QAction*
+AddinManager::get_action_ground (void)
+{
+    return this->action_ground;
 }
 
 QSlider*
@@ -96,12 +108,20 @@ AddinManager::on_scene_changed (void)
     this->orig_cam_centers.clear();
     this->orig_cam2world_vec.clear();
     this->frusta_renderer.reset();
+    this->ground_renderer.reset();
 }
 
 void
 AddinManager::reset_frusta_renderer (void)
 {
     this->frusta_renderer.reset();
+    this->ground_renderer.reset();
+}
+
+void
+AddinManager::reset_ground_renderer (void)
+{
+    this->ground_renderer.reset();
 }
 
 void
@@ -152,6 +172,13 @@ AddinManager::paint_impl (void)
             this->create_frusta_renderer();
         if (this->frusta_renderer != nullptr)
             this->frusta_renderer->draw();
+    }
+
+    if (this->action_ground->isChecked()) {
+        if (this->ground_renderer == nullptr)
+            this->create_ground_renderer();
+        if (this->ground_renderer != nullptr)
+            this->ground_renderer->draw();
     }
 
     if (this->action_viewdir->isChecked()) {
@@ -435,7 +462,21 @@ void AddinManager::create_frusta_renderer (void) {
         add_camera_to_mesh(cam, size, mesh);
     }
 
+    this->frusta_renderer = ogl::MeshRenderer::create(mesh);
+    this->frusta_renderer->set_shader(this->state.wireframe_shader);
+    this->frusta_renderer->set_primitive(GL_LINES);
+}
+
+void AddinManager::create_ground_renderer (void) {
+
+    mve::TriangleMesh::Ptr mesh = mve::TriangleMesh::create();
+    mve::TriangleMesh::VertexList& verts(mesh->get_vertices());
+    mve::TriangleMesh::FaceList& faces(mesh->get_faces());
+    mve::TriangleMesh::ColorList& colors(mesh->get_vertex_colors());
+    math::Vec4f color(0, 1, 0, 1); // green
+
     // Draw a ground plane as (x, z) in [-1, 1] x [-1, 1] at some height y.
+    double GL_ground_shift_y = -0.8;
     double d = 10.0;
     for (size_t i = 1; i <= 22; i++) {
         double x[2], z[2];
@@ -458,9 +499,9 @@ void AddinManager::create_frusta_renderer (void) {
         colors.push_back(color);
     }
 
-    this->frusta_renderer = ogl::MeshRenderer::create(mesh);
-    this->frusta_renderer->set_shader(this->state.wireframe_shader);
-    this->frusta_renderer->set_primitive(GL_LINES);
+    this->ground_renderer = ogl::MeshRenderer::create(mesh);
+    this->ground_renderer->set_shader(this->state.wireframe_shader);
+    this->ground_renderer->set_primitive(GL_LINES);
 }
 
 void
