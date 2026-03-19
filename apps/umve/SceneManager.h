@@ -7,15 +7,8 @@
 
 #include "SfmUtils.h"
 
-// The currently active scene as well as the selected view are requried
-// throughout the application. In order to reduce passing the scene
-// through a hierarchy of aggregate objects, the scene, the selected
-// view as well as the selected embedding are managed here. Whenever
-// one of the events happens, the appropriate signal is fired.
-//
-// The selection of the scene is typically handled by the main window.
-// The selection of views is handled by the SceneOverview class.
-// The selection of images is handled by the ViewInspect class.
+// Singleton signal hub for scene and view selection.
+// SfmMainWindow selects the scene, SceneOverview selects views.
 class SceneManager: public QObject {
   Q_OBJECT
 
