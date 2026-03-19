@@ -163,6 +163,25 @@ void SfmCameraInfo::read_tsai(std::string const& filename) {
 
 // View
 
+View::Ptr View::create() {
+  return Ptr(new View);
+}
+
+std::string const& View::get_name() const {
+  return name_;
+}
+
+SfmCameraInfo const& View::get_camera() const {
+  return camera_;
+}
+
+void View::set_camera(SfmCameraInfo const& cam) {
+  camera_ = cam;
+}
+
+void View::set_dirty(bool /*dirty*/) {
+}
+
 void View::load_view(std::string const& /*image_path*/,
                      std::string const& camera_path) {
   // Extract basename for the view name
@@ -177,6 +196,20 @@ void View::load_view(std::string const& /*image_path*/,
 }
 
 // Scene
+
+Scene::ViewList const& Scene::get_views() const {
+  return views_;
+}
+
+Scene::ViewList& Scene::get_views() {
+  return views_;
+}
+
+View::Ptr Scene::get_view_by_id(std::size_t id) {
+  if (id < views_.size())
+    return views_[id];
+  return View::Ptr();
+}
 
 Scene::Ptr Scene::create(
   std::vector<std::string> const& image_files,

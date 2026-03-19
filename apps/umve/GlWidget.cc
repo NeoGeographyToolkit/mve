@@ -62,6 +62,23 @@ void GlWidget::paintGL() {
   this->context->paint();
 }
 
+QSize GlWidget::minimumSizeHint() const {
+  return QSize(50, 50);
+}
+
+QSize GlWidget::sizeHint() const {
+  return QSize(400, 400);
+}
+
+void GlWidget::repaint_async(void) {
+  // Don't issue an immediate repaint but let the timer trigger
+  // a repaint after all events have been processed.
+  if (this->repaint_timer->isActive())
+    return;
+
+  this->repaint_timer->start();
+}
+
 void GlWidget::set_context(sfm::GlContext* context) {
   this->context = context;
   this->cx_init = true;

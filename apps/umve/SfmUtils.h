@@ -86,41 +86,6 @@ private:
   ViewList views_;
 };
 
-// Inline implementations
-
-inline View::Ptr View::create() {
-  return Ptr(new View);
-}
-
-inline std::string const& View::get_name() const {
-  return name_;
-}
-
-inline SfmCameraInfo const& View::get_camera() const {
-  return camera_;
-}
-
-inline void View::set_camera(SfmCameraInfo const& cam) {
-  camera_ = cam;
-}
-
-inline void View::set_dirty(bool /*dirty*/) {
-}
-
-inline Scene::ViewList const& Scene::get_views() const {
-  return views_;
-}
-
-inline Scene::ViewList& Scene::get_views() {
-  return views_;
-}
-
-inline View::Ptr Scene::get_view_by_id(std::size_t id) {
-  if (id < views_.size())
-    return views_[id];
-  return View::Ptr();
-}
-
 } // namespace sfm
 
 #endif // SFM_UTILS_HEADER

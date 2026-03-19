@@ -7,6 +7,22 @@
 
 namespace sfm {
 
+void CamTrackball::set_camera(SfmCamera* camera) {
+  this->cam = camera;
+}
+
+sfm::Vec3f CamTrackball::get_campos(void) const {
+  return this->tb_center + this->tb_tocam * this->tb_radius;
+}
+
+sfm::Vec3f CamTrackball::get_viewdir(void) const {
+  return -this->tb_tocam;
+}
+
+sfm::Vec3f const& CamTrackball::get_upvec(void) const {
+  return this->tb_upvec;
+}
+
 CamTrackball::CamTrackball(void) {
   this->cam = nullptr;
   this->tb_radius = 1.0f;

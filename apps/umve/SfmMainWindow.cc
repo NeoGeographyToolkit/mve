@@ -11,6 +11,9 @@
 #include "SceneManager.h"
 #include "SfmMainWindow.h"
 
+SfmMainWindow::~SfmMainWindow(void) {
+}
+
 SfmMainWindow::SfmMainWindow(int width, int height) {
   this->scene_overview = new SceneOverview(this);
 

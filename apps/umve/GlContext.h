@@ -40,22 +40,6 @@ private:
   int zoom_mouse_y;
 };
 
-inline void CamTrackball::set_camera(SfmCamera* camera) {
-  this->cam = camera;
-}
-
-inline sfm::Vec3f CamTrackball::get_campos(void) const {
-  return this->tb_center + this->tb_tocam * this->tb_radius;
-}
-
-inline sfm::Vec3f CamTrackball::get_viewdir(void) const {
-  return -this->tb_tocam;
-}
-
-inline sfm::Vec3f const& CamTrackball::get_upvec(void) const {
-  return this->tb_upvec;
-}
-
 // Rendering context with trackball camera control.
 // Subclass and override init_impl, resize_impl, paint_impl.
 class GlContext {

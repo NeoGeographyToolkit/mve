@@ -23,9 +23,4 @@ public:
   QSize sizeHint(void) const;
 };
 
-QSize
-inline SceneOverview::sizeHint(void) const {
-  return QSize(175, 0);
-}
-
 #endif // SFM_SCENE_OVERVIEW_HEADER

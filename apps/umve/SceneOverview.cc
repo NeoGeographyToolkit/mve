@@ -5,6 +5,10 @@
 #include "SceneManager.h"
 #include "SceneOverview.h"
 
+QSize SceneOverview::sizeHint(void) const {
+  return QSize(175, 0);
+}
+
 SceneOverview::SceneOverview(QWidget* parent)
   : QWidget(parent) {
   this->viewlist = new QListWidget();

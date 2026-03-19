@@ -45,21 +45,4 @@ private:
   QTimer* repaint_timer;
 };
 
-inline QSize GlWidget::minimumSizeHint() const {
-  return QSize(50, 50);
-}
-
-inline QSize GlWidget::sizeHint() const {
-  return QSize(400, 400);
-}
-
-inline void GlWidget::repaint_async(void) {
-  // Don't issue an immediate repaint but let the timer trigger
-  // a repaint after all events have been processed.
-  if (this->repaint_timer->isActive())
-    return;
-
-  this->repaint_timer->start();
-}
-
 #endif // SFM_GL_WIDGET_HEADER

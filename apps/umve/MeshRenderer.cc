@@ -50,6 +50,18 @@ void VertexBuffer::set_indices(GLuint const* data, GLsizei num_indices) {
   glFunctions()->glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
 }
 
+GLint VertexBuffer::get_values_per_vertex(void) const {
+  return this->vpv;
+}
+
+GLsizei VertexBuffer::get_element_amount(void) const {
+  return this->elems;
+}
+
+GLenum VertexBuffer::get_data_type(void) const {
+  return this->datatype;
+}
+
 // VertexArray
 
 VertexArray::VertexArray(void) {
@@ -59,6 +71,27 @@ VertexArray::VertexArray(void) {
 
 VertexArray::~VertexArray(void) {
   glFunctions()->glDeleteVertexArrays(1, &this->vao_id);
+}
+
+void VertexArray::set_primitive(GLuint primitive) {
+  this->primitive = primitive;
+}
+
+void VertexArray::set_vertex_vbo(VertexBuffer::Ptr vbo) {
+  this->vert_vbo = vbo;
+}
+
+void VertexArray::set_index_vbo(VertexBuffer::Ptr vbo) {
+  this->index_vbo = vbo;
+}
+
+void VertexArray::add_vbo(VertexBuffer::Ptr vbo,
+                           std::string const& name) {
+  this->vbo_list.push_back(std::make_pair(vbo, name));
+}
+
+void VertexArray::set_shader(QOpenGLShaderProgram* shader) {
+  this->shader = shader;
 }
 
 void VertexArray::reset_vertex_array(void) {
