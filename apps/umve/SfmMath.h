@@ -1,3 +1,4 @@
+// Derived from MVE (Simon Fuhrmann, TU Darmstadt, BSD 3-Clause).
 /*
  * Minimal math types for sfm_view: vectors, matrices, and GL matrix builders.
  * Derived from MVE math library (Simon Fuhrmann, TU Darmstadt, BSD 3-Clause).

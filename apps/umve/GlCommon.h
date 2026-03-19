@@ -1,3 +1,4 @@
+// Derived from MVE (Simon Fuhrmann, TU Darmstadt, BSD 3-Clause).
 /*
  * Copyright (C) 2015, Simon Fuhrmann
  * TU Darmstadt - Graphics, Capture and Massively Parallel Computing

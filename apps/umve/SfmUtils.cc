@@ -1,3 +1,4 @@
+// Derived from MVE (Simon Fuhrmann, TU Darmstadt, BSD 3-Clause).
 // Copyright (c) 2015, Simon Fuhrmann (TU Darmstadt)
 // Copyright (c) 2023-2026, United States Government as represented by the
 // Administrator of the National Aeronautics and Space Administration.
