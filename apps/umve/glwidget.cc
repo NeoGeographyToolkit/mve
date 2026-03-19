@@ -12,7 +12,6 @@
 #include <QApplication>
 
 #include "ogl/opengl.h"
-#include "ogl/events.h"
 #include "glwidget.h"
 
 GLWidget::GLWidget (QWidget *parent)

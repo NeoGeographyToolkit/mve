@@ -45,10 +45,6 @@ struct MouseEvent
     int y; ///< Mouse Y-position
 };
 
-/** Prints debug information for mouse event 'e' to STDOUT. */
-void
-event_debug_print (MouseEvent const& e);
-
 OGL_NAMESPACE_END
 
 #endif /* OGL_EVENTS_HEADER */

@@ -135,9 +135,8 @@ Context::paint (void)
 }
 
 inline bool
-Context::mouse_event (MouseEvent const& event)
+Context::mouse_event (MouseEvent const& /*event*/)
 {
-    ogl::event_debug_print(event);
     return true;
 }
 

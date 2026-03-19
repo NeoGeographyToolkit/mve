@@ -35,9 +35,6 @@ public slots:
     void repaint_async (void);
     void gl_context (void);
 
-public:
-    static void debug_event (ogl::MouseEvent const& event);
-
 protected:
     void initializeGL (void);
     void paintGL (void);
