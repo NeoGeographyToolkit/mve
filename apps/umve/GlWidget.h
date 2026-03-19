@@ -46,7 +46,6 @@ private:
     QTimer* repaint_timer;
 };
 
-/* ---------------------------------------------------------------- */
 
 inline QSize
 GlWidget::minimumSizeHint() const

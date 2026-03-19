@@ -16,7 +16,6 @@ CamTrackball::CamTrackball (void)
     this->tb_upvec = math::Vec3f(0.0f, 1.0f, 0.0f);
 }
 
-/* ---------------------------------------------------------------- */
 
 bool
 CamTrackball::consume_event (MouseEvent const& event)
@@ -81,7 +80,6 @@ CamTrackball::consume_event (MouseEvent const& event)
     return is_handled;
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 CamTrackball::handle_tb_rotation (int x, int y)
@@ -112,7 +110,6 @@ CamTrackball::handle_tb_rotation (int x, int y)
     this->tb_upvec = rot * this->rot_tb_upvec;
 }
 
-/* ---------------------------------------------------------------- */
 
 math::Vec3f
 CamTrackball::get_ball_normal (int x, int y)
@@ -127,9 +124,8 @@ CamTrackball::get_ball_normal (int x, int y)
     return sn.normalize();
 }
 
-/* ---------------------------------------------------------------- */
 
-/* ---- GlContext ---- */
+// GlContext
 
 void
 GlContext::init (void)

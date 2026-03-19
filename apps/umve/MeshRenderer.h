@@ -20,7 +20,7 @@
 
 GL_NAMESPACE_BEGIN
 
-/* ---- VertexBuffer ---- */
+// VertexBuffer
 
 // OpenGL vertex buffer object (VBO) abstraction.
 class VertexBuffer
@@ -70,7 +70,7 @@ VertexBuffer::get_data_type (void) const
     return this->datatype;
 }
 
-/* ---- VertexArray ---- */
+// VertexArray
 
 // OpenGL vertex array object (VAO) abstraction.
 class VertexArray
@@ -136,7 +136,7 @@ VertexArray::set_shader (QOpenGLShaderProgram* shader)
     this->shader = shader;
 }
 
-/* ---- MeshRenderer ---- */
+// MeshRenderer
 
 // Takes a TriangleMesh and creates VBOs for rendering.
 class MeshRenderer : public VertexArray

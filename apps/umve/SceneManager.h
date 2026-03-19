@@ -44,7 +44,6 @@ public:
     void reset_view (void);
 };
 
-/* ---------------------------------------------------------------- */
 
 inline void
 SceneManager::select_scene (sfm::Scene::Ptr scene)

@@ -11,7 +11,7 @@
 
 namespace math {
 
-/* ---- Vector ---- */
+// Vector
 
 template <typename T, int N>
 class Vector
@@ -84,7 +84,7 @@ typedef Vector<float,3> Vec3f;
 typedef Vector<double,3> Vec3d;
 typedef Vector<float,4> Vec4f;
 
-/* ---- Matrix ---- */
+// Matrix
 
 template <typename T, int R, int C>
 class Matrix
@@ -158,7 +158,7 @@ typedef Matrix<float,3,3> Matrix3f;
 typedef Matrix<double,3,3> Matrix3d;
 typedef Matrix<float,4,4> Matrix4f;
 
-/* ---- Free functions ---- */
+// Free functions
 
 template <typename T>
 T clamp (T const& v, T const& lo, T const& hi)
@@ -248,7 +248,7 @@ matrix_rotation_from_axis_angle (Vector<T,3> const& axis, T const& angle)
 
 } // namespace math
 
-/* ---- TriangleMesh ---- */
+// TriangleMesh
 
 namespace sfm {
 
@@ -288,7 +288,7 @@ private:
 
 } // namespace sfm
 
-/* ---- Camera ---- */
+// Camera
 
 namespace gl {
 

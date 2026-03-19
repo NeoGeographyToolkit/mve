@@ -8,7 +8,7 @@
 
 GL_NAMESPACE_BEGIN
 
-/* ---- Trackball ---- */
+// Trackball
 
 // Trackball camera control that consumes mouse events.
 class CamTrackball
@@ -68,7 +68,7 @@ CamTrackball::get_upvec (void) const
     return this->tb_upvec;
 }
 
-/* ---- Context ---- */
+// Context
 
 // Rendering context with trackball camera control.
 // Subclass and override init_impl, resize_impl, paint_impl.

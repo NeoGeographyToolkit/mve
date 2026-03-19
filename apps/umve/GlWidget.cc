@@ -29,19 +29,16 @@ GlWidget::GlWidget (QWidget *parent)
     connect (this->repaint_timer, SIGNAL (timeout()), this, SLOT (repaint()));
 }
 
-/* ---------------------------------------------------------------- */
 
 GlWidget::~GlWidget (void)
 {
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::initializeGL() {
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::resizeGL(int width, int height)
@@ -55,7 +52,6 @@ GlWidget::resizeGL(int width, int height)
         this->context->resize(width, height);
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::paintGL()
@@ -79,7 +75,6 @@ GlWidget::paintGL()
     this->context->paint();
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::set_context (gl::GlContext* context)
@@ -88,7 +83,6 @@ GlWidget::set_context (gl::GlContext* context)
     this->cx_init = true;
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::mousePressEvent (QMouseEvent *event)
@@ -104,7 +98,6 @@ GlWidget::mousePressEvent (QMouseEvent *event)
     this->repaint_async();
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::mouseReleaseEvent (QMouseEvent *event)
@@ -120,7 +113,6 @@ GlWidget::mouseReleaseEvent (QMouseEvent *event)
     this->repaint_async();
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::mouseMoveEvent (QMouseEvent *event)
@@ -136,7 +128,6 @@ GlWidget::mouseMoveEvent (QMouseEvent *event)
     this->repaint_async();
 }
 
-/* ---------------------------------------------------------------- */
 
 void
 GlWidget::wheelEvent (QWheelEvent* event)

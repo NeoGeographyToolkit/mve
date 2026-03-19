@@ -6,7 +6,7 @@
 
 GL_NAMESPACE_BEGIN
 
-/* ---- VertexBuffer ---- */
+// VertexBuffer
 
 VertexBuffer::~VertexBuffer (void)
 {
@@ -60,7 +60,7 @@ VertexBuffer::set_indices (GLuint const* data, GLsizei num_indices)
     glFunctions()->glBufferData(this->vbo_target, bytes, data, GL_STATIC_DRAW);
 }
 
-/* ---- VertexArray ---- */
+// VertexArray
 
 VertexArray::VertexArray (void)
 {
@@ -130,7 +130,7 @@ VertexArray::draw (void)
     f->glBindVertexArray(0);
 }
 
-/* ---- MeshRenderer ---- */
+// MeshRenderer
 
 void
 MeshRenderer::set_mesh (sfm::TriangleMesh::ConstPtr mesh)
